@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Ast;
+using DoodleDigits.Core.Execution.Results;
 
 namespace DoodleDigits.Core.Execution {
     public static class NamedFunctions {
@@ -20,16 +21,16 @@ namespace DoodleDigits.Core.Execution {
         new("min", 1..^1, (a) => a.Min()),
         */
 
-        private static RealValue ConvertArgumentToReal(Value value, int index, ExecutionContext context) {
-            Function? func = context.Node as Function;
+        private static RealValue ConvertArgumentToReal(Value value, int index, ExecutionContext<Function> context) {
+            Function func = context.Node;
 
             if (value is RealValue real) {
                 return real;
             }
 
             if (value is BooleanValue @bool) {
-                context.AddWarning("Conversion", func?.Arguments[index].Position ?? context.Node.Position);
-                return new RealValue(@bool.Value ? 1 : 0);
+                RealValue newValue = @bool.ConvertToReal();
+                context.AddResult(new ResultConversion(@bool, newValue, func.Arguments[index].Position));
             }
 
             throw new NotImplementedException();
@@ -37,7 +38,7 @@ namespace DoodleDigits.Core.Execution {
         
 
 
-        public static Value Log(Value[] values, ExecutionContext context) {
+        public static Value Log(Value[] values, ExecutionContext<Function> context) {
             if (values.Length == 1) {
                 return new RealValue(Math.Log10( ConvertArgumentToReal(values[0], 0, context).Value ));
             }
@@ -48,31 +49,37 @@ namespace DoodleDigits.Core.Execution {
             ));
         }
 
-        public static Value Ln(Value value, ExecutionContext context) {
+        public static Value Root(Value value, Value root, ExecutionContext<Function> context) {
+            double dValue = ConvertArgumentToReal(value, 0, context).Value;
+            double dRoot = ConvertArgumentToReal(root, 1, context).Value;
+            return new RealValue(Math.Pow(dValue, 1/dRoot));
+        }
+
+        public static Value Ln(Value value, ExecutionContext<Function> context) {
             return new RealValue(Math.Log(ConvertArgumentToReal(value, 0, context).Value));
         }
 
-        public static Value Sin(Value value, ExecutionContext context) {
+        public static Value Sin(Value value, ExecutionContext<Function> context) {
             return new RealValue(Math.Sin(ConvertArgumentToReal(value, 0, context).Value));
         }
 
-        public static Value Cos(Value value, ExecutionContext context) {
+        public static Value Cos(Value value, ExecutionContext<Function> context) {
             return new RealValue(Math.Sin(ConvertArgumentToReal(value, 0, context).Value));
         }
 
-        public static Value Tan(Value value, ExecutionContext context) {
+        public static Value Tan(Value value, ExecutionContext<Function> context) {
             return new RealValue(Math.Sin(ConvertArgumentToReal(value, 0, context).Value));
         }
 
-        public static Value Sqrt(Value value, ExecutionContext context) {
+        public static Value Sqrt(Value value, ExecutionContext<Function> context) {
             return new RealValue(Math.Sqrt(ConvertArgumentToReal(value, 0, context).Value));
         }
 
-        public static Value Max(Value[] values, ExecutionContext context) {
+        public static Value Max(Value[] values, ExecutionContext<Function> context) {
             return new RealValue(values.Select((x, i) => ConvertArgumentToReal(x, i, context).Value).Max()) ;
         }
 
-        public static Value Min(Value[] values, ExecutionContext context) {
+        public static Value Min(Value[] values, ExecutionContext<Function> context) {
             return new RealValue(values.Select((x, i) => ConvertArgumentToReal(x, i, context).Value).Min());
         }
     }

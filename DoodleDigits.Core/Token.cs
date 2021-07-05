@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Utilities;
 
 namespace DoodleDigits.Core {
     public enum TokenType {
@@ -15,14 +16,42 @@ namespace DoodleDigits.Core {
         ParenthesisClose,
         ParenthesisOpen,
         Comma,
-        NewLine,
         Modulus,
         EndOfFile,
         Power,
         Unknown,
+        Equals,
+        NotEquals,
+        LessOrEqualTo,
+        LessThan,
+        GreaterOrEqualTo,
+        GreaterThan,
+        Or,
+        And,
     }
 
     public class Token : IEquatable<Token> {
+
+        public static readonly TwoWayDictionary<string, TokenType> Tokens = new() {
+            { "+", TokenType.Add },
+            { "-", TokenType.Subtract },
+            { "*", TokenType.Multiply },
+            { "/", TokenType.Divide },
+            { "(", TokenType.ParenthesisOpen },
+            { ")", TokenType.ParenthesisClose },
+            { ",", TokenType.Comma },
+            { "%", TokenType.Modulus },
+            { "^", TokenType.Power },
+            { "=", TokenType.Equals },
+            { "!=", TokenType.NotEquals },
+            { "<=", TokenType.LessOrEqualTo },
+            { "<", TokenType.LessThan },
+            { ">=", TokenType.GreaterOrEqualTo },
+            { ">", TokenType.GreaterThan },
+            { "&&", TokenType.And },
+            { "||", TokenType.Or },
+        };
+        
 
         public Token(string content, TokenType type) {
             Content = content;

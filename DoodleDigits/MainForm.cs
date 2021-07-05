@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DoodleDigits.Core;
 using DoodleDigits.Core.Execution;
+using DoodleDigits.Core.Execution.Results;
 
 namespace DoodleDigits
 {
@@ -16,13 +17,17 @@ namespace DoodleDigits
         private readonly Executor executor;
 
         public MainForm() {
-            executor = new Executor(FunctionLibrary.Functions);
+            executor = new Executor(FunctionLibrary.Functions, ConstantLibrary.Constants);
             InitializeComponent();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e) {
-            var result = executor.Calculate(textBox1.Text);
-            label1.Text = result.Results.Length > 0 ? result.Results[0] : "";
+            var results = executor.Calculate(textBox1.Text);
+            foreach (var result in results.Results) {
+                if (result is ResultValue value) {
+                    label1.Text = value.Value.ToString();
+                }
+            }
         }
     }
 }

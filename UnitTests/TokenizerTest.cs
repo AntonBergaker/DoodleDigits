@@ -68,6 +68,19 @@ namespace UnitTests {
             }, "func(5)");
         }
 
+        [Test]
+        public void TestManyCharacterTokens() {
+            AssertTokenEqual(new Token[] {
+                new("5", TokenType.Number),
+                new("<=", TokenType.LessOrEqualTo),
+                new("5", TokenType.Number),
+                new("!=", TokenType.NotEquals),
+                new("5", TokenType.Number),
+                new("<", TokenType.LessThan),
+                new("5", TokenType.Number),
+            }, "5 <= 5 != 5 < 5");
+        }
+
 
         private void AssertTokenEqual(Token[] expectedTokens, string input) {
 

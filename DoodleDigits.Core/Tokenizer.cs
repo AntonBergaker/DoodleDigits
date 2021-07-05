@@ -3,28 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Utilities;
 
 namespace DoodleDigits.Core {
     public class Tokenizer {
         private int index;
         private string input;
 
+
+        private static readonly Dictionary<char, string[]> IdentifyTokens;
+
+        static Tokenizer() {
+
+            Dictionary<char, List<string>> charDictionary = new();
+
+            foreach (KeyValuePair<string, TokenType> pair in Token.Tokens) {
+                char c = pair.Key[0];
+
+                List<string>? list = charDictionary.GetValueOrDefault(c);
+                if (list == null) {
+                    charDictionary[c] = list = new List<string>();
+                }
+
+                list.Add(pair.Key);
+                list.Sort((a, b) => b.Length - a.Length);
+            }
+
+            IdentifyTokens = charDictionary.ToDictionary(
+                x => x.Key, 
+                x => x.Value.ToArray());
+        }
+
         public Tokenizer() {
             index = 0;
             input = null!;
         }
-
-        private static readonly Dictionary<char, TokenType> UniqueTokens = new Dictionary<char, TokenType> {
-            {'+', TokenType.Add },
-            {'-', TokenType.Subtract },
-            {'*', TokenType.Multiply },
-            {'/', TokenType.Divide },
-            {'(', TokenType.ParenthesisOpen},
-            {')', TokenType.ParenthesisClose},
-            {',', TokenType.Comma},
-            {'%', TokenType.Modulus},
-            {'^', TokenType.Power},
-        };
 
         public Token[] Tokenize(string input) {
             this.input = input;
@@ -64,7 +77,7 @@ namespace DoodleDigits.Core {
 
             if (c == '\n') {
                 index++;
-                return new Token("\n", TokenType.NewLine, startIndex..startIndex);
+                return null;
             }
             if (char.IsWhiteSpace(c)) {
                 index++;
@@ -73,9 +86,14 @@ namespace DoodleDigits.Core {
             if (TryReadNumber()) {
                 return new Token(input[startIndex..index], TokenType.Number, startIndex..index);
             }
-            if (UniqueTokens.TryGetValue(c, out TokenType tokenType)) {
-                index++;
-                return new Token(c.ToString(), tokenType, startIndex..startIndex);
+            if (IdentifyTokens.TryGetValue(c, out string[]? tokensWithChar)) {
+                foreach (string str in tokensWithChar) {
+                    int endIndex = index + str.Length;
+                    if (input.Length >= endIndex && input[index..endIndex] == str) {
+                        index += str.Length;
+                        return new Token(str, Token.Tokens[str], startIndex..index);
+                    }
+                }
             }
             if (IsIdentifierFirstLetter(c)) {
                 JumpUntilFalse(x => IsIdentifierLetter(x));

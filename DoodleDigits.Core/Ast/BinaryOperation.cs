@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Utilities;
 
 namespace DoodleDigits.Core.Ast
 {
@@ -14,31 +15,34 @@ namespace DoodleDigits.Core.Ast
             Multiply,
             Modulus,
             Power,
+            Equals,
+            NotEquals,
+            GreaterOrEqualTo,
+            GreaterThan,
+            LessOrEqualTo,
+            LessThan
         }
 
-        public static string GetSymbolForType(OperationType operation) {
-            return operation switch {
-                OperationType.Add => "+",
-                OperationType.Divide => "/",
-                OperationType.Multiply => "*",
-                OperationType.Subtract => "-",
-                OperationType.Modulus => "%",
-                OperationType.Power => "^",
-                _ => throw new NotImplementedException(),
-            };
+
+        private static readonly TwoWayDictionary<TokenType, OperationType> TypeDictionary = new() {
+            {TokenType.Add, OperationType.Add},
+            {TokenType.Divide, OperationType.Divide},
+            {TokenType.Multiply, OperationType.Multiply},
+            {TokenType.Subtract, OperationType.Subtract},
+            {TokenType.Modulus, OperationType.Modulus},
+            {TokenType.Power, OperationType.Power},
+            {TokenType.Equals, OperationType.Equals},
+            {TokenType.NotEquals, OperationType.NotEquals},
+            {TokenType.GreaterOrEqualTo, OperationType.GreaterOrEqualTo},
+            {TokenType.GreaterThan, OperationType.GreaterThan},
+            {TokenType.LessOrEqualTo, OperationType.LessOrEqualTo},
+            {TokenType.LessThan, OperationType.LessThan},
+        };
+
+        public static OperationType GetTypeFromToken(TokenType token) {
+            return TypeDictionary[token];
         }
 
-        public static OperationType GetTypeFromToken(TokenType tokenType) {
-            return tokenType switch {
-                TokenType.Add => OperationType.Add,
-                TokenType.Divide => OperationType.Divide,
-                TokenType.Multiply => OperationType.Multiply,
-                TokenType.Subtract => OperationType.Subtract,
-                TokenType.Modulus => OperationType.Modulus,
-                TokenType.Power => OperationType.Power,
-                _ => throw new NotImplementedException(),
-            };
-        }
 
         public Expression Left { get; }
         public OperationType Operation { get; }
@@ -62,7 +66,7 @@ namespace DoodleDigits.Core.Ast
         }
 
         public override string ToString() {
-            return $"({Left} {GetSymbolForType(Operation)} {Right})";
+            return $"({Left} {Token.Tokens[TypeDictionary[Operation]]} {Right})";
         }
 
     }

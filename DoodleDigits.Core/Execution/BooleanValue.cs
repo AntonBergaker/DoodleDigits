@@ -16,5 +16,9 @@ namespace DoodleDigits.Core.Execution {
         public override string ToString() {
             return Value.ToString(CultureInfo.InvariantCulture);
         }
+
+        public RealValue ConvertToReal() {
+            return new RealValue(Value ? 1 : 0);
+        }
     }
 }

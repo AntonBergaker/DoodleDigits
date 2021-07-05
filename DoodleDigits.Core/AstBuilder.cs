@@ -46,6 +46,12 @@ namespace DoodleDigits.Core
             List<Expression> expressions = new();
             while (reader.ReachedEnd == false) {
                 expressions.Add(ReadExpression());
+
+                Token peek = reader.Peek();
+                if (peek.Type == TokenType.Comma) {
+                    reader.Skip();
+                }
+
             }
 
             if (expressions.Count == 1) {
@@ -63,6 +69,8 @@ namespace DoodleDigits.Core
             new[] {TokenType.Power},
             new[] {TokenType.Multiply, TokenType.Divide, TokenType.Modulus},
             new[] {TokenType.Add, TokenType.Subtract},
+            new[] {TokenType.GreaterOrEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.LessOrEqualTo},
+            new[] {TokenType.Equals, TokenType.NotEquals}
         };
 
         private Expression ReadBinary(int depth) {
@@ -91,7 +99,7 @@ namespace DoodleDigits.Core
 
             if (peek.Type is TokenType.Add or TokenType.Subtract) {
                 reader.Skip();
-                return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), ReadLiteral(), peek.Position);
+                return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), ReadUnary(), peek.Position);
             }
 
             return ReadLiteral();
@@ -125,8 +133,13 @@ namespace DoodleDigits.Core
 
         private Expression ReadIdentifier(Token token) {
             if (token.Content.StartsWith("log")) {
-                if (ReadLog(token, out Expression? log)) {
+                if (ReadFunctionWithBuiltInParameter(token, "log", out Expression? log)) {
                     return log;
+                }
+            }
+            if (token.Content.StartsWith("root")) {
+                if (ReadFunctionWithBuiltInParameter(token, "root", out Expression? root)) {
+                    return root;
                 }
             }
 
@@ -171,18 +184,19 @@ namespace DoodleDigits.Core
             return new Function(token.Content, new[] { expression }, token.Position);
         }
 
-        private bool ReadLog(Token token, [NotNullWhen(true)] out Expression? log) {
-            log = null;
+        private bool ReadFunctionWithBuiltInParameter(Token token, string functionName, [NotNullWhen(true)] out Expression? function) {
+            function = null;
+            int functionLength = functionName.Length;
 
-            if (token.Content.Length == 3) {
+            if (token.Content.Length == functionLength) {
                 // Log will be handled by the normal mechanisms under function when false
                 return false;
             }
 
-            if (token.Content[3] == '_') {
+            if (token.Content[functionLength] == '_') {
                 // Underscore means we try to read a literal down here
                 // Parse the one token
-                Token? hotSwappedToken = tokenizer.TokenizeOne(token.Content, 4);
+                Token? hotSwappedToken = tokenizer.TokenizeOne(token.Content, functionLength+1);
                 if (hotSwappedToken == null || hotSwappedToken.Type is TokenType.Unknown or TokenType.EndOfFile) {
                     return false;
                 }
@@ -190,17 +204,17 @@ namespace DoodleDigits.Core
                 Expression @base = ReadLiteral(hotSwappedToken);
                 Expression argument = ReadExpression();
 
-                log = new Function("log", new[] {argument, @base}, token.Position);
+                function = new Function(functionName, new[] {argument, @base}, token.Position);
                 return true;
             }
 
-            if (char.IsDigit(token.Content[3])) {
-                if (double.TryParse(token.Content[3..], out double @base)) {
-                    Range newRange = (token.Position.Start.Value + 3)..token.Position.End;
+            if (char.IsDigit(token.Content[functionLength])) {
+                if (double.TryParse(token.Content[functionLength..], out double @base)) {
+                    Range newRange = (token.Position.Start.Value + functionLength)..token.Position.End;
                     Expression baseLiteral = new NumberLiteral(@base.ToString(CultureInfo.InvariantCulture), newRange);
                     Expression argument = ReadExpression();
 
-                    log = new Function("log", new[] { argument, baseLiteral }, token.Position);
+                    function = new Function(functionName, new[] { argument, baseLiteral }, token.Position);
                     return true;
                 }
             }
