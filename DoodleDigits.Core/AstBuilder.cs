@@ -62,7 +62,20 @@ namespace DoodleDigits.Core
         }
 
         private Expression ReadExpression() {
-            return ReadBinary(binaryOperationOrder.Length-1);
+            return ReadImplicitMultiplication();
+        }
+
+        private Expression ReadImplicitMultiplication() {
+            Expression lhs = ReadBinary(binaryOperationOrder.Length - 1);
+
+            Token peek = reader.Peek();
+            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
+                lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply,
+                    ReadBinary(binaryOperationOrder.Length - 1), reader.Position..reader.Position);
+                peek = reader.Peek();
+            }
+
+            return lhs;
         }
 
         private static readonly TokenType[][] binaryOperationOrder = new[] {

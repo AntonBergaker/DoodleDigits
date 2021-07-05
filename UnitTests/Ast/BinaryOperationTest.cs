@@ -73,5 +73,53 @@ namespace UnitTests.Ast {
                 )
                 , "10-1-2");
         }
+
+        [Test]
+        public void TestImplicitMultiplication() {
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Add,
+                        new NumberLiteral("5")
+                    ), 
+                    BinaryOperation.OperationType.Multiply,
+                        new NumberLiteral("5")
+                    ), "(5 + 5)(5)"
+                );
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Add,
+                        new NumberLiteral("5")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new NumberLiteral("5")
+                ), "(5 + 5)5"
+            );
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new NumberLiteral("5"),
+                    BinaryOperation.OperationType.Multiply,
+                    new Identifier("x")
+                ), "5x"
+            );
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Multiply,
+                        new Identifier("x")
+                    ), 
+                    BinaryOperation.OperationType.Multiply, 
+                    new Identifier("y")
+                ), "5x(y)"
+            );
+
+        }
     }
 }

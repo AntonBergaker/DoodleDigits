@@ -18,6 +18,7 @@ namespace DoodleDigits.Core {
         }
 
         public bool ReachedEnd => index >= tokens.Length;
+        public int Position => Math.Min(index, tokens.Length);
 
         public Token Peek() {
             if (ReachedEnd) {
