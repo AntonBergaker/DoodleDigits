@@ -88,7 +88,7 @@ namespace DoodleDigits.Core
 
         private Expression ReadBinary(int depth) {
             if (depth == -1) {
-                return ReadUnary();
+                return ReadPreUnary();
             }
 
             Expression lhs = this.ReadBinary(depth - 1);
@@ -106,16 +106,29 @@ namespace DoodleDigits.Core
         }
 
 
-        private Expression ReadUnary() {
+        private Expression ReadPreUnary() {
 
             Token peek = reader.Peek();
 
-            if (peek.Type is TokenType.Add or TokenType.Subtract) {
+            if (peek.Type is TokenType.Add or TokenType.Subtract or TokenType.Exclamation) {
                 reader.Skip();
-                return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), ReadUnary(), peek.Position);
+                return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), ReadPreUnary(), peek.Position);
             }
 
-            return ReadLiteral();
+            return ReadPostUnary();
+        }
+
+        private Expression ReadPostUnary() {
+            Expression expression = ReadLiteral();
+
+            Token peek = reader.Peek();
+            while (peek.Type == TokenType.Exclamation) {
+                reader.Skip();
+                expression = new UnaryOperation(UnaryOperation.OperationType.Factorial, expression, peek.Position);
+                peek = reader.Peek();
+            }
+
+            return expression;
         }
 
         private Expression ReadLiteral() {

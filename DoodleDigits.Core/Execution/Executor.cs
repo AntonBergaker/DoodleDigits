@@ -118,12 +118,18 @@ namespace DoodleDigits.Core.Execution {
         }
 
         private Value Calculate(UnaryOperation unaryOperation) {
+            
             Value value = Calculate(unaryOperation.Value);
-            return unaryOperation.Operation switch {
-                UnaryOperation.OperationType.Add => UnaryOperations.UnaryPlus(value, context.ForNode(unaryOperation)),
-                UnaryOperation.OperationType.Subtract => UnaryOperations.UnaryNegate(value, context.ForNode(unaryOperation)),
-                _ => throw new ArgumentOutOfRangeException()
+
+            Func<Value, ExecutionContext<UnaryOperation>, Value> func = unaryOperation.Operation switch {
+                UnaryOperation.OperationType.Add => UnaryOperations.UnaryPlus,
+                UnaryOperation.OperationType.Subtract => UnaryOperations.UnaryNegate,
+                UnaryOperation.OperationType.Factorial => UnaryOperations.UnaryFactorial,
+                UnaryOperation.OperationType.Not => UnaryOperations.UnaryNot,
+                _ => throw new ArgumentOutOfRangeException(),
             };
+
+            return func(value, context.ForNode(unaryOperation));
         }
 
 

@@ -11,7 +11,7 @@ namespace UnitTests.Ast {
     class UnaryTest {
 
         [Test]
-        public void TestUnary() {
+        public void TestPreUnary() {
 
             AstUtils.AssertEqual(new UnaryOperation(UnaryOperation.OperationType.Subtract, new NumberLiteral("5")), "-5");
 
@@ -22,6 +22,32 @@ namespace UnitTests.Ast {
                     )
                 ), "-(-5)");
 
+        }
+
+        [Test]
+        public void TestPostUnary() {
+
+            AstUtils.AssertEqual(
+                new UnaryOperation(UnaryOperation.OperationType.Factorial, 
+                    new NumberLiteral("1")
+                ),
+                "1!");
+
+            AstUtils.AssertEqual(
+                new UnaryOperation(UnaryOperation.OperationType.Factorial,
+                    new UnaryOperation(UnaryOperation.OperationType.Factorial,
+                        new NumberLiteral("1")
+                    )
+                ),
+                "1!!");
+
+            AstUtils.AssertEqual(
+                new UnaryOperation(UnaryOperation.OperationType.Subtract,
+                    new UnaryOperation(UnaryOperation.OperationType.Factorial,
+                        new NumberLiteral("1")
+                    )
+                ),
+                "-1!");
         }
     }
 }

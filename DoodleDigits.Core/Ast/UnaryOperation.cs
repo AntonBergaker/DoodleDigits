@@ -11,6 +11,8 @@ namespace DoodleDigits.Core.Ast
         public enum OperationType {
             Add,
             Subtract,
+            Factorial,
+            Not
         }
 
         public static string GetSymbolForType(OperationType operation) {
@@ -25,6 +27,7 @@ namespace DoodleDigits.Core.Ast
             return token switch {
                 TokenType.Add => OperationType.Add,
                 TokenType.Subtract => OperationType.Subtract,
+                TokenType.Exclamation => OperationType.Not,
                 _ => throw new Exception("Token has no unary operation")
             };
         }
@@ -49,6 +52,10 @@ namespace DoodleDigits.Core.Ast
         }
 
         public override string ToString() {
+            if (Operation == OperationType.Factorial) {
+                return $"{Value}!";
+            }
+
             return $"{GetSymbolForType(Operation)}{Value}";
         }
     }

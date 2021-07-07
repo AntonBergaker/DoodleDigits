@@ -16,5 +16,11 @@ namespace DoodleDigits.Core.Execution {
         public override string ToString() {
             return Value.ToString(CultureInfo.InvariantCulture);
         }
+
+        public Value ConvertToBool() {
+            return new BooleanValue(Value > 0.5);
+        }
+
+        public bool HasDecimal => Value % 1 == 0;
     }
 }

@@ -28,6 +28,7 @@ namespace DoodleDigits.Core {
         GreaterThan,
         Or,
         And,
+        Exclamation
     }
 
     public class Token : IEquatable<Token> {
@@ -50,6 +51,7 @@ namespace DoodleDigits.Core {
             { ">", TokenType.GreaterThan },
             { "&&", TokenType.And },
             { "||", TokenType.Or },
+            {"!", TokenType.Exclamation},
         };
         
 
