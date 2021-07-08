@@ -25,6 +25,7 @@ namespace DoodleDigits.Core.Execution {
 
         public IReadOnlyDictionary<string, Value> Constants => data.Constants;
         public Dictionary<string, Value> Variables => data.Variables;
+        public IReadOnlyList<Result> Results => data.Results;
 
         public ExecutionContext(IEnumerable<Constant> constants) {
             data = new ExecutionContextData(constants);
@@ -42,6 +43,10 @@ namespace DoodleDigits.Core.Execution {
             return new ExecutionContext<T>(this, node);
         }
 
+        public void Clear() {
+            data.Results.Clear();
+            data.Variables.Clear();
+        }
     }
 
 

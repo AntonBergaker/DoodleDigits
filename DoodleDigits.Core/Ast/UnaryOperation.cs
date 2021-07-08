@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Execution;
+using DoodleDigits.Core.Execution.Functions;
 
 namespace DoodleDigits.Core.Ast
 {
     public class UnaryOperation : Expression {
+
+        public delegate Value OperationFunction(Value value, ExecutionContext<UnaryOperation> context);
 
         public enum OperationType {
             Add,
@@ -15,23 +19,36 @@ namespace DoodleDigits.Core.Ast
             Not
         }
 
-        public static string GetSymbolForType(OperationType operation) {
-            return operation switch {
-                OperationType.Add => "+",
-                OperationType.Subtract => "-",
-                _ => throw new NotImplementedException(),
+        static UnaryOperation() {
+
+            var ops = new (TokenType tokenType, OperationType operationType, OperationFunction function)[] {
+                (TokenType.Add, OperationType.Add, UnaryOperations.UnaryPlus),
+                (TokenType.Subtract, OperationType.Subtract, UnaryOperations.UnaryNegate),
+                (TokenType.Exclamation, OperationType.Not, UnaryOperations.UnaryNot),
             };
+
+            TokenOperationDictionary = ops.ToDictionary(x => x.tokenType, x => x.operationType);
+
+            ops = ops.Append((TokenType.Exclamation, OperationType.Factorial, UnaryOperations.UnaryFactorial)).ToArray();
+
+            OperationTokenDictionary = ops.ToDictionary(x => x.operationType, x => x.tokenType);
+            FunctionDictionary = ops.ToDictionary(x => x.operationType, x => x.function);
+            AllFunctions = ops.Select(x => x.function).ToArray();
         }
+
+        private static readonly Dictionary<TokenType, OperationType> TokenOperationDictionary;
+        private static readonly Dictionary<OperationType, TokenType> OperationTokenDictionary;
+        private static readonly Dictionary<OperationType, OperationFunction> FunctionDictionary;
+
+        public static readonly OperationFunction[] AllFunctions;
 
         public static OperationType GetTypeFromToken(TokenType token) {
-            return token switch {
-                TokenType.Add => OperationType.Add,
-                TokenType.Subtract => OperationType.Subtract,
-                TokenType.Exclamation => OperationType.Not,
-                _ => throw new Exception("Token has no unary operation")
-            };
+            return TokenOperationDictionary[token];
         }
 
+        public static OperationFunction GetFunctionFromType(OperationType type) {
+            return FunctionDictionary[type];
+        }
 
         public OperationType Operation { get; }
         public Expression Value { get; }
@@ -56,7 +73,7 @@ namespace DoodleDigits.Core.Ast
                 return $"{Value}!";
             }
 
-            return $"{GetSymbolForType(Operation)}{Value}";
+            return $"{Token.Tokens[OperationTokenDictionary[Operation]]}{Value}";
         }
     }
 }

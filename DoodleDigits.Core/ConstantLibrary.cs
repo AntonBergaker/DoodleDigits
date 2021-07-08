@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Execution;
+using Rationals;
 
 namespace DoodleDigits.Core {
     public class Constant {
@@ -22,9 +23,9 @@ namespace DoodleDigits.Core {
         public static Constant[] Constants = {
             new("true", new BooleanValue(true)),
             new("false", new BooleanValue(false)),
-            new("pi", new RealValue(Math.PI)),
-            new("tau", new RealValue(Math.Tau)),
-            new("e", new RealValue(Math.E)),
+            new("pi", new RealValue((Rational) Math.PI)),
+            new("tau", new RealValue((Rational) Math.Tau)),
+            new("e", new RealValue((Rational) Math.E)),
         };
 
 

@@ -5,38 +5,42 @@ using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits.Core.Execution.Functions.Binary {
 
     public static partial class BinaryOperations {
-        private static (BooleanValue val0, BooleanValue val1) ConvertToBool(Value value0, Value value1, ExecutionContext<BinaryOperation> context) {
+        private static (BooleanValue lhs, BooleanValue rhs) ConvertToBool(IConvertibleToBool lhs, IConvertibleToBool rhs, ExecutionContext<BinaryOperation> context) {
             BinaryOperation bo = context.Node;
 
-            if (value0 is RealValue real0) {
-                value0 = new BooleanValue(real0.Value > 0.5);
-                context.AddResult(new ResultConversion(real0, value0, bo.Right.Position));
+            return (lhs.ConvertToBool(context, bo.Left.Position), rhs.ConvertToBool(context, bo.Right.Position));
+        }
+
+        public static Value And(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
+                return new UndefinedValue();
             }
-            if (value1 is RealValue real1) {
-                value1 = new BooleanValue(real1.Value > 0.5);
-                context.AddResult(new ResultConversion(real1, value1, bo.Right.Position));
+
+            var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
+            return new BooleanValue(boolLhs.Value && boolRhs.Value);
+        }
+
+        public static Value Xor(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
+                return new UndefinedValue();
             }
 
-            return ((BooleanValue)value0, (BooleanValue)value1);
+            var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
+            return new BooleanValue(boolLhs.Value ^ boolRhs.Value);
         }
 
-        public static BooleanValue And(Value value0, Value value1, ExecutionContext<BinaryOperation> context) {
-            var (boolValue0, boolValue1) = ConvertToBool(value0, value1, context);
-            return new(boolValue0.Value && boolValue1.Value);
-        }
+        public static Value Or(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
+                return new UndefinedValue();
+            }
 
-        public static BooleanValue Xor(Value value0, Value value1, ExecutionContext<BinaryOperation> context) {
-            var (boolValue0, boolValue1) = ConvertToBool(value0, value1, context);
-            return new(boolValue0.Value ^ boolValue1.Value);
-        }
-
-        public static BooleanValue Or(Value value0, Value value1, ExecutionContext<BinaryOperation> context) {
-            var (boolValue0, boolValue1) = ConvertToBool(value0, value1, context);
-            return new(boolValue0.Value || boolValue1.Value);
+            var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
+            return new BooleanValue(boolLhs.Value || boolRhs.Value);
         }
     }
 

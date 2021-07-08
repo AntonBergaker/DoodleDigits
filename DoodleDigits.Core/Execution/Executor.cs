@@ -8,6 +8,7 @@ using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Functions;
 using DoodleDigits.Core.Execution.Functions.Binary;
 using DoodleDigits.Core.Execution.Results;
+using Rationals;
 
 namespace DoodleDigits.Core.Execution {
 
@@ -33,6 +34,7 @@ namespace DoodleDigits.Core.Execution {
 
         public ExecutionResult Calculate(string input) {
             results.Clear();
+            context.Clear();
 
             var result = builder.Build(input);
 
@@ -45,6 +47,8 @@ namespace DoodleDigits.Core.Execution {
             } else if (result.Root is Expression ex) {
                 results.Add(new ResultValue(Calculate(ex), ex.Position));
             }
+
+            results.AddRange(context.Results);
 
             results.Sort((a, b) => a.Position.Start.GetOffset(input.Length) - b.Position.Start.GetOffset(input.Length));
 
@@ -110,7 +114,7 @@ namespace DoodleDigits.Core.Execution {
 
         private Value Calculate(NumberLiteral numberLiteral) {
 
-            if (double.TryParse(numberLiteral.Number.Replace("_", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double result)) {
+            if (Rational.TryParseDecimal(numberLiteral.Number.Replace("_", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out Rational result)) {
                 return new RealValue(result);
             }
 
@@ -121,14 +125,8 @@ namespace DoodleDigits.Core.Execution {
             
             Value value = Calculate(unaryOperation.Value);
 
-            Func<Value, ExecutionContext<UnaryOperation>, Value> func = unaryOperation.Operation switch {
-                UnaryOperation.OperationType.Add => UnaryOperations.UnaryPlus,
-                UnaryOperation.OperationType.Subtract => UnaryOperations.UnaryNegate,
-                UnaryOperation.OperationType.Factorial => UnaryOperations.UnaryFactorial,
-                UnaryOperation.OperationType.Not => UnaryOperations.UnaryNot,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-
+            UnaryOperation.OperationFunction func = UnaryOperation.GetFunctionFromType(unaryOperation.Operation);
+            
             return func(value, context.ForNode(unaryOperation));
         }
 
@@ -146,21 +144,7 @@ namespace DoodleDigits.Core.Execution {
             Value lhs = Calculate(bo.Left);
             Value rhs = Calculate(bo.Right);
 
-            Func<Value, Value, ExecutionContext<BinaryOperation>, Value> func = bo.Operation switch {
-                BinaryOperation.OperationType.Add => BinaryOperations.Add,
-                BinaryOperation.OperationType.Subtract => BinaryOperations.Subtract,
-                BinaryOperation.OperationType.Divide => BinaryOperations.Divide,
-                BinaryOperation.OperationType.Multiply => BinaryOperations.Multiply,
-                BinaryOperation.OperationType.Modulus => BinaryOperations.Modulus,
-                BinaryOperation.OperationType.Power => BinaryOperations.Power,
-                BinaryOperation.OperationType.Equals => BinaryOperations.Equals,
-                BinaryOperation.OperationType.NotEquals => BinaryOperations.NotEquals,
-                BinaryOperation.OperationType.LessThan => BinaryOperations.LessThan,
-                BinaryOperation.OperationType.LessOrEqualTo => BinaryOperations.LessOrEqualTo,
-                BinaryOperation.OperationType.GreaterThan => BinaryOperations.GreaterThan,
-                BinaryOperation.OperationType.GreaterOrEqualTo => BinaryOperations.GreaterOrEqualTo,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
+            BinaryOperation.OperationFunction func = BinaryOperation.GetOperationFromType(bo.Operation);
 
             return func(lhs, rhs, context.ForNode(bo));
         }

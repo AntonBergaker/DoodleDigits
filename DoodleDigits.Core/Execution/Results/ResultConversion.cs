@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DoodleDigits.Core.Execution.Results {
-    class ResultConversion : Result {
+    public class ResultConversion : Result {
         public Value PreviousValue { get; }
         public Value NewValue { get; }
 

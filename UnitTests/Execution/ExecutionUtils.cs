@@ -8,11 +8,12 @@ using DoodleDigits.Core;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Results;
 using NUnit.Framework;
+using Rationals;
 
 namespace UnitTests.Execution {
     static class ExecutionUtils {
 
-        public static void AssertEquals(double expected, string input) {
+        public static void AssertEquals(Rational expected, string input) {
             AssertEquals(new RealValue(expected), input);
         }
 

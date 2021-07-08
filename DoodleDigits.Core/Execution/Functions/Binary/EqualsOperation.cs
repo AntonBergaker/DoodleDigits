@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits.Core.Execution.Functions.Binary {
     public static partial class BinaryOperations {
@@ -22,10 +23,26 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             return assignment;
         }
 
-        public static BooleanValue Equals(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+        public static Value Equals(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             {
                 if (lhs is BooleanValue bLhs && rhs is BooleanValue bRhs) {
                     return new BooleanValue(bLhs.Value == bRhs.Value);
+                }
+            }
+
+            {
+                if (lhs is TooBigValue tooBigLhs && rhs is TooBigValue tooBigRhs) {
+                    return new BooleanValue(tooBigLhs.ValueSign == tooBigRhs.ValueSign);
+                }
+
+                if (lhs is TooBigValue || rhs is TooBigValue) {
+                    return new BooleanValue(false);
+                }
+            }
+
+            {
+                if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                    return lhs;
                 }
             }
 
@@ -50,8 +67,13 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             }
         }
 
-        public static BooleanValue NotEquals(Value value0, Value value1, ExecutionContext<BinaryOperation> context) {
-            return new BooleanValue(!Equals(value0, value1, context).Value);
+        public static Value NotEquals(Value value0, Value value1, ExecutionContext<BinaryOperation> context) {
+            Value equalsValue = Equals(value0, value1, context);
+            if (equalsValue is BooleanValue @bool) {
+                return new BooleanValue(!@bool.Value);
+            }
+            
+            return equalsValue;
         }
     }
 }

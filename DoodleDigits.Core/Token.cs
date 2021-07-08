@@ -51,7 +51,7 @@ namespace DoodleDigits.Core {
             { ">", TokenType.GreaterThan },
             { "&&", TokenType.And },
             { "||", TokenType.Or },
-            {"!", TokenType.Exclamation},
+            { "!", TokenType.Exclamation},
         };
         
 

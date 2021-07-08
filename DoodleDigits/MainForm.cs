@@ -23,11 +23,24 @@ namespace DoodleDigits
 
         private void textBox1_TextChanged(object sender, EventArgs e) {
             var results = executor.Calculate(textBox1.Text);
-            foreach (var result in results.Results) {
-                if (result is ResultValue value) {
-                    label1.Text = value.Value.ToString();
+            StringBuilder sb = new StringBuilder();
+            foreach (Result result in results.Results) {
+
+                switch (result) {
+                    case ResultValue resultValue:
+                        sb.AppendLine(resultValue.Value.ToString());
+                        break;
+                    case ResultError resultError:
+                        sb.AppendLine(resultError.Error);
+                        break;
+                    case ResultConversion resultConversion:
+                        sb.AppendLine($"Converted {resultConversion.PreviousValue} to {resultConversion.NewValue}");
+                        break;
                 }
+
             }
+
+            label1.Text = sb.ToString();
         }
     }
 }
