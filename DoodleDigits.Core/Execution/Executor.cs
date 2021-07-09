@@ -8,6 +8,7 @@ using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Functions;
 using DoodleDigits.Core.Execution.Functions.Binary;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution.ValueTypes;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution {
@@ -70,7 +71,7 @@ namespace DoodleDigits.Core.Execution {
                 case Function f:
                     return Calculate(f);
                 case ErrorNode error:
-                    return new RealValue(0);
+                    return new UndefinedValue();
                 default: throw new Exception("Expression not handled for " + expression.GetType());
             }
 
@@ -96,7 +97,7 @@ namespace DoodleDigits.Core.Execution {
             }
 
             results.Add(new ResultError($"Unknown function: {function.Identifier}", function.Position));
-            return new RealValue(0);
+            return new UndefinedValue();
         }
 
         private Value Calculate(Identifier identifier) {
@@ -109,16 +110,16 @@ namespace DoodleDigits.Core.Execution {
             }
 
             results.Add(new ResultError("Unknown identifier", identifier.Position));
-            return new RealValue(0);
+            return new UndefinedValue();
         }
 
         private Value Calculate(NumberLiteral numberLiteral) {
 
-            if (Rational.TryParseDecimal(numberLiteral.Number.Replace("_", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out Rational result)) {
+            if (RationalUtils.TryParse(numberLiteral.Number, out Rational result)) {
                 return new RealValue(result);
             }
 
-            return new RealValue(0);
+            return new UndefinedValue();
         }
 
         private Value Calculate(UnaryOperation unaryOperation) {

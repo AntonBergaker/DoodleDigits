@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Execution.ValueTypes;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution {
-    public abstract class Value {
+namespace DoodleDigits.Core.Execution.ValueTypes {
+    public abstract class Value : IEquatable<Value> {
         public abstract override string ToString();
 
         public static Value FromDouble(double value, bool resultOfInfinity = false) {
@@ -26,9 +21,15 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue((Rational) value);
         }
 
-        /// <summary>
-        /// Determines if the value is of an abstract type, with no real mathematical value. Abstract values include undefined and "too big".
-        /// </summary>
-        public abstract bool IsAbstract { get; }
+        public abstract bool Equals(Value? other);
+
+        public override bool Equals(object? obj) {
+            if (obj is not Value val) {
+                return false;
+            }
+            return Equals(val);
+        }
+
+        public abstract override int GetHashCode();
     }
 }

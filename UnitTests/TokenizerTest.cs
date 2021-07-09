@@ -56,6 +56,11 @@ namespace UnitTests {
             AssertTokenEqual(new Token[] {
                 new(".5050", TokenType.Number),
             }, ".5050");
+
+            AssertTokenEqual(new Token[] {
+                new("5 5", TokenType.Number),
+                new("5", TokenType.Number),
+            }, "5 5  5");
         }
 
         [Test]

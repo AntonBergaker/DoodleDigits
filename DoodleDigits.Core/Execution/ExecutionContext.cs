@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits.Core.Execution {
 

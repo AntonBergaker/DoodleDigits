@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Functions;
+using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits.Core {
     public class FunctionData {

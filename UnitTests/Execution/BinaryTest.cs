@@ -11,40 +11,40 @@ namespace UnitTests.Execution {
         [Test]
         public void TestSingles() {
             
-            ExecutionUtils.AssertEquals(10, "5 + 5");
+            ExecutionUtils.AssertEqual(10, "5 + 5");
 
-            ExecutionUtils.AssertEquals(4, "2 ^ 2");
+            ExecutionUtils.AssertEqual(4, "2 ^ 2");
         }
 
         [Test]
         public void TestOrderOfOperations() {
-            ExecutionUtils.AssertEquals(7, "1 + 2 * 3");
+            ExecutionUtils.AssertEqual(7, "1 + 2 * 3");
         }
 
         [Test]
         public void TestUnary() {
-            ExecutionUtils.AssertEquals(-2, "2 + -4");
+            ExecutionUtils.AssertEqual(-2, "2 + -4");
 
-            ExecutionUtils.AssertEquals(6, "2 + -(-4)");
+            ExecutionUtils.AssertEqual(6, "2 + -(-4)");
         }
 
         [Test]
         public void TestEquals() {
-            ExecutionUtils.AssertEquals(true, "5 = 5");
-            ExecutionUtils.AssertEquals(false, "5 = 4");
-            ExecutionUtils.AssertEquals(true, "x = 5, x = 5");
-            ExecutionUtils.AssertEquals(false, "pi = 5");
-            ExecutionUtils.AssertEquals(true, "a = pi*2, pi = a/2");
+            ExecutionUtils.AssertEqual(true, "5 = 5");
+            ExecutionUtils.AssertEqual(false, "5 = 4");
+            ExecutionUtils.AssertEqual(true, "x = 5, x = 5");
+            ExecutionUtils.AssertEqual(false, "pi = 5");
+            ExecutionUtils.AssertEqual(true, "a = pi*2, pi = a/2");
 
-            ExecutionUtils.AssertEquals(5, "x = 5");
+            ExecutionUtils.AssertEqual(5, "x = 5");
         }
 
         [Test]
         public void TestNotEquals() {
-            ExecutionUtils.AssertEquals(false, "5 != 5");
-            ExecutionUtils.AssertEquals(true, "5 != 4");
+            ExecutionUtils.AssertEqual(false, "5 != 5");
+            ExecutionUtils.AssertEqual(true, "5 != 4");
             
-            ExecutionUtils.AssertEquals(true, "5 > 4 != 5 < 4");
+            ExecutionUtils.AssertEqual(true, "5 > 4 != 5 < 4");
         }
     }
 }

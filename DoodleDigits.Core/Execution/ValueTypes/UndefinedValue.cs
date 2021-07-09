@@ -9,7 +9,13 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         public override string ToString() {
             return "undefined";
         }
+        
+        public override bool Equals(Value? other) {
+            return false;
+        }
 
-        public override bool IsAbstract => true;
+        public override int GetHashCode() {
+            return 0;
+        }
     }
 }

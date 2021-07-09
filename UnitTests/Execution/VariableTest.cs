@@ -10,9 +10,9 @@ namespace UnitTests.Execution {
         [Test]
         public void TestVariableAssignment() {
 
-            ExecutionUtils.AssertEquals(3, "x = 3, x");
+            ExecutionUtils.AssertEqual(3, "x = 3, x");
 
-            ExecutionUtils.AssertEquals(6, "x = 1, y = x + 5, y");
+            ExecutionUtils.AssertEqual(6, "x = 1, y = x + 5, y");
 
         }
 

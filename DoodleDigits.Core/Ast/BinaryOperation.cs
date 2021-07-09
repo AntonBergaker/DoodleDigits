@@ -7,6 +7,7 @@ using DoodleDigits.Core;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Functions.Binary;
+using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Utilities;
 
 namespace DoodleDigits.Core.Ast

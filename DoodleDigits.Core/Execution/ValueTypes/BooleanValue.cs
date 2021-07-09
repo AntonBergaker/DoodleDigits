@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DoodleDigits.Core.Execution.Results;
-using DoodleDigits.Core.Execution.ValueTypes;
 
-namespace DoodleDigits.Core.Execution {
+namespace DoodleDigits.Core.Execution.ValueTypes {
     public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
         public readonly bool Value;
 
@@ -18,8 +13,6 @@ namespace DoodleDigits.Core.Execution {
         public override string ToString() {
             return Value.ToString(CultureInfo.InvariantCulture);
         }
-
-        public override bool IsAbstract => false;
 
         public RealValue ConvertToReal() {
             return new RealValue(Value ? 1 : 0);
@@ -37,6 +30,18 @@ namespace DoodleDigits.Core.Execution {
 
         public BooleanValue ConvertToBool(ExecutionContext context, Range position) {
             return this;
+        }
+
+        public override bool Equals(Value? other) {
+            if (other is not BooleanValue bOther) {
+                return false;
+            }
+
+            return bOther.Value == Value;
+        }
+
+        public override int GetHashCode() {
+            return Value.GetHashCode();
         }
     }
 }

@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Results;
-using DoodleDigits.Core.Execution.ValueTypes;
 
-namespace DoodleDigits.Core.Execution {
+namespace DoodleDigits.Core.Execution.ValueTypes {
     public class TooBigValue : Value, IConvertibleToBool {
         public enum Sign {
             Positive,
@@ -26,7 +20,17 @@ namespace DoodleDigits.Core.Execution {
             return "Very big";
         }
 
-        public override bool IsAbstract => true;
+        public override bool Equals(Value? other) {
+            if (other is TooBigValue tbOther) {
+                return tbOther.ValueSign == ValueSign;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return ValueSign.GetHashCode();
+        }
 
         public bool IsPositive => ValueSign is Sign.Positive or Sign.PositiveInfinity;
 

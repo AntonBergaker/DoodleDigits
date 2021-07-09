@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DoodleDigits.Core.Execution.Results;
-using DoodleDigits.Core.Execution.ValueTypes;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution {
+namespace DoodleDigits.Core.Execution.ValueTypes {
     public class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
         public readonly Rational Value;
 
@@ -17,10 +11,23 @@ namespace DoodleDigits.Core.Execution {
         }
 
         public override string ToString() {
+            if (HasDecimal) {
+                return ((double)Value).ToString();
+            }
             return Value.ToString();
         }
+        
+        public override bool Equals(Value? other) {
+            if (other is not RealValue rOther) {
+                return false;
+            }
 
-        public override bool IsAbstract => false;
+            return rOther.Value == Value;
+        }
+
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
 
         public BooleanValue ConvertToBool() {
             return new BooleanValue(Value > new Rational(1, 2));

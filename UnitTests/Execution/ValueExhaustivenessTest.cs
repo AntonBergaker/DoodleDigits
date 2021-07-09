@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DoodleDigits.Core;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution;
+using DoodleDigits.Core.Execution.ValueTypes;
 using NUnit.Framework;
 
 namespace UnitTests.Execution {

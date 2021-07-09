@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Execution;
+using DoodleDigits.Core.Execution.ValueTypes;
 using Rationals;
 
 namespace DoodleDigits.Core {
@@ -26,6 +27,7 @@ namespace DoodleDigits.Core {
             new("pi", new RealValue((Rational) Math.PI)),
             new("tau", new RealValue((Rational) Math.Tau)),
             new("e", new RealValue((Rational) Math.E)),
+            new("infinity", new TooBigValue(TooBigValue.Sign.PositiveInfinity)),
         };
 
 

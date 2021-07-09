@@ -84,7 +84,7 @@ namespace DoodleDigits.Core {
                 return null;
             }
             if (TryReadNumber()) {
-                return new Token(input[startIndex..index], TokenType.Number, startIndex..index);
+                return new Token(input[startIndex..index].Trim(), TokenType.Number, startIndex..index);
             }
             if (IdentifyTokens.TryGetValue(c, out string[]? tokensWithChar)) {
                 foreach (string str in tokensWithChar) {
@@ -121,9 +121,21 @@ namespace DoodleDigits.Core {
 
                 bool usedComma = false;
                 bool hasDigit = false;
+                bool lastWasSpace = false;
 
                 while (CanRead) {
                     char c = ReadOne();
+                    if (c == ' ') {
+                        if (lastWasSpace) {
+                            break;
+                        }
+
+                        lastWasSpace = true;
+                        continue;
+                    }
+                    
+                    lastWasSpace = false;
+
                     if (c == '.') {
                         if (usedComma) {
                             index--;
