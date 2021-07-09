@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution {
-    static class RationalUtils {
+namespace DoodleDigits.Core.Utilities {
+    public static class RationalUtils {
         private static readonly Dictionary<char, int> NumberCharacters = new() {
             {'0', 0},
             {'1', 1},
@@ -70,9 +67,37 @@ namespace DoodleDigits.Core.Execution {
                 }
             }
 
-            rational = new Rational(numerator, denominator);
+            rational = new Rational(numerator, denominator).CanonicalForm;
             return true;
         }
 
+        public static readonly Rational Half = new Rational(BigInteger.One, 2);
+
+        public static Rational Floor(Rational value) {
+            return value.WholePart;
+        }
+
+        public static Rational Round(Rational value) {
+            BigInteger whole = value.WholePart;
+            if (value.FractionPart > RationalUtils.Half) {
+                whole += 1;
+            }
+            return whole;
+        }
+
+        public static Rational Ceil(Rational value) {
+            BigInteger whole = value.WholePart;
+            if (value.FractionPart > 0) {
+                whole += 1;
+            }
+            return whole;
+        }
+
+        public static Rational Modulus(this Rational @this, Rational divisor) {
+            Rational divided = @this / divisor;
+            Rational floored = Floor(divided);
+
+            return (divided - floored) * divisor;
+        } 
     }
 }

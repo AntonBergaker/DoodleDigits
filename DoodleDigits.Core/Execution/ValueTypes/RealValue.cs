@@ -35,7 +35,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public BooleanValue ConvertToBool(ExecutionContext context, Range position) {
             BooleanValue newValue = ConvertToBool();
-            context.AddResult(new ResultConversion(this, newValue, position));
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
             return newValue;
         }
 

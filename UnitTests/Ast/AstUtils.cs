@@ -11,7 +11,7 @@ namespace UnitTests.Ast {
     static class AstUtils {
 
         public static void AssertEqual(AstNode expected, string input) {
-            AstBuilder builder = new AstBuilder(FunctionLibrary.Functions.Select(x => x.Name));
+            AstBuilder builder = new AstBuilder(FunctionLibrary.Functions.SelectMany(x => x.Names));
             AstResult result = builder.Build(input);
 
             if (result.Root.Equals(expected) == false) {

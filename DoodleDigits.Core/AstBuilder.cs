@@ -68,7 +68,7 @@ namespace DoodleDigits.Core
         private Expression ReadImplicitMultiplication() {
             Expression lhs = ReadBinary(binaryOperationOrder.Length - 1);
 
-            Token peek = reader.Peek();
+            Token peek = reader.Peek(false);
             while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
                 lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply,
                     ReadBinary(binaryOperationOrder.Length - 1), reader.Position..reader.Position);
@@ -82,6 +82,7 @@ namespace DoodleDigits.Core
             new[] {TokenType.Power},
             new[] {TokenType.Multiply, TokenType.Divide, TokenType.Modulus},
             new[] {TokenType.Add, TokenType.Subtract},
+            new[] {TokenType.ShiftLeft, TokenType.ShiftRight},
             new[] {TokenType.GreaterOrEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.LessOrEqualTo},
             new[] {TokenType.Equals, TokenType.NotEquals}
         };

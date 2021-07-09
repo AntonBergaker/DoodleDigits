@@ -26,6 +26,7 @@ namespace UnitTests.Execution {
             new BooleanValue(true),
             new TooBigValue(TooBigValue.Sign.Negative), 
             new TooBigValue(TooBigValue.Sign.Positive),
+            new UndefinedValue(),
         };
 
         private ExecutionContext MakeContext() => new ExecutionContext(new Constant[0]);
@@ -69,7 +70,7 @@ namespace UnitTests.Execution {
                             parameters[i] = allValues[index / (int)Math.Pow(valueCount, i) % valueCount];
                         }
 
-                        function.Function(parameters, context.ForNode(new Function(function.Name, Enumerable.Repeat(new ErrorNode(), parameterCount) )));
+                        function.Function(parameters, context.ForNode(new Function(function.Names[0], Enumerable.Repeat(new ErrorNode(), parameterCount) )));
                     }
                 }
             }

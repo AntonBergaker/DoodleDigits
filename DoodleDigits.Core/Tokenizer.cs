@@ -77,7 +77,7 @@ namespace DoodleDigits.Core {
 
             if (c == '\n') {
                 index++;
-                return null;
+                return new Token("\n", TokenType.NewLine, startIndex..startIndex);
             }
             if (char.IsWhiteSpace(c)) {
                 index++;

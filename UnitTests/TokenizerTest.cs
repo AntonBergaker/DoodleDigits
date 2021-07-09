@@ -86,6 +86,17 @@ namespace UnitTests {
             }, "5 <= 5 != 5 < 5");
         }
 
+        [Test]
+        public void TestSeperators() {
+
+            AssertTokenEqual(new Token[] {
+                new("5", TokenType.Number),
+                new("\n", TokenType.NewLine),
+                new("5", TokenType.Number),
+            }, "5\n5");
+
+        }
+
 
         private void AssertTokenEqual(Token[] expectedTokens, string input) {
 

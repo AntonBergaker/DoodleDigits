@@ -9,6 +9,7 @@ using DoodleDigits.Core.Execution.Functions;
 using DoodleDigits.Core.Execution.Functions.Binary;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution {
@@ -28,8 +29,13 @@ namespace DoodleDigits.Core.Execution {
 
         public Executor(IEnumerable<FunctionData> functions, IEnumerable<Constant> constants) {
             results = new List<Result>();
-            builder = new AstBuilder(functions.Select(x => x.Name));
-            this.functions = functions.ToDictionary(x => x.Name);
+            this.functions = new Dictionary<string, FunctionData>();
+            foreach (FunctionData functionData in functions) {
+                foreach (string name in functionData.Names) {
+                    this.functions.Add(name, functionData);
+                }
+            }
+            builder = new AstBuilder(this.functions.Keys);
             context = new ExecutionContext(constants);
         }
 

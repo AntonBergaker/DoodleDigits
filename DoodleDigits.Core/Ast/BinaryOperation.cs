@@ -27,7 +27,9 @@ namespace DoodleDigits.Core.Ast
             GreaterOrEqualTo,
             GreaterThan,
             LessOrEqualTo,
-            LessThan
+            LessThan,
+            ShiftLeft,
+            ShiftRight,
         }
 
         static BinaryOperation() {
@@ -45,6 +47,8 @@ namespace DoodleDigits.Core.Ast
                         (TokenType.GreaterThan, OperationType.GreaterThan, BinaryOperations.GreaterThan),
                         (TokenType.LessOrEqualTo, OperationType.LessOrEqualTo, BinaryOperations.LessOrEqualTo),
                         (TokenType.LessThan, OperationType.LessThan, BinaryOperations.LessThan),
+                        (TokenType.ShiftLeft, OperationType.ShiftLeft, BinaryOperations.ShiftLeft),
+                        (TokenType.ShiftRight, OperationType.ShiftRight, BinaryOperations.ShiftRight),
                     };
 
             TypeDictionary = new TwoWayDictionary<TokenType, OperationType>();

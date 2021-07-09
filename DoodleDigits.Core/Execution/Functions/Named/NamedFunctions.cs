@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution {
@@ -173,6 +174,46 @@ namespace DoodleDigits.Core.Execution {
                 return new UndefinedValue();
             }
             return new RealValue(min.Value);
+        }
+
+
+        public static Value Floor(Value value, ExecutionContext<Function> context) {
+            if (value is TooBigValue) {
+                return value;
+            }
+
+            if (value is not IConvertibleToReal convertibleToReal) {
+                return new UndefinedValue();
+            }
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+            return new RealValue(RationalUtils.Floor(realValue.Value));
+        }
+
+        public static Value Round(Value value, ExecutionContext<Function> context) {
+            if (value is TooBigValue) {
+                return value;
+            }
+
+            if (value is not IConvertibleToReal convertibleToReal) {
+                return new UndefinedValue();
+            }
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+            return new RealValue(RationalUtils.Round(realValue.Value));
+        }
+
+        public static Value Ceil(Value value, ExecutionContext<Function> context) {
+            if (value is TooBigValue) {
+                return value;
+            }
+
+            if (value is not IConvertibleToReal convertibleToReal) {
+                return new UndefinedValue();
+            }
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+            return new RealValue(RationalUtils.Round(realValue.Value));
         }
     }
 }

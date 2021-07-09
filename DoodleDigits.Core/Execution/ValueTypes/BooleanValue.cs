@@ -20,7 +20,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public RealValue ConvertToReal(ExecutionContext context, Range position) {
             RealValue newValue = ConvertToReal();
-            context.AddResult(new ResultConversion(this, newValue, position));
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
             return newValue;
         }
 

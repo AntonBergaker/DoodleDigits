@@ -20,17 +20,29 @@ namespace DoodleDigits.Core {
         public bool ReachedEnd => index >= tokens.Length;
         public int Position => Math.Min(index, tokens.Length);
 
-        public Token Peek() {
-            if (ReachedEnd) {
-                return new Token("eof", TokenType.EndOfFile, tokens.Length..tokens.Length);
+        private Token EofToken => new Token("eof", TokenType.EndOfFile, tokens.Length..tokens.Length);
+
+        private Token SafeRead(int index) {
+            if (index >= tokens.Length) {
+                return EofToken;
             }
+
             return tokens[index];
         }
-        public Token Read() {
-            if (ReachedEnd) {
-                return new Token("eof", TokenType.EndOfFile, tokens.Length..tokens.Length);
+
+        public Token Peek(bool skipNewLine = true) {
+            int tempIndex = index;
+            while (skipNewLine && SafeRead(tempIndex).Type == TokenType.NewLine) {
+                tempIndex++;
             }
-            return tokens[index++];
+            return SafeRead(tempIndex);
+        }
+
+        public Token Read(bool skipNewLine = true) {
+            while (skipNewLine && SafeRead(index).Type == TokenType.NewLine) {
+                index++;
+            }
+            return SafeRead(index++);
         }
 
         /// <summary>

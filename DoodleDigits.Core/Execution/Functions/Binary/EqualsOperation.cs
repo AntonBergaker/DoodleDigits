@@ -51,12 +51,10 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                 RealValue? realRhs = rhs as RealValue;
 
                 if (lhs is BooleanValue boolLhs) {
-                    realLhs = boolLhs.ConvertToReal();
-                    context.AddResult(new ResultConversion(boolLhs, realLhs, context.Node.Left.Position));
+                    realLhs = boolLhs.ConvertToReal(context, context.Node.Left.Position);
                 }
                 if (rhs is BooleanValue boolRhs) {
-                    realRhs = boolRhs.ConvertToReal();
-                    context.AddResult(new ResultConversion(boolRhs, realRhs, context.Node.Right.Position));
+                    realRhs = boolRhs.ConvertToReal(context, context.Node.Right.Position);
                 }
 
                 if (realLhs != null && realRhs != null) {
