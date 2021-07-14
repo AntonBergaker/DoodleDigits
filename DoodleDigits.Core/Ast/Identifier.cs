@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace DoodleDigits.Core.Ast {
     public class Identifier : Expression {
         public string Value { get; }
+
         public Identifier(string identifier, Range position) : base(position) {
             Value = identifier;
         }
@@ -24,5 +25,7 @@ namespace DoodleDigits.Core.Ast {
         public override string ToString() {
             return Value;
         }
+
+        public override Range FullPosition => Position;
     }
 }

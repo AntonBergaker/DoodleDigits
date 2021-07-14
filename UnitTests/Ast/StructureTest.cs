@@ -29,6 +29,16 @@ namespace UnitTests.Ast {
                 ), "5+\n5"
             );
 
+            AstUtils.AssertEqual(
+                new NumberLiteral("5"), 
+            "5\n");
+        }
+
+        [Test]
+        public void TestUnfinishedBinary() {
+            AstUtils.AssertEqual(
+                new NumberLiteral("5"), 
+            "5 + ");
         }
     }
 }

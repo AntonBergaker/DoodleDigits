@@ -4,18 +4,40 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DoodleDigits"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
-        <RichTextBox x:Name="RichTextBox" FontSize="16" TextChanged="RichTextBox_TextChanged">
-            <FlowDocument>
-                <Paragraph>
-                    <Run Text="RichTextBox"/>
-                </Paragraph>
-            </FlowDocument>
-        </RichTextBox>
-        <Grid>
-            <Label x:Name="ResultLabel" Margin="10, 10" Width="200" Height="200">Result: </Label>
-        </Grid>
+        <TextBox x:Name="RichTextBox" FontSize="16" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"/>
+        <ItemsControl ItemsSource="{Binding Path=Results}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                    <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
+                             FontFamily="Patrick Hand"
+                             FontSize="18px"
+                             Foreground="DodgerBlue">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="IsReadOnly" Value="True" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding Path=Position.X}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Path=Position.Y}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
     </Grid>
 </Window>

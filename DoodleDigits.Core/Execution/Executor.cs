@@ -22,7 +22,7 @@ namespace DoodleDigits.Core.Execution {
     }
 
     public class Executor {
-        private ExecutionContext context;
+        private readonly ExecutionContext context;
         private readonly List<Result> results;
         private readonly AstBuilder builder;
         private readonly Dictionary<string, FunctionData> functions;
@@ -49,10 +49,10 @@ namespace DoodleDigits.Core.Execution {
 
             if (result.Root is ExpressionList list) {
                 foreach (Expression expression in list.Expressions) {
-                    results.Add(new ResultValue(Calculate(expression), expression.Position));
+                    results.Add(new ResultValue(Calculate(expression), expression.FullPosition));
                 }
             } else if (result.Root is Expression ex) {
-                results.Add(new ResultValue(Calculate(ex), ex.Position));
+                results.Add(new ResultValue(Calculate(ex), ex.FullPosition));
             }
 
             results.AddRange(context.Results);

@@ -9,6 +9,17 @@ namespace DoodleDigits.Core.Ast {
         public string Identifier { get; }
         public Expression[] Arguments { get; }
 
+        public override Range FullPosition {
+            get {
+                Range fullPosition = Position;
+                foreach (Expression argument in Arguments) {
+                    fullPosition = Utils.Join(fullPosition, argument.FullPosition);
+                }
+
+                return fullPosition;
+            }
+        }
+
         public Function(string identifier, IEnumerable<Expression> arguments, Range position) : base(position) {
             Identifier = identifier;
             Arguments = arguments.ToArray();

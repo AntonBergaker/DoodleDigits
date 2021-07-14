@@ -45,7 +45,10 @@ namespace DoodleDigits.Core
         private AstNode ReadStatements() {
             List<Expression> expressions = new();
             while (reader.ReachedEnd == false) {
-                expressions.Add(ReadExpression());
+                Expression expression = ReadExpression();
+                if (expression is not ErrorNode) {
+                    expressions.Add(expression);
+                }
 
                 Token peek = reader.Peek();
                 if (peek.Type == TokenType.Comma) {
@@ -99,7 +102,11 @@ namespace DoodleDigits.Core
             Token nextToken = reader.Peek();
             while (operatorsTop.Contains(nextToken.Type)) {
                 reader.Skip();
-                lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), ReadBinary(depth-1), nextToken.Position);
+                Expression rhs = ReadBinary(depth - 1);
+                if (rhs is ErrorNode) {
+                    break;
+                }
+                lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, nextToken.Position);
                 nextToken = reader.Peek();
             }
 
@@ -154,7 +161,7 @@ namespace DoodleDigits.Core
                     return ReadIdentifier(token);
             }
 
-            return new ErrorNode("Unrecognized number/identifier", token.Position);
+            return new ErrorNode();
         }
 
 

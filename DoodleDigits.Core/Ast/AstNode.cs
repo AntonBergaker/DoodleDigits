@@ -19,6 +19,11 @@ namespace DoodleDigits.Core.Ast {
             return this.Equals(other);
         }
 
+        /// <summary>
+        /// Like position, but also includes its children
+        /// </summary>
+        public abstract Range FullPosition { get; }
+
         public abstract bool Equals(AstNode other);
 
         public abstract override string ToString();
