@@ -32,6 +32,17 @@ namespace UnitTests.Ast {
             AstUtils.AssertEqual(
                 new NumberLiteral("5"), 
             "5\n");
+
+
+
+            AstUtils.AssertEqual(
+                new ExpressionList(
+                    new() {
+                        new NumberLiteral("5"),
+                        new UnaryOperation(UnaryOperation.OperationType.Subtract, new NumberLiteral("5"))
+                    }
+                ),
+                "5\n-5");
         }
 
         [Test]

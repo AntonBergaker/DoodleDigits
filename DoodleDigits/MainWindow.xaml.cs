@@ -32,10 +32,12 @@ namespace DoodleDigits {
         }
 
         private async void RichTextBox_TextChanged(object sender, TextChangedEventArgs e) {
-            var executionResult = await RunExecution(RichTextBox.Text);
+            string text = RichTextBox.Text;
+            var executionResult = await RunExecution(text);
+            LineMeasure measure = new LineMeasure(text, RichTextBox);
             Results.Clear();
             foreach (Result result in executionResult.Results) {
-                Results.Add(new ResultViewModel(result, RichTextBox));
+                Results.Add(new ResultViewModel(result, measure));
             }
             
         }

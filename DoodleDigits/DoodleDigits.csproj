@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Yomogi-Regular.ttf" />
+    <None Remove="Resources\PatrickHand-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Yomogi-Regular.ttf" />
+    <Resource Include="Resources\PatrickHand-Regular.ttf" />
   </ItemGroup>
 
 </Project>

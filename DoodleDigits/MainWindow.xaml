@@ -9,15 +9,17 @@
         Title="MainWindow" Height="450" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
-        <TextBox x:Name="RichTextBox" FontSize="16" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"/>
+        <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"
+                 TextBlock.LineHeight="37" 
+                 TextBlock.LineStackingStrategy="BlockLineHeight"/>
         <ItemsControl ItemsSource="{Binding Path=Results}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                     <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
                              FontFamily="Patrick Hand"
-                             FontSize="18px"
+                             FontSize="18"
                              Foreground="DodgerBlue">
-                            <TextBox.Style>
+                        <TextBox.Style>
                                 <Style TargetType="TextBox">
                                     <Setter Property="IsReadOnly" Value="True" />
                                     <Setter Property="BorderThickness" Value="0" />

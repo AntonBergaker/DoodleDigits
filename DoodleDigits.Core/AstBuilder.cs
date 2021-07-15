@@ -99,15 +99,15 @@ namespace DoodleDigits.Core
 
             TokenType[] operatorsTop = binaryOperationOrder[depth];
 
-            Token nextToken = reader.Peek();
+            Token nextToken = reader.Peek(false);
             while (operatorsTop.Contains(nextToken.Type)) {
-                reader.Skip();
+                reader.Skip(false);
                 Expression rhs = ReadBinary(depth - 1);
                 if (rhs is ErrorNode) {
                     break;
                 }
                 lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, nextToken.Position);
-                nextToken = reader.Peek();
+                nextToken = reader.Peek(false);
             }
 
             return lhs;

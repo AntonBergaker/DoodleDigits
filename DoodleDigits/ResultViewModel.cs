@@ -14,7 +14,7 @@ namespace DoodleDigits {
 
         public Point Position { get; }
 
-        public ResultViewModel(Result result, TextBox textBox) {
+        public ResultViewModel(Result result, LineMeasure measure) {
             switch (result) {
                 case ResultValue resultValue:
                     if (resultValue.Value is TooBigValue tooBig) {
@@ -28,7 +28,12 @@ namespace DoodleDigits {
                         break;
                     }
 
-                    Content = resultValue.Value.ToString();
+                    if (resultValue.Value is UndefinedValue) {
+                        Content = "";
+                        break;
+                    }
+
+                    Content = " = " + resultValue.Value.ToString();
                     break;
                 case ResultError resultError:
                     Content = resultError.Error;
@@ -38,7 +43,7 @@ namespace DoodleDigits {
                     break;
             }
 
-            Position = textBox.GetRectFromCharacterIndex(result.Position.End.Value).TopRight + new Vector(10, -1);
+            Position = measure.GetLineEndPosition(measure.GetLineIndex(result.Position.End.Value)) + new Vector(15, -11);
         }
     }
 }

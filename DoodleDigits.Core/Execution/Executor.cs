@@ -96,7 +96,7 @@ namespace DoodleDigits.Core.Execution {
                         $"Function expects {minParameters} parameters" : 
                         $"Function expects between {minParameters} and {maxParameters} parameters", 
                         function.Position));
-                    return new RealValue(0);
+                    return new UndefinedValue();
                 }
 
                 return functionData.Function(function.Arguments.Select(x => Calculate(x)).ToArray(), context.ForNode(function));
