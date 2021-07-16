@@ -87,7 +87,7 @@ namespace UnitTests {
         }
 
         [Test]
-        public void TestSeperators() {
+        public void TestSeparators() {
 
             AssertTokenEqual(new Token[] {
                 new("5", TokenType.Number),

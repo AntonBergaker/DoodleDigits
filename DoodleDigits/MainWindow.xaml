@@ -7,7 +7,7 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged">
     <Grid>
         <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"
                  TextBlock.LineHeight="37" 

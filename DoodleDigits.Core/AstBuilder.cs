@@ -65,7 +65,41 @@ namespace DoodleDigits.Core
         }
 
         private Expression ReadExpression() {
-            return ReadImplicitMultiplication();
+            return ReadEquals();
+        }
+
+        private Expression ReadEquals() {
+            Func<Expression> next = ReadImplicitMultiplication;
+
+            Expression lhs = next();
+
+            // Only created if we have at least one equals operation
+            List<Expression>? equalsValues = null;
+            List<EqualsChain.EqualsType>? equalsTypes = null;
+
+            Token nextToken = reader.Peek(false);
+            while (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
+                reader.Skip(false);
+                Expression rhs = next();
+                if (rhs is ErrorNode) {
+                    break;
+                }
+
+                if (equalsValues == null) {
+                    equalsValues = new List<Expression>();
+                    equalsValues.Add(lhs);
+                    equalsTypes = new List<EqualsChain.EqualsType>();
+                }
+
+                equalsTypes!.Add(EqualsChain.GetTypeFromToken(nextToken.Type));
+                equalsValues.Add(rhs);
+                nextToken = reader.Peek(false);
+            }
+
+            if (equalsValues != null) {
+                return new EqualsChain(equalsValues, equalsTypes!, equalsValues.First().Position.Start..equalsValues.Last().Position.End);
+            }
+            return lhs;
         }
 
         private Expression ReadImplicitMultiplication() {
@@ -87,7 +121,6 @@ namespace DoodleDigits.Core
             new[] {TokenType.Add, TokenType.Subtract},
             new[] {TokenType.ShiftLeft, TokenType.ShiftRight},
             new[] {TokenType.GreaterOrEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.LessOrEqualTo},
-            new[] {TokenType.Equals, TokenType.NotEquals}
         };
 
         private Expression ReadBinary(int depth) {

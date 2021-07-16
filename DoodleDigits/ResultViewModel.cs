@@ -10,7 +10,7 @@ using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits {
     public class ResultViewModel {
-        public string Content { get; }
+        public string Content { get; } = "";
 
         public Point Position { get; }
 

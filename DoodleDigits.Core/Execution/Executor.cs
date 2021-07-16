@@ -76,6 +76,8 @@ namespace DoodleDigits.Core.Execution {
                     return Calculate(id);
                 case Function f:
                     return Calculate(f);
+                case EqualsChain ec:
+                    return Calculate(ec);
                 case ErrorNode error:
                     return new UndefinedValue();
                 default: throw new Exception("Expression not handled for " + expression.GetType());
@@ -137,17 +139,64 @@ namespace DoodleDigits.Core.Execution {
             return func(value, context.ForNode(unaryOperation));
         }
 
+        private Value Calculate(EqualsChain equalsChain) {
 
-        private Value Calculate(BinaryOperation bo) {
-            if (bo.Operation == BinaryOperation.OperationType.Equals) {
-                if (bo.Left is Identifier id0) {
-                    return BinaryOperations.Equals(id0, Calculate(bo.Right), context.ForNode(bo));
+            Value? CalculateExpression(Expression expression) {
+                if (expression is Identifier identifier) {
+                    if (context.Variables.ContainsKey(identifier.Value) == false &&
+                        context.Constants.ContainsKey(identifier.Value) == false) {
+                        return null;
+                    }
                 }
-                if (bo.Right is Identifier id1) {
-                    return BinaryOperations.Equals(id1, Calculate(bo.Left), context.ForNode(bo));
-                }
+                return Calculate(expression);
             }
 
+            Value?[] calculatedResults = equalsChain.Values.Select(x => CalculateExpression(x)).ToArray();
+
+            bool isAssignmentChain = 
+                calculatedResults.Count(x => x != null) == 1 && 
+                equalsChain.EqualTypes.Contains(EqualsChain.EqualsType.NotEquals) == false;
+
+            if (isAssignmentChain) {
+                Value? calculatedResult = calculatedResults.First(x => x != null);
+                if (calculatedResult == null) {
+                    throw new Exception("This shouldn't be possible");
+                }
+
+                for (var i = 0; i < equalsChain.Values.Length; i++) {
+                    if (calculatedResults[i] != null) {
+                        continue;
+                    }
+                    Identifier value = (Identifier)equalsChain.Values[i];
+                    context.Variables[value.Value] = calculatedResult;
+                }
+
+                return calculatedResult;
+            }
+            else {
+                for (int i = 0; i < equalsChain.EqualTypes.Length; i++) {
+                    var type = equalsChain.EqualTypes[i];
+                    Value lhs = calculatedResults[i] ?? Calculate(equalsChain.Values[i]);
+                    Value rhs = calculatedResults[i + 1] ?? Calculate(equalsChain.Values[i + 1]);
+
+                    Value result = type == EqualsChain.EqualsType.Equals
+                        ? BinaryOperations.Equals(lhs, rhs, i, context.ForNode(equalsChain))
+                        : BinaryOperations.NotEquals(lhs, rhs, i, context.ForNode(equalsChain));
+
+                    if (result is not BooleanValue booleanValue) {
+                        return new UndefinedValue();
+                    }
+
+                    if (booleanValue.Value == false) {
+                        return new BooleanValue(false);
+                    }
+                }
+
+                return new BooleanValue(true);
+            }
+        }
+
+        private Value Calculate(BinaryOperation bo) {
             Value lhs = Calculate(bo.Left);
             Value rhs = Calculate(bo.Right);
 
