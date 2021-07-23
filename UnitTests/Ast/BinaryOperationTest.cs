@@ -34,7 +34,7 @@ namespace UnitTests.Ast {
         }
 
         [Test]
-        public void TestOrderOfOperations() {
+        public void TestArithmeticOrderOfOperations() {
 
             AstUtils.AssertEqual(
                 new BinaryOperation(
@@ -72,6 +72,55 @@ namespace UnitTests.Ast {
                     new NumberLiteral("2")
                 )
                 , "10-1-2");
+        }
+
+
+        [Test]
+        public void TestBooleanOrderOfOperations() {
+
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new EqualsComparison(
+                        new NumberLiteral("5"),
+                        EqualsComparison.EqualsSign.Equals,
+                        new NumberLiteral("5")
+                    ),
+                    BinaryOperation.OperationType.BooleanAnd,
+                    new EqualsComparison(
+                        new NumberLiteral("5"),
+                        EqualsComparison.EqualsSign.NotEquals,
+                        new NumberLiteral("5")
+                    )
+                )
+                , "5 = 5 && 5 != 5");
+
+            
+            // This is becoming quite unreadable
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new EqualsComparison(
+                        new NumberLiteral("5"),
+                        EqualsComparison.EqualsSign.Equals,
+                        new BinaryOperation(
+                            new NumberLiteral("5"),
+                            BinaryOperation.OperationType.Add,
+                            new NumberLiteral("5")
+                        )
+                    ),
+                    BinaryOperation.OperationType.BooleanAnd,
+                    new EqualsComparison(
+                        new BinaryOperation(
+                            new NumberLiteral("5"),
+                            BinaryOperation.OperationType.Add,
+                            new NumberLiteral("5")
+                        ),
+                        EqualsComparison.EqualsSign.NotEquals,
+                        new NumberLiteral("5")
+                    )
+                )
+                , "5 = 5 + 5 && 5 + 5 != 5");
+
         }
 
         [Test]

@@ -8,7 +8,7 @@ using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits.Core.Execution.Functions.Binary {
     public static partial class BinaryOperations {
-        public static Value Equals(Value lhs, Value rhs, int index, ExecutionContext<EqualsChain> context) {
+        public static Value Equals(Value lhs, Value rhs, int index, ExecutionContext<EqualsComparison> context) {
             {
                 // Boolean
                 if (lhs is BooleanValue bLhs && rhs is BooleanValue bRhs) {
@@ -44,16 +44,16 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             {
                 // Fallback real
                 if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                    RealValue realLhs = ctrLhs.ConvertToReal(context, context.Node.Values[index].Position);
-                    RealValue realRhs = ctrRhs.ConvertToReal(context, context.Node.Values[index+1].Position);
+                    RealValue realLhs = ctrLhs.ConvertToReal(context, context.Node.Expressions[index].Position);
+                    RealValue realRhs = ctrRhs.ConvertToReal(context, context.Node.Expressions[index+1].Position);
                     return new BooleanValue(realLhs.Value.Equals(realRhs.Value));
                 }
             }
 
             { // Fallback bool
                 if (lhs is IConvertibleToBool ctbLhs && rhs is IConvertibleToBool ctbRhs) {
-                    BooleanValue boolLhs = ctbLhs.ConvertToBool(context, context.Node.Values[index].Position);
-                    BooleanValue boolRhs = ctbRhs.ConvertToBool(context, context.Node.Values[index + 1].Position);
+                    BooleanValue boolLhs = ctbLhs.ConvertToBool(context, context.Node.Expressions[index].Position);
+                    BooleanValue boolRhs = ctbRhs.ConvertToBool(context, context.Node.Expressions[index + 1].Position);
                     return new BooleanValue(boolLhs.Value == boolRhs.Value);
                 }
             }
@@ -62,7 +62,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
         }
 
 
-        public static Value NotEquals(Value value0, Value value1, int index, ExecutionContext<EqualsChain> context) {
+        public static Value NotEquals(Value value0, Value value1, int index, ExecutionContext<EqualsComparison> context) {
             Value equalsValue = Equals(value0, value1, index, context);
             if (equalsValue is BooleanValue @bool) {
                 return new BooleanValue(!@bool.Value);

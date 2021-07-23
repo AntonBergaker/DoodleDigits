@@ -30,6 +30,9 @@ namespace DoodleDigits.Core.Ast
             LessThan,
             ShiftLeft,
             ShiftRight,
+            BooleanAnd,
+            BooleanOr,
+            BooleanXor,
         }
 
         static BinaryOperation() {
@@ -47,6 +50,9 @@ namespace DoodleDigits.Core.Ast
                         (TokenType.LessThan, OperationType.LessThan, BinaryOperations.LessThan),
                         (TokenType.ShiftLeft, OperationType.ShiftLeft, BinaryOperations.ShiftLeft),
                         (TokenType.ShiftRight, OperationType.ShiftRight, BinaryOperations.ShiftRight),
+                        (TokenType.BooleanAnd, OperationType.BooleanAnd, BinaryOperations.BooleanAnd),
+                        (TokenType.BooleanXor, OperationType.BooleanXor, BinaryOperations.BooleanXor),
+                        (TokenType.BooleanOr, OperationType.BooleanOr, BinaryOperations.BooleanOr),
                     };
 
             TypeDictionary = new TwoWayDictionary<TokenType, OperationType>();
@@ -95,7 +101,7 @@ namespace DoodleDigits.Core.Ast
         }
 
         public override string ToString() {
-            return $"({Left} {Token.Tokens[TypeDictionary[Operation]]} {Right})";
+            return $"({Left} {Token.StringForTokenType(TypeDictionary[Operation])} {Right})";
         }
 
     }

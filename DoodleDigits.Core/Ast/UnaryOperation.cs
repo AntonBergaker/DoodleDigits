@@ -76,7 +76,7 @@ namespace DoodleDigits.Core.Ast
                 return $"{Value}!";
             }
 
-            return $"{Token.Tokens[OperationTokenDictionary[Operation]]}{Value}";
+            return $"{Token.StringForTokenType(OperationTokenDictionary[Operation])}{Value}";
         }
     }
 }

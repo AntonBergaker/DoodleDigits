@@ -11,16 +11,18 @@ namespace UnitTests.Ast {
         [Test]
         public void TestEqualsChain() {
 
-            AstUtils.AssertEqual(new EqualsChain(
-                new[] { new NumberLiteral("5"), new NumberLiteral("5"), new NumberLiteral("5") },
-                new[] { EqualsChain.EqualsType.Equals, EqualsChain.EqualsType.Equals }
-            ), "5 = 5 = 5");
+            AstUtils.AssertEqual(new EqualsComparison.Builder(
+                new NumberLiteral("5")) {
+                    { EqualsComparison.EqualsSign.Equals, new NumberLiteral("5") },
+                    { EqualsComparison.EqualsSign.Equals, new NumberLiteral("5") }
+            }.Build(), "5 = 5 = 5");
 
 
-            AstUtils.AssertEqual(new EqualsChain(
-                new[] { new NumberLiteral("5"), new NumberLiteral("5"), new NumberLiteral("5") },
-                new[] { EqualsChain.EqualsType.Equals, EqualsChain.EqualsType.NotEquals }
-            ), "5 = 5 != 5");
+            AstUtils.AssertEqual(new EqualsComparison.Builder(
+                new NumberLiteral("5")) {
+                    { EqualsComparison.EqualsSign.Equals, new NumberLiteral("5") },
+                    { EqualsComparison.EqualsSign.NotEquals, new NumberLiteral("5") }
+                }.Build(), "5 = 5 != 5");
 
         }
     }

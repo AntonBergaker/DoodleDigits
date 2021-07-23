@@ -26,8 +26,9 @@ namespace DoodleDigits.Core {
         LessThan,
         GreaterOrEqualTo,
         GreaterThan,
-        Or,
-        And,
+        BooleanOr,
+        BooleanAnd,
+        BooleanXor,
         Exclamation,
         ShiftLeft,
         ShiftRight,
@@ -36,29 +37,52 @@ namespace DoodleDigits.Core {
 
     public class Token : IEquatable<Token> {
 
-        public static readonly TwoWayDictionary<string, TokenType> Tokens = new() {
-            { "+", TokenType.Add },
-            { "-", TokenType.Subtract },
-            { "*", TokenType.Multiply },
-            { "/", TokenType.Divide },
-            { "(", TokenType.ParenthesisOpen },
-            { ")", TokenType.ParenthesisClose },
-            { ",", TokenType.Comma },
-            { "%", TokenType.Modulus },
-            { "^", TokenType.Power },
-            { "=", TokenType.Equals },
-            { "!=", TokenType.NotEquals },
-            { "<=", TokenType.LessOrEqualTo },
-            { "<", TokenType.LessThan },
-            { ">=", TokenType.GreaterOrEqualTo },
-            { ">", TokenType.GreaterThan },
-            { "&&", TokenType.And },
-            { "||", TokenType.Or },
-            { "!", TokenType.Exclamation},
-            { "<<", TokenType.ShiftLeft},
-            { ">>", TokenType.ShiftRight}
-        };
-        
+        public static Dictionary<string, TokenType> Tokens;
+        private static Dictionary<TokenType, string> tokenToString;
+
+        static Token() {
+            var tokens = new (string token, TokenType type)[] {             
+                ("+", TokenType.Add),
+                ("-", TokenType.Subtract),
+                ("*", TokenType.Multiply),
+                ("/", TokenType.Divide),
+                ("(", TokenType.ParenthesisOpen),
+                (")", TokenType.ParenthesisClose),
+                (",", TokenType.Comma),
+                ("%", TokenType.Modulus),
+                ("^", TokenType.Power),
+                ("=", TokenType.Equals),
+                ("!=", TokenType.NotEquals),
+                ("<=", TokenType.LessOrEqualTo),
+                ("<", TokenType.LessThan),
+                (">=", TokenType.GreaterOrEqualTo),
+                (">", TokenType.GreaterThan),
+                ("&&", TokenType.BooleanAnd),
+                ("and", TokenType.BooleanAnd),
+                ("||", TokenType.BooleanOr),
+                ("or", TokenType.BooleanOr),
+                ("^^", TokenType.BooleanXor),
+                ("!", TokenType.Exclamation),
+                ("<<", TokenType.ShiftLeft),
+                (">>", TokenType.ShiftRight)
+            };
+
+            Tokens = tokens.ToDictionary(x => x.token, x => x.type);
+
+            tokenToString = new Dictionary<TokenType, string>();
+            foreach (var token in tokens) {
+                if (tokenToString.ContainsKey(token.type)) {
+                    continue;
+                }
+                tokenToString.Add(token.type, token.token);
+            }
+        }
+
+
+        public static string StringForTokenType(TokenType type) {
+            return tokenToString[type];
+        }
+
 
         public Token(string content, TokenType type) {
             Content = content;
@@ -87,5 +111,6 @@ namespace DoodleDigits.Core {
         public override string ToString() {
             return $"{Content}({Type})";
         }
+        
     }
 }

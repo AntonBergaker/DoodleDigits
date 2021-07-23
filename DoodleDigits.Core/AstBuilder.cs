@@ -65,7 +65,7 @@ namespace DoodleDigits.Core
         }
 
         private Expression ReadExpression() {
-            return ReadEquals();
+            return ReadPreEqualsBinary();
         }
 
         private Expression ReadEquals() {
@@ -73,49 +73,49 @@ namespace DoodleDigits.Core
 
             Expression lhs = next();
 
-            // Only created if we have at least one equals operation
-            List<Expression>? equalsValues = null;
-            List<EqualsChain.EqualsType>? equalsTypes = null;
-
             Token nextToken = reader.Peek(false);
-            while (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
-                reader.Skip(false);
-                Expression rhs = next();
-                if (rhs is ErrorNode) {
-                    break;
+            if (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
+                EqualsComparison.Builder builder = new(lhs, nextToken.Position);
+
+                while (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
+                    reader.Skip(false);
+                    Expression rhs = next();
+                    if (rhs is ErrorNode) {
+                        break;
+                    }
+
+                    builder.Add(EqualsComparison.GetTypeFromToken(nextToken.Type), rhs, nextToken.Position);
+                    nextToken = reader.Peek();
                 }
 
-                if (equalsValues == null) {
-                    equalsValues = new List<Expression>();
-                    equalsValues.Add(lhs);
-                    equalsTypes = new List<EqualsChain.EqualsType>();
-                }
-
-                equalsTypes!.Add(EqualsChain.GetTypeFromToken(nextToken.Type));
-                equalsValues.Add(rhs);
-                nextToken = reader.Peek(false);
+                return builder.Build();
             }
 
-            if (equalsValues != null) {
-                return new EqualsChain(equalsValues, equalsTypes!, equalsValues.First().Position.Start..equalsValues.Last().Position.End);
-            }
             return lhs;
         }
 
         private Expression ReadImplicitMultiplication() {
-            Expression lhs = ReadBinary(binaryOperationOrder.Length - 1);
+            Expression lhs = ReadPostEqualsBinary();
 
             Token peek = reader.Peek(false);
             while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
                 lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply,
-                    ReadBinary(binaryOperationOrder.Length - 1), reader.Position..reader.Position);
+                    ReadPostEqualsBinary(), reader.Position..reader.Position);
                 peek = reader.Peek();
             }
 
             return lhs;
         }
 
-        private static readonly TokenType[][] binaryOperationOrder = new[] {
+
+        private static readonly TokenType[][] preEqualsBinaryOperationOrder = new[] {
+            new[] {TokenType.BooleanAnd},
+        };
+        private Expression ReadPreEqualsBinary() {
+            return ReadBinary(preEqualsBinaryOperationOrder, preEqualsBinaryOperationOrder.Length-1, ReadEquals);
+        }
+
+        private static readonly TokenType[][] postEqualsBinaryOperationOrder = new[] {
             new[] {TokenType.Power},
             new[] {TokenType.Multiply, TokenType.Divide, TokenType.Modulus},
             new[] {TokenType.Add, TokenType.Subtract},
@@ -123,19 +123,25 @@ namespace DoodleDigits.Core
             new[] {TokenType.GreaterOrEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.LessOrEqualTo},
         };
 
-        private Expression ReadBinary(int depth) {
+        private Expression ReadPostEqualsBinary() {
+            return ReadBinary(postEqualsBinaryOperationOrder, postEqualsBinaryOperationOrder.Length - 1, ReadPreUnary);
+        }
+
+
+        private Expression ReadBinary(TokenType[][] operations, int depth, Func<Expression> baseNext) {
             if (depth == -1) {
-                return ReadPreUnary();
+                return baseNext();
             }
+            Expression Next() => this.ReadBinary(operations, depth - 1, baseNext);
 
-            Expression lhs = this.ReadBinary(depth - 1);
+            Expression lhs = Next();
 
-            TokenType[] operatorsTop = binaryOperationOrder[depth];
+            TokenType[] operatorsTop = operations[depth];
 
             Token nextToken = reader.Peek(false);
             while (operatorsTop.Contains(nextToken.Type)) {
                 reader.Skip(false);
-                Expression rhs = ReadBinary(depth - 1);
+                Expression rhs = Next();
                 if (rhs is ErrorNode) {
                     break;
                 }

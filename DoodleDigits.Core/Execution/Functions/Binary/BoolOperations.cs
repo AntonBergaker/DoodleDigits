@@ -16,7 +16,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             return (lhs.ConvertToBool(context, bo.Left.Position), rhs.ConvertToBool(context, bo.Right.Position));
         }
 
-        public static Value And(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+        public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
                 return new UndefinedValue();
             }
@@ -25,7 +25,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             return new BooleanValue(boolLhs.Value && boolRhs.Value);
         }
 
-        public static Value Xor(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+        public static Value BooleanXor(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
                 return new UndefinedValue();
             }
@@ -34,7 +34,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             return new BooleanValue(boolLhs.Value ^ boolRhs.Value);
         }
 
-        public static Value Or(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+        public static Value BooleanOr(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
                 return new UndefinedValue();
             }
