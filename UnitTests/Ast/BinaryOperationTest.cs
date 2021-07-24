@@ -152,6 +152,23 @@ namespace UnitTests.Ast {
             AstUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
+                    BinaryOperation.OperationType.Add,
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Multiply,
+                        new BinaryOperation(
+                            new NumberLiteral("5"),
+                            BinaryOperation.OperationType.Add,
+                            new NumberLiteral("5")
+                        )
+                    )
+                ) , "5+5(5 + 5)"
+            );
+
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
                     new Identifier("x")
                 ), "5x"
@@ -169,6 +186,46 @@ namespace UnitTests.Ast {
                 ), "5x(y)"
             );
 
+
+            AstUtils.AssertEqual(
+                new EqualsComparison(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Multiply,
+                        new NumberLiteral("5")
+                    ),
+                    EqualsComparison.EqualsSign.Equals,
+                    new NumberLiteral("5")
+                ),
+                "5(5) = 5"
+            );
+
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new NumberLiteral("5"),
+                    BinaryOperation.OperationType.Multiply,
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Power,
+                        new NumberLiteral("5")
+                    )
+                ),
+                "(5)(5)^5"
+            );
+
+            AstUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Power,
+                        new NumberLiteral("5")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new NumberLiteral("5")
+                ),
+                "5^5(5)"
+            );
         }
     }
 }

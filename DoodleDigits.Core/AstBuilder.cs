@@ -69,7 +69,7 @@ namespace DoodleDigits.Core
         }
 
         private Expression ReadEquals() {
-            Func<Expression> next = ReadImplicitMultiplication;
+            Func<Expression> next = ReadPostEqualsBinary;
 
             Expression lhs = next();
 
@@ -94,29 +94,17 @@ namespace DoodleDigits.Core
             return lhs;
         }
 
-        private Expression ReadImplicitMultiplication() {
-            Expression lhs = ReadPostEqualsBinary();
 
-            Token peek = reader.Peek(false);
-            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
-                lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply,
-                    ReadPostEqualsBinary(), reader.Position..reader.Position);
-                peek = reader.Peek();
-            }
-
-            return lhs;
-        }
-
-
-        private static readonly TokenType[][] preEqualsBinaryOperationOrder = new[] {
+        private static readonly TokenType[][] preEqualsBinaryOperationOrder = {
             new[] {TokenType.BooleanAnd},
+            new[] {TokenType.BooleanXor}
         };
         private Expression ReadPreEqualsBinary() {
-            return ReadBinary(preEqualsBinaryOperationOrder, preEqualsBinaryOperationOrder.Length-1, ReadEquals);
+            return GenericReadBinary(preEqualsBinaryOperationOrder, preEqualsBinaryOperationOrder.Length-1, ReadEquals);
         }
 
-        private static readonly TokenType[][] postEqualsBinaryOperationOrder = new[] {
-            new[] {TokenType.Power},
+
+        private static readonly TokenType[][] postEqualsBinaryOperationOrder = {
             new[] {TokenType.Multiply, TokenType.Divide, TokenType.Modulus},
             new[] {TokenType.Add, TokenType.Subtract},
             new[] {TokenType.ShiftLeft, TokenType.ShiftRight},
@@ -124,15 +112,15 @@ namespace DoodleDigits.Core
         };
 
         private Expression ReadPostEqualsBinary() {
-            return ReadBinary(postEqualsBinaryOperationOrder, postEqualsBinaryOperationOrder.Length - 1, ReadPreUnary);
+            return GenericReadBinary(postEqualsBinaryOperationOrder, postEqualsBinaryOperationOrder.Length - 1, ReadImplicitMultiplication);
         }
 
 
-        private Expression ReadBinary(TokenType[][] operations, int depth, Func<Expression> baseNext) {
+        private Expression GenericReadBinary(TokenType[][] operations, int depth, Func<Expression> baseNext) {
             if (depth == -1) {
                 return baseNext();
             }
-            Expression Next() => this.ReadBinary(operations, depth - 1, baseNext);
+            Expression Next() => this.GenericReadBinary(operations, depth - 1, baseNext);
 
             Expression lhs = Next();
 
@@ -150,6 +138,24 @@ namespace DoodleDigits.Core
             }
 
             return lhs;
+        }
+
+        private Expression ReadImplicitMultiplication() {
+            Expression lhs = ReadPower();
+
+            Token peek = reader.Peek(false);
+            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
+                lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply,
+                    ReadPower(), reader.Position..reader.Position);
+                peek = reader.Peek();
+            }
+
+            return lhs;
+        }
+
+        private static readonly TokenType[][] powerOperationOrder = { new[] { TokenType.Power } };
+        private Expression ReadPower() {
+            return GenericReadBinary(powerOperationOrder, powerOperationOrder.Length - 1, ReadPreUnary);
         }
 
 
