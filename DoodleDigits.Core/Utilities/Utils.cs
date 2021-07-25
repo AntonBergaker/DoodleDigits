@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DoodleDigits.Core {
+namespace DoodleDigits.Core.Utilities {
     public static class Utils {
         public static Range Join(Range a, Range b) {
             int a0 = a.Start.GetOffset(int.MaxValue);

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DoodleDigits.Core {
+namespace DoodleDigits.Core.Tokenizing {
     class TokenReader {
         private readonly Token[] tokens;
         private int index;

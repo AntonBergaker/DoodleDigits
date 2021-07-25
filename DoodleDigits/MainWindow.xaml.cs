@@ -16,9 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DoodleDigits.Core;
-using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Results;
-using DoodleDigits.Core.Execution.ValueTypes;
 using Path = System.IO.Path;
 
 namespace DoodleDigits {
@@ -94,10 +92,10 @@ namespace DoodleDigits {
             var saveTask = Save();
 
             string text = RichTextBox.Text;
-            var executionResult = await RunExecution(text);
+            var calculationResult = await RunExecution(text);
             LineMeasure measure = new LineMeasure(text, RichTextBox);
             Results.Clear();
-            foreach (Result result in executionResult.Results) {
+            foreach (Result result in calculationResult.Results) {
                 Results.Add(new ResultViewModel(result, measure));
             }
 
@@ -105,10 +103,10 @@ namespace DoodleDigits {
             await saveTask;
         }
 
-        private Task<ExecutionResult> RunExecution(string input) {
-            var task = new Task<ExecutionResult>(() => {
-                Executor executor = new Executor(FunctionLibrary.Functions, ConstantLibrary.Constants);
-                return executor.Calculate(input);
+        private Task<CalculationResult> RunExecution(string input) {
+            var task = new Task<CalculationResult>(() => {
+                Calculator calculator = new Calculator(FunctionLibrary.Functions, ConstantLibrary.Constants);
+                return calculator.Calculate(input);
             });
             task.Start();
             return task;

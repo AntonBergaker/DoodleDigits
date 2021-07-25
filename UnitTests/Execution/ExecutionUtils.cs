@@ -8,6 +8,7 @@ using DoodleDigits.Core;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Parsing;
 using NUnit.Framework;
 using Rationals;
 
@@ -24,9 +25,9 @@ namespace UnitTests.Execution {
 
         public static void AssertEqual(Value expected, string input) {
 
-            Executor executor = new(FunctionLibrary.Functions, ConstantLibrary.Constants);
+            Calculator calculator = new(FunctionLibrary.Functions, ConstantLibrary.Constants);
 
-            var results = executor.Calculate(input);
+            var results = calculator.Calculate(input);
 
             foreach (Result result in results.Results) {
                 if (result is ResultError error) {

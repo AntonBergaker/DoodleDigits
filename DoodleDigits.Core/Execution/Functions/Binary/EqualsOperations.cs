@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.Functions.Binary {
     public static partial class BinaryOperations {

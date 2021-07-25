@@ -4,11 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution.Functions;
 using DoodleDigits.Core.Execution.Functions.Binary;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Parsing;
+using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
@@ -24,7 +25,6 @@ namespace DoodleDigits.Core.Execution {
     public class Executor {
         private readonly ExecutionContext context;
         private readonly List<Result> results;
-        private readonly AstBuilder builder;
         private readonly Dictionary<string, FunctionData> functions;
 
         public Executor(IEnumerable<FunctionData> functions, IEnumerable<Constant> constants) {
@@ -35,31 +35,26 @@ namespace DoodleDigits.Core.Execution {
                     this.functions.Add(name, functionData);
                 }
             }
-            builder = new AstBuilder(this.functions.Keys);
             context = new ExecutionContext(constants);
         }
 
-        public ExecutionResult Calculate(string input) {
+        public ExecutionResult Execute(AstNode root) {
             results.Clear();
             context.Clear();
 
-            var result = builder.Build(input);
-
-            //errors.AddRange(result.Errors);
-
-            if (result.Root is ExpressionList list) {
+            if (root is ExpressionList list) {
                 foreach (Expression expression in list.Expressions) {
                     results.Add(new ResultValue(Calculate(expression), expression.FullPosition));
                 }
-            } else if (result.Root is Expression ex) {
+            } else if (root is Expression ex) {
                 results.Add(new ResultValue(Calculate(ex), ex.FullPosition));
             }
 
             results.AddRange(context.Results);
 
-            results.Sort((a, b) => a.Position.Start.GetOffset(input.Length) - b.Position.Start.GetOffset(input.Length));
+            results.Sort((a, b) => a.Position.Start.Value - b.Position.Start.Value);
 
-            return new ExecutionResult( results.ToArray());
+            return new ExecutionResult(results.ToArray());
         }
 
 

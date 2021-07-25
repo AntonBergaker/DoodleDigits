@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core;
-using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Functions.Binary;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core.Ast
+namespace DoodleDigits.Core.Parsing.Ast
 {
     public class BinaryOperation : Expression {
         public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context);

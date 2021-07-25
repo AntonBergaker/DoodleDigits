@@ -3,35 +3,36 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using DoodleDigits.Core.Ast;
+using DoodleDigits.Core.Parsing.Ast;
+using DoodleDigits.Core.Tokenizing;
 
-namespace DoodleDigits.Core
+namespace DoodleDigits.Core.Parsing
 {
-    public class AstResult {
-        public readonly List<Error> Errors;
+    public class ParseResult {
+        public readonly List<ParseError> Errors;
         public readonly AstNode Root;
 
-        public AstResult(List<Error> errors, AstNode root) {
+        public ParseResult(List<ParseError> errors, AstNode root) {
             Errors = errors;
             Root = root;
         }
     }
 
-    public class AstBuilder {
+    public class Parser {
         private readonly HashSet<string> functionNames;
         private readonly Tokenizer tokenizer;
         private TokenReader reader;
-        private readonly List<Error> errors;
+        private readonly List<ParseError> errors;
 
-        public AstBuilder(IEnumerable<string> functionNames) {
+        public Parser(IEnumerable<string> functionNames) {
             this.functionNames = functionNames.ToHashSet();
             tokenizer = new Tokenizer();
             reader = null!;
-            errors = new List<Error>();
+            errors = new List<ParseError>();
         }
 
 
-        public AstResult Build(string input) {
+        public ParseResult Parse(string input) {
             errors.Clear();
             reader = new TokenReader(tokenizer.Tokenize(input));
 
@@ -39,7 +40,7 @@ namespace DoodleDigits.Core
 
             AstNode statements = ReadStatements();
 
-            return new AstResult(new List<Error>(errors), statements);
+            return new ParseResult(new List<ParseError>(errors), statements);
         }
 
         private AstNode ReadStatements() {
@@ -200,7 +201,7 @@ namespace DoodleDigits.Core
                     // This should be a parenthesis
                     Token nextToken = reader.Read();
                     if (nextToken.Type != TokenType.ParenthesisClose) {
-                        errors.Add(new Error(nextToken.Position, "Unclosed parenthesis"));
+                        errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
                     }
 
                     return expression;

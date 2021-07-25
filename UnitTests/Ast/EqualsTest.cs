@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DoodleDigits.Core.Ast;
+using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 
 namespace UnitTests.Ast {
