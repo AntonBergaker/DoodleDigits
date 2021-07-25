@@ -96,8 +96,12 @@ namespace DoodleDigits.Core
 
 
         private static readonly TokenType[][] preEqualsBinaryOperationOrder = {
+            new[] {TokenType.BitwiseAnd},
+            new[] {TokenType.BitwiseXor},
+            new[] {TokenType.BitwiseOr},
             new[] {TokenType.BooleanAnd},
-            new[] {TokenType.BooleanXor}
+            new[] {TokenType.BooleanXor},
+            new[] {TokenType.BooleanOr},
         };
         private Expression ReadPreEqualsBinary() {
             return GenericReadBinary(preEqualsBinaryOperationOrder, preEqualsBinaryOperationOrder.Length-1, ReadEquals);

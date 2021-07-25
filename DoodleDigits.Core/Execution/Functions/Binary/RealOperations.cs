@@ -11,8 +11,8 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
     public static partial class BinaryOperations {
         private static (RealValue lhs, RealValue rhs) ConvertToReal(IConvertibleToReal lhs, IConvertibleToReal rhs,
             ExecutionContext<BinaryOperation> context) {
-            return (lhs.ConvertToReal(context, context.Node.Left.Position),
-                rhs.ConvertToReal(context, context.Node.Right.Position));
+            return (lhs.ConvertToReal(context, context.Node.Lhs.Position),
+                rhs.ConvertToReal(context, context.Node.Rhs.Position));
         }
 
         public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {

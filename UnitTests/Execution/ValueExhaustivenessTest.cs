@@ -8,6 +8,7 @@ using DoodleDigits.Core.Ast;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
 using NUnit.Framework;
+using Rationals;
 
 namespace UnitTests.Execution {
     /// <summary>
@@ -16,15 +17,16 @@ namespace UnitTests.Execution {
     class ValueExhaustivenessTest {
 
 
-        private Value[] AllValues => new Value[] { 
+        private Value[] AllValues => new Value[] {
             new RealValue(0),
             new RealValue(1),
             new RealValue(1000000000),
             new RealValue(-1000000000),
+            new RealValue(new Rational(1, 1000000000)),
             new RealValue(-1),
-            new BooleanValue(false), 
+            new BooleanValue(false),
             new BooleanValue(true),
-            new TooBigValue(TooBigValue.Sign.Negative), 
+            new TooBigValue(TooBigValue.Sign.Negative),
             new TooBigValue(TooBigValue.Sign.Positive),
             new UndefinedValue(),
         };

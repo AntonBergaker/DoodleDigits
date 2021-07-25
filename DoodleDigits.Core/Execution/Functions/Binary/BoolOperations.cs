@@ -13,7 +13,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
         private static (BooleanValue lhs, BooleanValue rhs) ConvertToBool(IConvertibleToBool lhs, IConvertibleToBool rhs, ExecutionContext<BinaryOperation> context) {
             BinaryOperation bo = context.Node;
 
-            return (lhs.ConvertToBool(context, bo.Left.Position), rhs.ConvertToBool(context, bo.Right.Position));
+            return (lhs.ConvertToBool(context, bo.Lhs.Position), rhs.ConvertToBool(context, bo.Rhs.Position));
         }
 
         public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {

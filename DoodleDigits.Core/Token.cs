@@ -32,7 +32,10 @@ namespace DoodleDigits.Core {
         Exclamation,
         ShiftLeft,
         ShiftRight,
-        NewLine
+        BitwiseOr,
+        BitwiseAnd,
+        BitwiseXor,
+        NewLine,
     }
 
     public class Token : IEquatable<Token> {
@@ -64,7 +67,10 @@ namespace DoodleDigits.Core {
                 ("^^", TokenType.BooleanXor),
                 ("!", TokenType.Exclamation),
                 ("<<", TokenType.ShiftLeft),
-                (">>", TokenType.ShiftRight)
+                (">>", TokenType.ShiftRight),
+                ("|", TokenType.BitwiseOr),
+                ("xor", TokenType.BitwiseXor),
+                ("&", TokenType.BitwiseAnd),
             };
 
             Tokens = tokens.ToDictionary(x => x.token, x => x.type);

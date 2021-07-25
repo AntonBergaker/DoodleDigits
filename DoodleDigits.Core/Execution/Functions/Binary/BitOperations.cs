@@ -14,12 +14,44 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
     public static partial class BinaryOperations {
 
         public static Value Xor(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            throw new NotImplementedException();
+            if (lhs is BooleanValue lhsBool && rhs is BooleanValue rhsBool) {
+                return new BooleanValue(lhsBool.Value ^ rhsBool.Value);
+            }
 
+            if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
+                var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context);
+                lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
+                rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
 
+                return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator);
+            }
+
+            return new UndefinedValue();
         }
 
+        public static Value BitwiseOr(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
+                var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context);
+                lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
+                rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
 
+                return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator);
+            }
+
+            return new UndefinedValue();
+        }
+
+        public static Value BitwiseAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
+                var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context);
+                lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
+                rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
+
+                return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator);
+            }
+
+            return new UndefinedValue();
+        }
 
         public static Value ShiftLeft(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is TooBigValue) {
@@ -42,19 +74,8 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             {
                 if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
                     var (realLhs, realRhs) = ConvertToReal(ctrLhs, ctrRhs, context);
-                    if (realLhs.HasDecimal) {
-                        var rounded = new RealValue(RationalUtils.Round(realLhs.Value));
-                        context.AddResult(new ResultConversion(realLhs, rounded,
-                            ResultConversion.ConversionType.Rounding, context.Node.Left.Position));
-                        realLhs = rounded;
-                    }
-
-                    if (realRhs.HasDecimal) {
-                        var rounded = new RealValue(RationalUtils.Round(realRhs.Value));
-                        context.AddResult(new ResultConversion(realRhs, rounded,
-                            ResultConversion.ConversionType.Rounding, context.Node.Right.Position));
-                        realRhs = rounded;
-                    }
+                    realLhs = realLhs.Round(context, context.Node.Lhs.Position);
+                    realRhs = realRhs.Round(context, context.Node.Rhs.Position);
 
                     if (realLhs.Value.IsZero) {
                         return new RealValue(Rational.Zero);
@@ -83,7 +104,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                 return ShiftLeft(lhs, tbvRhs.Negate(), context);
             }
             if (rhs is IConvertibleToReal ctrRhs) {
-                var realRhs = ctrRhs.ConvertToReal(context, context.Node.Right.Position);
+                var realRhs = ctrRhs.ConvertToReal(context, context.Node.Rhs.Position);
                 return ShiftLeft(lhs, new RealValue(-realRhs.Value), context);
             }
 

@@ -15,7 +15,7 @@ namespace DoodleDigits.Core.Ast
     public class BinaryOperation : Expression {
         public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context);
 
-        public override Range FullPosition => Utils.Join(Position, Left.FullPosition, Right.FullPosition);
+        public override Range FullPosition => Utils.Join(Position, Lhs.FullPosition, Rhs.FullPosition);
 
         public enum OperationType {
             Add,
@@ -33,6 +33,9 @@ namespace DoodleDigits.Core.Ast
             BooleanAnd,
             BooleanOr,
             BooleanXor,
+            BitwiseAnd,
+            BitwiseOr,
+            BitwiseXor,
         }
 
         static BinaryOperation() {
@@ -53,6 +56,9 @@ namespace DoodleDigits.Core.Ast
                         (TokenType.BooleanAnd, OperationType.BooleanAnd, BinaryOperations.BooleanAnd),
                         (TokenType.BooleanXor, OperationType.BooleanXor, BinaryOperations.BooleanXor),
                         (TokenType.BooleanOr, OperationType.BooleanOr, BinaryOperations.BooleanOr),
+                        (TokenType.BitwiseOr, OperationType.BitwiseOr, BinaryOperations.BitwiseAnd),
+                        (TokenType.BitwiseXor, OperationType.BitwiseXor, BinaryOperations.Xor),
+                        (TokenType.BitwiseAnd, OperationType.BitwiseAnd, BinaryOperations.BitwiseOr),
                     };
 
             TypeDictionary = new TwoWayDictionary<TokenType, OperationType>();
@@ -79,17 +85,17 @@ namespace DoodleDigits.Core.Ast
         }
 
 
-        public Expression Left { get; }
+        public Expression Lhs { get; }
         public OperationType Operation { get; }
-        public Expression Right { get; }
+        public Expression Rhs { get; }
 
-        public BinaryOperation(Expression left, OperationType operation, Expression right, Range position) : base(position) {
-            Left = left;
+        public BinaryOperation(Expression lhs, OperationType operation, Expression rhs, Range position) : base(position) {
+            Lhs = lhs;
             Operation = operation;
-            Right = right;
+            Rhs = rhs;
         }
 
-        public BinaryOperation(Expression left, OperationType operation, Expression right) : this(left, operation, right, 0..0) {
+        public BinaryOperation(Expression lhs, OperationType operation, Expression rhs) : this(lhs, operation, rhs, 0..0) {
         }
 
         public override bool Equals(AstNode other) {
@@ -97,11 +103,11 @@ namespace DoodleDigits.Core.Ast
                 return false;
             }
 
-            return Operation == bo.Operation && Left.Equals(bo.Left) && Right.Equals(bo.Right);
+            return Operation == bo.Operation && Lhs.Equals(bo.Lhs) && Rhs.Equals(bo.Rhs);
         }
 
         public override string ToString() {
-            return $"({Left} {Token.StringForTokenType(TypeDictionary[Operation])} {Right})";
+            return $"({Lhs} {Token.StringForTokenType(TypeDictionary[Operation])} {Rhs})";
         }
 
     }

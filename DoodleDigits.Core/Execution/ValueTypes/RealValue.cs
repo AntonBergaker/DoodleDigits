@@ -1,5 +1,6 @@
 ﻿using System;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
@@ -38,6 +39,19 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
             return newValue;
         }
+
+
+        public RealValue Round(ExecutionContext context, Range position) {
+            if (HasDecimal == false) {
+                return this;
+            }
+
+            RealValue rounded = new RealValue(RationalUtils.Round(Value));
+            context.AddResult(new ResultConversion(this, rounded,
+                ResultConversion.ConversionType.Rounding, position));
+            return rounded;
+        }
+
 
         public bool HasDecimal => Value.FractionPart != 0;
         public RealValue ConvertToReal() {

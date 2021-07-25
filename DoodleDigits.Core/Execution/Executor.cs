@@ -197,8 +197,8 @@ namespace DoodleDigits.Core.Execution {
         }
 
         private Value Calculate(BinaryOperation bo) {
-            Value lhs = Calculate(bo.Left);
-            Value rhs = Calculate(bo.Right);
+            Value lhs = Calculate(bo.Lhs);
+            Value rhs = Calculate(bo.Rhs);
 
             BinaryOperation.OperationFunction func = BinaryOperation.GetOperationFromType(bo.Operation);
 
