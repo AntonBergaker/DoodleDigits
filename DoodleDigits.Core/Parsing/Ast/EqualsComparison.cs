@@ -70,18 +70,6 @@ namespace DoodleDigits.Core.Parsing.Ast {
             Expressions = builder.Expressions.ToArray();
             Signs = builder.Signs.ToArray();
         }
-        
-
-        public override Range FullPosition {
-            get {
-                Range fullPosition = Position;
-                foreach (Expression argument in Expressions) {
-                    fullPosition = Utils.Join(fullPosition, argument.FullPosition);
-                }
-
-                return fullPosition;
-            }
-        }
 
         public override bool Equals(AstNode other) {
             if (other is not EqualsComparison otherEqChain) {

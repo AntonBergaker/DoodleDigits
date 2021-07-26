@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DoodleDigits.Core.Utilities {
     public static class Utils {
@@ -17,6 +19,19 @@ namespace DoodleDigits.Core.Utilities {
 
         public static Range Join(Range a, Range b, Range c, Range d) {
             return Join(Join(a, b), Join(c, d));
+        }
+
+        public static Range Join(params Range[] ranges) {
+            Range r = ranges[0];
+            for (int i = 1; i < ranges.Length; i++) {
+                r = Join(r, ranges[i]);
+            }
+
+            return r;
+        }
+
+        public static Range Join(IEnumerable<Range> ranges) {
+            return Join(ranges.ToArray());
         }
     }
 }

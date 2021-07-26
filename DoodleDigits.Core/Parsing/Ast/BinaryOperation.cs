@@ -10,9 +10,7 @@ namespace DoodleDigits.Core.Parsing.Ast
 {
     public class BinaryOperation : Expression {
         public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context);
-
-        public override Range FullPosition => Utils.Join(Position, Lhs.FullPosition, Rhs.FullPosition);
-
+        
         public enum OperationType {
             Add,
             Subtract,

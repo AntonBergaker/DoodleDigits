@@ -21,7 +21,5 @@ namespace DoodleDigits.Core.Parsing.Ast {
         public override string ToString() {
             return Value;
         }
-
-        public override Range FullPosition => Position;
     }
 }

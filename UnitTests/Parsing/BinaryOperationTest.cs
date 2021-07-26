@@ -7,26 +7,26 @@ using DoodleDigits.Core;
 using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 
-namespace UnitTests.Ast {
+namespace UnitTests.Parsing {
     class BinaryOperationTest {
 
         [Test]
         public void TestBasicSingles() {
 
-            AstUtils.AssertEqual(new BinaryOperation(
+            ParsingUtils.AssertEqual(new BinaryOperation(
                 new NumberLiteral("5"), 
                 BinaryOperation.OperationType.Add,
                 new NumberLiteral("5")
                 ), "5 + 5");
 
 
-            AstUtils.AssertEqual(new BinaryOperation(
+            ParsingUtils.AssertEqual(new BinaryOperation(
                 new NumberLiteral("5"),
                 BinaryOperation.OperationType.Multiply,
                 new NumberLiteral("5.125")
             ), "5 * 5.125");
 
-            AstUtils.AssertEqual(new BinaryOperation(
+            ParsingUtils.AssertEqual(new BinaryOperation(
                 new NumberLiteral("12345"),
                 BinaryOperation.OperationType.Subtract,
                 new NumberLiteral("5.125")
@@ -36,7 +36,7 @@ namespace UnitTests.Ast {
         [Test]
         public void TestArithmeticOrderOfOperations() {
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("1"),
@@ -48,7 +48,7 @@ namespace UnitTests.Ast {
                     )
             , "1*2-3");
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("4"),
                     BinaryOperation.OperationType.Subtract,
@@ -61,7 +61,7 @@ namespace UnitTests.Ast {
                 , "4-5*6");
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("10"),
@@ -79,7 +79,7 @@ namespace UnitTests.Ast {
         public void TestBooleanOrderOfOperations() {
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new EqualsComparison(
                         new NumberLiteral("5"),
@@ -97,7 +97,7 @@ namespace UnitTests.Ast {
 
             
             // This is becoming quite unreadable
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new EqualsComparison(
                         new NumberLiteral("5"),
@@ -125,7 +125,7 @@ namespace UnitTests.Ast {
 
         [Test]
         public void TestImplicitMultiplication() {
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -137,7 +137,7 @@ namespace UnitTests.Ast {
                     ), "(5 + 5)(5)"
                 );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -149,7 +149,7 @@ namespace UnitTests.Ast {
                 ), "(5 + 5)5"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Add,
@@ -166,7 +166,7 @@ namespace UnitTests.Ast {
             );
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
@@ -174,7 +174,7 @@ namespace UnitTests.Ast {
                 ), "5x"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -187,7 +187,7 @@ namespace UnitTests.Ast {
             );
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new EqualsComparison(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -201,7 +201,7 @@ namespace UnitTests.Ast {
             );
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
@@ -214,7 +214,7 @@ namespace UnitTests.Ast {
                 "(5)(5)^5"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),

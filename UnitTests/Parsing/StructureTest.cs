@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 
-namespace UnitTests.Ast {
+namespace UnitTests.Parsing {
     class StructureTest {
 
         [Test]
         public void TestNewlineSeparation() {
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new ExpressionList(
                     new () {
                         new NumberLiteral("5"),
@@ -21,7 +21,7 @@ namespace UnitTests.Ast {
                 ), "5\n5"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"), 
                     BinaryOperation.OperationType.Add, 
@@ -29,13 +29,13 @@ namespace UnitTests.Ast {
                 ), "5+\n5"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new NumberLiteral("5"), 
             "5\n");
 
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new ExpressionList(
                     new() {
                         new NumberLiteral("5"),
@@ -47,7 +47,7 @@ namespace UnitTests.Ast {
 
         [Test]
         public void TestUnfinishedBinary() {
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new NumberLiteral("5"), 
             "5 + ");
         }

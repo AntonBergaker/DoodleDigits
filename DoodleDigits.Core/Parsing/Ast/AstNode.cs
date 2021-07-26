@@ -2,7 +2,6 @@
 
 namespace DoodleDigits.Core.Parsing.Ast {
     public abstract class AstNode : IEquatable<AstNode> {
-        public Range Position { get; }
 
         protected AstNode(Range position) {
             Position = position;
@@ -18,7 +17,7 @@ namespace DoodleDigits.Core.Parsing.Ast {
         /// <summary>
         /// Like position, but also includes its children
         /// </summary>
-        public abstract Range FullPosition { get; }
+        public Range Position { get; set; }
 
         public abstract bool Equals(AstNode other);
 

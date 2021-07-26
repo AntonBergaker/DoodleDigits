@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Tokenizing;
+using DoodleDigits.Core.Utilities;
 
 namespace DoodleDigits.Core.Parsing
 {
@@ -62,7 +63,11 @@ namespace DoodleDigits.Core.Parsing
                 return expressions[0];
             }
 
-            return new ExpressionList(expressions, 0..0);
+            if (expressions.Count == 0) {
+                return new ExpressionList(expressions, 0..0);
+            }
+
+            return new ExpressionList(expressions, Utils.Join(expressions.Select(x => x.Position).ToArray()));
         }
 
         private Expression ReadExpression() {
@@ -76,7 +81,7 @@ namespace DoodleDigits.Core.Parsing
 
             Token nextToken = reader.Peek(false);
             if (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
-                EqualsComparison.Builder builder = new(lhs, nextToken.Position);
+                EqualsComparison.Builder builder = new(lhs, Utils.Join(nextToken.Position, lhs.Position));
 
                 while (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
                     reader.Skip(false);
@@ -85,7 +90,7 @@ namespace DoodleDigits.Core.Parsing
                         break;
                     }
 
-                    builder.Add(EqualsComparison.GetTypeFromToken(nextToken.Type), rhs, nextToken.Position);
+                    builder.Add(EqualsComparison.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(nextToken.Position, rhs.Position));
                     nextToken = reader.Peek();
                 }
 
@@ -138,7 +143,7 @@ namespace DoodleDigits.Core.Parsing
                 if (rhs is ErrorNode) {
                     break;
                 }
-                lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, nextToken.Position);
+                lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(lhs.Position, nextToken.Position, rhs.Position));
                 nextToken = reader.Peek(false);
             }
 
@@ -150,8 +155,9 @@ namespace DoodleDigits.Core.Parsing
 
             Token peek = reader.Peek(false);
             while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
-                lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply,
-                    ReadPower(), reader.Position..reader.Position);
+                Expression rhs = ReadPower();
+                lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply, rhs,
+                    Utils.Join(lhs.Position, rhs.Position));
                 peek = reader.Peek();
             }
 
@@ -170,7 +176,8 @@ namespace DoodleDigits.Core.Parsing
 
             if (peek.Type is TokenType.Add or TokenType.Subtract or TokenType.Exclamation) {
                 reader.Skip();
-                return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), ReadPreUnary(), peek.Position);
+                Expression value = ReadPreUnary();
+                return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), value, Utils.Join(peek.Position, value.Position));
             }
 
             return ReadPostUnary();
@@ -182,7 +189,7 @@ namespace DoodleDigits.Core.Parsing
             Token peek = reader.Peek();
             while (peek.Type == TokenType.Exclamation) {
                 reader.Skip();
-                expression = new UnaryOperation(UnaryOperation.OperationType.Factorial, expression, peek.Position);
+                expression = new UnaryOperation(UnaryOperation.OperationType.Factorial, expression, Utils.Join(expression.Position, peek.Position));
                 peek = reader.Peek();
             }
 
@@ -194,26 +201,29 @@ namespace DoodleDigits.Core.Parsing
         }
 
         private Expression ReadLiteral(Token token) {
-
-            switch (token.Type) {
-                case TokenType.ParenthesisOpen:
-                    Expression expression = ReadExpression();
-                    // This should be a parenthesis
-                    Token nextToken = reader.Read();
-                    if (nextToken.Type != TokenType.ParenthesisClose) {
-                        errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
-                    }
-
-                    return expression;
-                case TokenType.Number:
-                    return new NumberLiteral(token.Content, token.Position);
-                case TokenType.Identifier:
-                    return ReadIdentifier(token);
-            }
-
-            return new ErrorNode();
+            return token.Type switch {
+                TokenType.ParenthesisOpen => ReadParenthesis(token),
+                TokenType.Number => new NumberLiteral(token.Content, token.Position),
+                TokenType.Identifier => ReadIdentifier(token),
+                _ => new ErrorNode()
+            };
         }
 
+
+        private Expression ReadParenthesis(Token token) {
+            Expression expression = ReadExpression();
+
+            // This should be a parenthesis
+            Token nextToken = reader.Read();
+            Index end = nextToken.Position.End;
+            if (nextToken.Type != TokenType.ParenthesisClose) {
+                errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
+                end = expression.Position.End;
+            }
+
+            expression.Position = token.Position.Start..end;
+            return expression;
+        }
 
         private Expression ReadIdentifier(Token token) {
             if (token.Content.StartsWith("log")) {
@@ -236,6 +246,8 @@ namespace DoodleDigits.Core.Parsing
 
         private Expression ReadFunction(Token token) {
             Token next = reader.Peek();
+            Index start = token.Position.Start;
+            Index end = token.Position.End;
             if (next.Type == TokenType.ParenthesisOpen) {
                 List<Expression> parameters = new();
                 reader.Skip();
@@ -247,25 +259,29 @@ namespace DoodleDigits.Core.Parsing
                     }
 
                     parameters.Add(ex);
+                    end = ex.Position.End;
 
                     Token peek = reader.Peek();
                     if (peek.Type is TokenType.ParenthesisClose or TokenType.EndOfFile) {
                         reader.Skip();
+                        end = peek.Position.End;
                         break;
                     }
 
                     if (peek.Type == TokenType.Comma) {
                         reader.Skip();
+                        end = peek.Position.End;
                         continue;
                     }
 
                 }
 
-                return new Function(token.Content, parameters, token.Position);
+                return new Function(token.Content, parameters, start..end);
             }
 
-            Expression expression = ReadExpression();
-            return new Function(token.Content, new[] { expression }, token.Position);
+            Expression expression = ReadLiteral();
+            end = expression.Position.End;
+            return new Function(token.Content, new[] { expression }, start..end);
         }
 
         private bool ReadFunctionWithBuiltInParameter(Token token, string functionName, [NotNullWhen(true)] out Expression? function) {
@@ -273,7 +289,7 @@ namespace DoodleDigits.Core.Parsing
             int functionLength = functionName.Length;
 
             if (token.Content.Length == functionLength) {
-                // Log will be handled by the normal mechanisms under function when false
+                // The function will be handled by the normal mechanisms under function when false
                 return false;
             }
 
@@ -286,9 +302,9 @@ namespace DoodleDigits.Core.Parsing
                 }
 
                 Expression @base = ReadLiteral(hotSwappedToken);
-                Expression argument = ReadExpression();
+                Expression argument = ReadLiteral();
 
-                function = new Function(functionName, new[] {argument, @base}, token.Position);
+                function = new Function(functionName, new[] {argument, @base}, Utils.Join(token.Position, argument.Position));
                 return true;
             }
 
@@ -296,9 +312,9 @@ namespace DoodleDigits.Core.Parsing
                 if (double.TryParse(token.Content[functionLength..], out double @base)) {
                     Range newRange = (token.Position.Start.Value + functionLength)..token.Position.End;
                     Expression baseLiteral = new NumberLiteral(@base.ToString(CultureInfo.InvariantCulture), newRange);
-                    Expression argument = ReadExpression();
+                    Expression argument = ReadLiteral();
 
-                    function = new Function(functionName, new[] { argument, baseLiteral }, token.Position);
+                    function = new Function(functionName, new[] { argument, baseLiteral }, Utils.Join(token.Position, argument.Position));
                     return true;
                 }
             }

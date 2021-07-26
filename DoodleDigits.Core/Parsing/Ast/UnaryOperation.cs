@@ -68,8 +68,6 @@ namespace DoodleDigits.Core.Parsing.Ast
             return uo.Operation == Operation && Value.Equals(uo.Value);
         }
 
-        public override Range FullPosition => Utils.Join(Position, Value.FullPosition);
-
         public override string ToString() {
             if (Operation == OperationType.Factorial) {
                 return $"{Value}!";

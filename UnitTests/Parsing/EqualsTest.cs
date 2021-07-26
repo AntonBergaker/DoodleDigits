@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 
-namespace UnitTests.Ast {
+namespace UnitTests.Parsing {
     class EqualsTest {
         [Test]
         public void TestEqualsChain() {
 
-            AstUtils.AssertEqual(new EqualsComparison.Builder(
+            ParsingUtils.AssertEqual(new EqualsComparison.Builder(
                 new NumberLiteral("5")) {
                     { EqualsComparison.EqualsSign.Equals, new NumberLiteral("5") },
                     { EqualsComparison.EqualsSign.Equals, new NumberLiteral("5") }
             }.Build(), "5 = 5 = 5");
 
 
-            AstUtils.AssertEqual(new EqualsComparison.Builder(
+            ParsingUtils.AssertEqual(new EqualsComparison.Builder(
                 new NumberLiteral("5")) {
                     { EqualsComparison.EqualsSign.Equals, new NumberLiteral("5") },
                     { EqualsComparison.EqualsSign.NotEquals, new NumberLiteral("5") }
                 }.Build(), "5 = 5 != 5");
 
         }
+
     }
 }

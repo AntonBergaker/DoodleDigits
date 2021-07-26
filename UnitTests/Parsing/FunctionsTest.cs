@@ -7,27 +7,27 @@ using DoodleDigits.Core;
 using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 
-namespace UnitTests.Ast {
+namespace UnitTests.Parsing {
     class FunctionsTest {
 
         [Test]
         public void TestSingleFunctions() {
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("sin", new[]
                 {
                     new NumberLiteral("5")
                 }), "sin(5)"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("sin", new[]
                 {
                     new NumberLiteral("5")
                 }), "sin 5"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("max", new[]
                 {
                     new NumberLiteral("1"),
@@ -37,16 +37,16 @@ namespace UnitTests.Ast {
         }
 
         [Test]
-        public void TestLogFunction() {
+        public void TestInlineParameterFunction() {
             
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("log", new []
                 {
                     new NumberLiteral("5")
                 }), "log(5)"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("log", new[]
                 {
                     new NumberLiteral("5"),
@@ -54,7 +54,7 @@ namespace UnitTests.Ast {
                 }), "log10 5"
             );
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("log", new Expression[]
                 {
                     new BinaryOperation(
@@ -67,12 +67,21 @@ namespace UnitTests.Ast {
             );
 
 
-            AstUtils.AssertEqual(
+            ParsingUtils.AssertEqual(
                 new Function("log", new Expression[]
                 {
                     new NumberLiteral("5"),
                     new Identifier("pi"),
                 }), "log_pi(5)"
+            );
+
+            ParsingUtils.AssertEqual(
+                new EqualsComparison(
+                    new Function("log", new Expression[] {new NumberLiteral("5"), new Identifier("e")}),
+                    EqualsComparison.EqualsSign.Equals,
+                    new Function("ln", new[] {new NumberLiteral("5")})
+                ),
+                "log_e(5) = ln(5)"
             );
         }
     }

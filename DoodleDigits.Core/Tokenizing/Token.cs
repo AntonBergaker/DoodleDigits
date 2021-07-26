@@ -40,8 +40,8 @@ namespace DoodleDigits.Core {
 
     public class Token : IEquatable<Token> {
 
-        public static Dictionary<string, TokenType> Tokens;
-        private static Dictionary<TokenType, string> tokenToString;
+        public static readonly Dictionary<string, TokenType> Tokens;
+        private static readonly Dictionary<TokenType, string> tokenToString;
 
         static Token() {
             var tokens = new (string token, TokenType type)[] {             
@@ -105,6 +105,18 @@ namespace DoodleDigits.Core {
         public string Content { get; }
         public TokenType Type { get; }
         public Range Position { get; }
+
+        public override bool Equals(object? other) {
+            if (other is not Token otherToken) {
+                return false;
+            }
+
+            return Equals(otherToken);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(Content, (int) Type, Position);
+        }
 
         public bool Equals(Token? other) {
             if (other == null) {

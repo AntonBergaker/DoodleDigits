@@ -4,8 +4,6 @@ namespace DoodleDigits.Core.Parsing.Ast {
     public class NumberLiteral : Expression {
         public string Number { get; }
 
-        public override Range FullPosition => Position;
-
         public NumberLiteral(string number, Range position) : base(position) {
             Number = number;
         }

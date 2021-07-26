@@ -44,10 +44,10 @@ namespace DoodleDigits.Core.Execution {
 
             if (root is ExpressionList list) {
                 foreach (Expression expression in list.Expressions) {
-                    results.Add(new ResultValue(Calculate(expression), expression.FullPosition));
+                    results.Add(new ResultValue(Calculate(expression), expression.Position));
                 }
             } else if (root is Expression ex) {
-                results.Add(new ResultValue(Calculate(ex), ex.FullPosition));
+                results.Add(new ResultValue(Calculate(ex), ex.Position));
             }
 
             results.AddRange(context.Results);

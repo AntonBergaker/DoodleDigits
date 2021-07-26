@@ -18,6 +18,18 @@ namespace DoodleDigits.Core {
         private readonly Executor executor;
         private readonly Parser parser;
 
+        /// <summary>
+        /// Creates a new calculator with the the functions found inside <see cref="FunctionLibrary"/> and constants from <see cref="ConstantLibrary"/>
+        /// </summary>
+        public Calculator() : this(FunctionLibrary.Functions, ConstantLibrary.Constants) {
+
+        }
+
+        /// <summary>
+        /// Creates a new calculator with the provided functions and constants
+        /// </summary>
+        /// <param name="functions">Functions to use</param>
+        /// <param name="constants">Constants to use</param>
         public Calculator(IEnumerable<FunctionData> functions, IEnumerable<Constant> constants) {
             var functionData = functions as FunctionData[] ?? functions.ToArray();
             executor = new Executor(functionData, constants);
