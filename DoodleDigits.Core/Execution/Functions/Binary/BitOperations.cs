@@ -93,7 +93,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                             )
                         );
                     }
-                    return new RealValue(RationalUtils.Floor(Rational.Pow(realLhs.Value, (int)realRhs.Value)));
+                    return new RealValue(RationalUtils.Floor(realLhs.Value * Rational.Pow(2, (int)realRhs.Value)));
                 }
             }
             return new UndefinedValue();

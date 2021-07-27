@@ -28,5 +28,15 @@ namespace UnitTests.Execution {
             ExecutionUtils.AssertEqual(6, "2 + -(-4)");
         }
 
+        [Test]
+        public void TestShift() {
+            ExecutionUtils.AssertEqual(10, "5 << 1");
+            ExecutionUtils.AssertEqual(5, "5 << 0");
+            ExecutionUtils.AssertEqual(20, "5 << 2");
+
+            ExecutionUtils.AssertEqual(25, "50 >> 1");
+            ExecutionUtils.AssertEqual(25, "50 << -1");
+            ExecutionUtils.AssertEqual(10, "5 >> -1");
+        }
     }
 }

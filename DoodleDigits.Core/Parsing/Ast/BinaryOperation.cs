@@ -56,8 +56,8 @@ namespace DoodleDigits.Core.Parsing.Ast
                     };
 
             TypeDictionary = new TwoWayDictionary<TokenType, OperationType>();
-            foreach (var op in ops) {
-                TypeDictionary.Add(op.tokenType, op.operationType);
+            foreach (var (tokenType, operationType, _) in ops) {
+                TypeDictionary.Add(tokenType, operationType);
             }
 
             OperationDictionary = ops.ToDictionary(x => x.operationType, x => x.function);

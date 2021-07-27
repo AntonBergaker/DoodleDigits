@@ -68,7 +68,7 @@ namespace UnitTests.Parsing {
                 ), "sin 5 * 5"
             );
 
-            // sin 5 = 5 => sin(5) = 5
+            // sin 5 = 5 <=> sin(5) = 5
             ParsingUtils.AssertEqual(
                 new EqualsComparison(
                     new Function("sin",
@@ -128,7 +128,7 @@ namespace UnitTests.Parsing {
                         new NumberLiteral("5"),
                         BinaryOperation.OperationType.Add, 
                         new NumberLiteral("5")
-                        ),
+                    ),
                     new NumberLiteral("2")
                 ), "log_2(5+5)"
             );
