@@ -14,25 +14,95 @@ namespace UnitTests.Parsing {
         public void TestSingleFunctions() {
 
             ParsingUtils.AssertEqual(
-                new Function("sin", new[]
-                {
+                new Function("sin", 
                     new NumberLiteral("5")
-                }), "sin(5)"
+                ), "sin(5)"
             );
 
             ParsingUtils.AssertEqual(
-                new Function("sin", new[]
-                {
-                    new NumberLiteral("5")
-                }), "sin 5"
+                new Function("sin",
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Add,
+                        new NumberLiteral("5")
+                    )
+                ), "sin(5+5)"
             );
 
             ParsingUtils.AssertEqual(
-                new Function("max", new[]
-                {
+                new Function("max",
                     new NumberLiteral("1"),
                     new NumberLiteral("2")
-                }), "max(1, 2)"
+                ), "max(1, 2)"
+            );
+        }
+
+        [Test]
+        public void TestNonParenthesisParsing() {
+            // sin 5 = sin(5)
+            ParsingUtils.AssertEqual(
+                new Function("sin",
+                    new NumberLiteral("5")
+                ),"sin 5"
+            );
+
+            // sin 5 + 5 = sin(5) + 5
+            ParsingUtils.AssertEqual(
+                new BinaryOperation(
+                    new Function("sin",
+                        new NumberLiteral("5")
+                    ),
+                    BinaryOperation.OperationType.Add,
+                    new NumberLiteral("5")
+                ), "sin 5 + 5"
+            );
+
+            // sin 5 * 5 = sin(5) * 5
+            ParsingUtils.AssertEqual(
+                new BinaryOperation(
+                    new Function("sin",
+                        new NumberLiteral("5")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new NumberLiteral("5")
+                ), "sin 5 * 5"
+            );
+
+            // sin 5 = 5 => sin(5) = 5
+            ParsingUtils.AssertEqual(
+                new EqualsComparison(
+                    new Function("sin",
+                        new NumberLiteral("5")
+                    ),
+                    EqualsComparison.EqualsSign.Equals,
+                    new NumberLiteral("5")
+                ), "sin 5 = 5"
+            );
+
+            // sin 2x = sin(2x)
+            ParsingUtils.AssertEqual(
+                new Function("sin",
+                    new BinaryOperation(
+                        new NumberLiteral("2"),
+                        BinaryOperation.OperationType.Multiply,
+                        new Identifier("x")
+                    )
+                ), "sin 2x"
+            );
+
+            // sin 6x + x = sin(6x) + x
+            ParsingUtils.AssertEqual(
+                new BinaryOperation(
+                    new Function("sin",
+                        new BinaryOperation(
+                            new NumberLiteral("6"),
+                            BinaryOperation.OperationType.Multiply,
+                            new Identifier("x")
+                        )
+                    ),
+                    BinaryOperation.OperationType.Add,
+                    new Identifier("x")
+                ), "sin 6x + x"
             );
         }
 
@@ -40,46 +110,47 @@ namespace UnitTests.Parsing {
         public void TestInlineParameterFunction() {
             
             ParsingUtils.AssertEqual(
-                new Function("log", new []
-                {
+                new Function("log", 
                     new NumberLiteral("5")
-                }), "log(5)"
+                ), "log(5)"
             );
 
             ParsingUtils.AssertEqual(
-                new Function("log", new[]
-                {
+                new Function("log", 
                     new NumberLiteral("5"),
-                    new NumberLiteral("10"),
-                }), "log10 5"
+                    new NumberLiteral("10")
+                ), "log10 5"
             );
 
             ParsingUtils.AssertEqual(
-                new Function("log", new Expression[]
-                {
+                new Function("log", 
                     new BinaryOperation(
                         new NumberLiteral("5"),
                         BinaryOperation.OperationType.Add, 
                         new NumberLiteral("5")
                         ),
-                    new NumberLiteral("2"),
-                }), "log_2(5+5)"
+                    new NumberLiteral("2")
+                ), "log_2(5+5)"
             );
 
 
             ParsingUtils.AssertEqual(
-                new Function("log", new Expression[]
-                {
+                new Function("log", 
                     new NumberLiteral("5"),
-                    new Identifier("pi"),
-                }), "log_pi(5)"
+                    new Identifier("pi")
+                ), "log_pi(5)"
             );
 
             ParsingUtils.AssertEqual(
                 new EqualsComparison(
-                    new Function("log", new Expression[] {new NumberLiteral("5"), new Identifier("e")}),
+                    new Function("log", 
+                        new NumberLiteral("5"), 
+                        new Identifier("e")
+                    ),
                     EqualsComparison.EqualsSign.Equals,
-                    new Function("ln", new[] {new NumberLiteral("5")})
+                    new Function("ln", 
+                        new NumberLiteral("5")
+                    )
                 ),
                 "log_e(5) = ln(5)"
             );

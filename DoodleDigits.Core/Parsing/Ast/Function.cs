@@ -15,6 +15,8 @@ namespace DoodleDigits.Core.Parsing.Ast {
 
         public Function(string identifier, IEnumerable<Expression> arguments) : this(identifier, arguments, 0..0) { }
 
+        public Function(string identifier, params Expression[] arguments) : this(identifier, (IEnumerable<Expression>)arguments) {}
+
 
         public override bool Equals(AstNode other) {
             if (other is not Function function) {

@@ -279,7 +279,7 @@ namespace DoodleDigits.Core.Parsing
                 return new Function(token.Content, parameters, start..end);
             }
 
-            Expression expression = ReadLiteral();
+            Expression expression = ReadImplicitMultiplication();
             end = expression.Position.End;
             return new Function(token.Content, new[] { expression }, start..end);
         }
@@ -302,7 +302,7 @@ namespace DoodleDigits.Core.Parsing
                 }
 
                 Expression @base = ReadLiteral(hotSwappedToken);
-                Expression argument = ReadLiteral();
+                Expression argument = ReadImplicitMultiplication();
 
                 function = new Function(functionName, new[] {argument, @base}, Utils.Join(token.Position, argument.Position));
                 return true;
