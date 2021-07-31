@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 using Rationals;
 
 namespace DoodleDigits.Core.Utilities {
@@ -32,6 +33,10 @@ namespace DoodleDigits.Core.Utilities {
                 throw new ArgumentOutOfRangeException(nameof(@base));
             }
 
+            if (input.StartsWith("-")) {
+                input = input[1..];
+                denominator = -denominator;
+            }
             bool passedDecimal = false;
 
             foreach (char @char in input) {
@@ -70,6 +75,69 @@ namespace DoodleDigits.Core.Utilities {
             rational = new Rational(numerator, denominator).CanonicalForm;
             return true;
         }
+
+        public static string ToDecimalString(this Rational value, int maximumDecimals) {
+            value = value.CanonicalForm;
+            StringBuilder sb = new StringBuilder(maximumDecimals);
+
+            if (value.Numerator < 0) {
+                sb.Append('-');
+            }
+
+            int magnitude = value.Magnitude;
+            if (magnitude < 0) {
+                sb.Append('0');
+                sb.Append('.');
+                sb.Append('0', -magnitude-1);
+            }
+
+            var enumerator = value.Digits;
+            int index = 0;
+            foreach (char c in enumerator) {
+                if (index == magnitude+1) {
+                    sb.Append(".");
+                }
+
+                sb.Append(c);
+
+                index++;
+            }
+
+            // Add missing 0s
+            int remaining0s = magnitude - (index-1);
+            if (remaining0s > 0) {
+                sb.Append('0', remaining0s);
+            }
+
+            return sb.ToString();
+
+        }
+
+        public static string ToScientificString(this Rational value, int decimals = 10) {
+            if (value.IsZero) {
+                return "0";
+            }
+
+            int magnitude = value.Magnitude;
+
+            StringBuilder sb = new StringBuilder(decimals);
+            var enumerator = value.Digits;
+            int index = 0;
+            foreach (char c in enumerator) {
+                if (index == 1) {
+                    sb.Append(".");
+                }
+                sb.Append(c);
+                index++;
+                if (index > decimals) {
+                    break;
+                }
+
+            }
+
+            return $"{sb}E{magnitude}";
+        }
+
 
         public static readonly Rational Half = new Rational(BigInteger.One, 2);
 

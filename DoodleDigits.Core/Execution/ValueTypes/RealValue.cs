@@ -35,53 +35,12 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             int numOfDigits = Math.Abs(magnitude);
 
             if (numOfDigits > maxNumberOfDigits) {
-                return ToScientificString(scientificDecimals);
+                return Value.ToScientificString(scientificDecimals);
             }
 
-            if (HasDecimal == false) {
-                return Value.ToString();
-            }
-
-            StringBuilder sb = new StringBuilder(numOfDigits);
-            var enumerator = Value.Digits;
-            int index = 0;
-            foreach (char c in enumerator) {
-                sb.Append(c);
-                if (index == magnitude) {
-                    sb.Append(".");
-                }
-
-                index++;
-            }
-
-
-            return sb.ToString();
+            return Value.ToDecimalString(scientificDecimals);
         }
 
-        public string ToScientificString(int decimals = 10) {
-            if (Value.IsZero) {
-                return "0";
-            }
-            
-            int magnitude = Value.Magnitude;
-
-            StringBuilder sb = new StringBuilder(decimals);
-            var enumerator = Value.Digits;
-            int index = 0;
-            foreach (char c in enumerator) {
-                sb.Append(c);
-                if (index == 0) {
-                    sb.Append(".");
-                }
-
-                index++;
-                if (index > decimals) {
-                    break;
-                }
-            }
-
-            return $"{sb}E{magnitude}";
-        }
         
         public override bool Equals(Value? other) {
             if (other is not RealValue rOther) {

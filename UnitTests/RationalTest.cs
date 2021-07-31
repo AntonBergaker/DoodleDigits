@@ -9,6 +9,37 @@ using Rationals;
 
 namespace UnitTests {
     class RationalTest {
+        private static readonly (string @string, Rational rational)[] TestData = {
+            ("1", 1),
+            ("2", 2),
+            ("10", 10),
+            ("1000000", 1000000),
+            ("-10", -10),
+            ("-1000000", -1000000),
+            ("0.0000001", (Rational)0.0000001M),
+            ("-0.0000001", -(Rational)0.0000001M),
+            ("0.00000012345", (Rational)0.00000012345M),
+            ("-0.00000012345", -(Rational)0.00000012345M)
+        };
+
+        [Test]
+        public void TestToDecimalString() {
+            foreach (var (expected, rational) in TestData) {
+                Assert.AreEqual(expected, rational.ToDecimalString(100));
+            }
+        }
+
+        [Test]
+        public void TestTryParse() {
+            foreach (var (input, expected) in TestData) {
+                if (RationalUtils.TryParse(input, out Rational actual, 10) == false) {
+                    Assert.Fail("Failed to parse " + input);
+                }
+                Assert.AreEqual(expected, actual);
+            }
+
+        }
+
 
         [Test]
         public void TestRound() {
