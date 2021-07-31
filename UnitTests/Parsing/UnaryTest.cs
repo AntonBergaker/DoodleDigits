@@ -13,9 +13,9 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestPreUnary() {
 
-            ParsingUtils.AssertEqual(new UnaryOperation(UnaryOperation.OperationType.Subtract, new NumberLiteral("5")), "-5");
+            ParsingTestUtils.AssertEqual(new UnaryOperation(UnaryOperation.OperationType.Subtract, new NumberLiteral("5")), "-5");
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new UnaryOperation(UnaryOperation.OperationType.Subtract,
                 new UnaryOperation(UnaryOperation.OperationType.Subtract, 
                     new NumberLiteral("5")
@@ -27,13 +27,13 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestPostUnary() {
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new UnaryOperation(UnaryOperation.OperationType.Factorial, 
                     new NumberLiteral("1")
                 ),
                 "1!");
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new UnaryOperation(UnaryOperation.OperationType.Factorial,
                     new UnaryOperation(UnaryOperation.OperationType.Factorial,
                         new NumberLiteral("1")
@@ -41,7 +41,7 @@ namespace UnitTests.Parsing {
                 ),
                 "1!!");
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new UnaryOperation(UnaryOperation.OperationType.Subtract,
                     new UnaryOperation(UnaryOperation.OperationType.Factorial,
                         new NumberLiteral("1")

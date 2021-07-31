@@ -17,5 +17,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         public override int GetHashCode() {
             return 0;
         }
+
+        public override Value Clone(bool? triviallyAchieved = null) {
+            return new UndefinedValue();
+        }
+
+        public UndefinedValue() : base(false) { }
     }
 }

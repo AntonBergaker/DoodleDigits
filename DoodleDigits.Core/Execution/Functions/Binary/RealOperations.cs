@@ -70,9 +70,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
 
             var result = ConvertToReal(ctrLhs, ctrRhs, context);
             if (result.rhs.Value == 0) {
-                return new TooBigValue(result.lhs.Value > 0
-                    ? TooBigValue.Sign.PositiveInfinity
-                    : TooBigValue.Sign.NegativeInfinity);
+                return new UndefinedValue();
             }
 
             return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm);
@@ -159,11 +157,17 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                 return new UndefinedValue();
             }
 
-            if (realValue1.HasDecimal == false &&
-                Rational.Abs((realValue0.Value.Magnitude + 1) * realValue1.Value) < 10000) {
+            if (realValue1.HasDecimal == false) {
+                if (Rational.Abs((realValue0.Value.Magnitude + 1) * realValue1.Value) > 10000) {
+                    return new TooBigValue(TooBigValue.Sign.Positive);
+                }
+
                 return new RealValue(Rational.Pow(realValue0.Value, (int) realValue1.Value));
             }
 
+            if (realValue0.Value > (Rational)decimal.MaxValue || realValue1.Value > (Rational)decimal.MaxValue) {
+                return new TooBigValue(TooBigValue.Sign.Positive);
+            }
             return Value.FromDouble(Math.Pow((double) realValue0.Value, (double) realValue1.Value));
         }
 

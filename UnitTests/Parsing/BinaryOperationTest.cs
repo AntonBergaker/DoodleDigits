@@ -13,20 +13,20 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestBasicSingles() {
 
-            ParsingUtils.AssertEqual(new BinaryOperation(
+            ParsingTestUtils.AssertEqual(new BinaryOperation(
                 new NumberLiteral("5"), 
                 BinaryOperation.OperationType.Add,
                 new NumberLiteral("5")
                 ), "5 + 5");
 
 
-            ParsingUtils.AssertEqual(new BinaryOperation(
+            ParsingTestUtils.AssertEqual(new BinaryOperation(
                 new NumberLiteral("5"),
                 BinaryOperation.OperationType.Multiply,
                 new NumberLiteral("5.125")
             ), "5 * 5.125");
 
-            ParsingUtils.AssertEqual(new BinaryOperation(
+            ParsingTestUtils.AssertEqual(new BinaryOperation(
                 new NumberLiteral("12345"),
                 BinaryOperation.OperationType.Subtract,
                 new NumberLiteral("5.125")
@@ -36,7 +36,7 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestArithmeticOrderOfOperations() {
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("1"),
@@ -48,7 +48,7 @@ namespace UnitTests.Parsing {
                     )
             , "1*2-3");
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("4"),
                     BinaryOperation.OperationType.Subtract,
@@ -61,7 +61,7 @@ namespace UnitTests.Parsing {
                 , "4-5*6");
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("10"),
@@ -79,7 +79,7 @@ namespace UnitTests.Parsing {
         public void TestBooleanOrderOfOperations() {
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new EqualsComparison(
                         new NumberLiteral("5"),
@@ -97,7 +97,7 @@ namespace UnitTests.Parsing {
 
             
             // This is becoming quite unreadable
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new EqualsComparison(
                         new NumberLiteral("5"),
@@ -125,7 +125,7 @@ namespace UnitTests.Parsing {
 
         [Test]
         public void TestImplicitMultiplication() {
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -137,7 +137,7 @@ namespace UnitTests.Parsing {
                     ), "(5 + 5)(5)"
                 );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -149,7 +149,7 @@ namespace UnitTests.Parsing {
                 ), "(5 + 5)5"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Add,
@@ -166,7 +166,7 @@ namespace UnitTests.Parsing {
             );
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
@@ -174,7 +174,7 @@ namespace UnitTests.Parsing {
                 ), "5x"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -187,7 +187,7 @@ namespace UnitTests.Parsing {
             );
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new EqualsComparison(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -201,7 +201,7 @@ namespace UnitTests.Parsing {
             );
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
@@ -214,7 +214,7 @@ namespace UnitTests.Parsing {
                 "(5)(5)^5"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -225,6 +225,18 @@ namespace UnitTests.Parsing {
                     new NumberLiteral("5")
                 ),
                 "5^5(5)"
+            );
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Multiply,
+                        new Identifier("a")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new NumberLiteral("5")
+                ), "5a(5)"
             );
         }
     }

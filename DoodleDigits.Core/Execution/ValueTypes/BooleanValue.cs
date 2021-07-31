@@ -6,7 +6,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
     public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
         public readonly bool Value;
 
-        public BooleanValue(bool value) {
+        public BooleanValue(bool value) : this(value, false) { }
+
+        public BooleanValue(bool value, bool triviallyAchieved) : base(triviallyAchieved) {
             Value = value;
         }
 
@@ -42,6 +44,10 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public override int GetHashCode() {
             return Value.GetHashCode();
+        }
+
+        public override Value Clone(bool? triviallyAchieved = null) {
+            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestNewlineSeparation() {
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new ExpressionList(
                     new () {
                         new NumberLiteral("5"),
@@ -21,7 +21,7 @@ namespace UnitTests.Parsing {
                 ), "5\n5"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new NumberLiteral("5"), 
                     BinaryOperation.OperationType.Add, 
@@ -29,13 +29,13 @@ namespace UnitTests.Parsing {
                 ), "5+\n5"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new NumberLiteral("5"), 
             "5\n");
 
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new ExpressionList(
                     new() {
                         new NumberLiteral("5"),
@@ -47,7 +47,7 @@ namespace UnitTests.Parsing {
 
         [Test]
         public void TestUnfinishedBinary() {
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new NumberLiteral("5"), 
             "5 + ");
         }

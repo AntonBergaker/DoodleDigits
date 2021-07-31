@@ -10,7 +10,7 @@ using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 
 namespace UnitTests.Parsing {
-    static class ParsingUtils {
+    static class ParsingTestUtils {
 
         public static void AssertEqual(AstNode expected, string input) {
             AstNode result = ParseToAst(input);

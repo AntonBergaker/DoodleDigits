@@ -5,6 +5,12 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
     public abstract class Value : IEquatable<Value> {
         public abstract override string ToString();
 
+        public bool TriviallyAchieved { get; }
+
+        protected Value(bool triviallyAchieved) {
+            TriviallyAchieved = triviallyAchieved;
+        }
+
         public static Value FromDouble(double value, bool resultOfInfinity = false) {
             if (double.IsPositiveInfinity(value)) {
                 return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.PositiveInfinity : TooBigValue.Sign.Positive);
@@ -31,5 +37,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public abstract override int GetHashCode();
+
+        public abstract Value Clone(bool? triviallyAchieved = null);
     }
 }

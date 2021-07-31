@@ -12,7 +12,7 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestPosition() {
 
-            Assert.AreEqual(0..5, ParsingUtils.ParseToAst("(1+1)").Position);
+            Assert.AreEqual(0..5, ParsingTestUtils.ParseToAst("(1+1)").Position);
 
         }
 

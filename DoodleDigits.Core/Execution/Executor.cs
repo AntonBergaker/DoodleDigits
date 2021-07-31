@@ -117,9 +117,27 @@ namespace DoodleDigits.Core.Execution {
         }
 
         private Value Calculate(NumberLiteral numberLiteral) {
+            string number = numberLiteral.Number;
+            int @base = 10;
+            bool trivial = true;
+            RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
 
-            if (RationalUtils.TryParse(numberLiteral.Number, out Rational result)) {
-                return new RealValue(result);
+            if (number.StartsWith("0x")) {
+                @base = 16;
+                number = number[2..];
+                trivial = false;
+                form = RealValue.PresentedForm.Hex;
+            }
+
+            if (number.StartsWith("0b")) {
+                @base = 2;
+                number = number[2..];
+                trivial = false;
+                form = RealValue.PresentedForm.Binary;
+            }
+
+            if (RationalUtils.TryParse(number, out Rational result, @base)) {
+                return new RealValue(result, trivial, form);
             }
 
             return new UndefinedValue();
@@ -163,7 +181,8 @@ namespace DoodleDigits.Core.Execution {
                         continue;
                     }
                     Identifier value = (Identifier)equalsComparison.Expressions[i];
-                    context.Variables[value.Value] = calculatedResult;
+
+                    context.Variables[value.Value] = calculatedResult.Clone(false);
                 }
 
                 return calculatedResult;

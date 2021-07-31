@@ -9,37 +9,41 @@
         Title="MainWindow" Height="450" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged">
     <Grid>
-        <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"
-                 TextBlock.LineHeight="37" 
-                 TextBlock.LineStackingStrategy="BlockLineHeight"/>
-        <ItemsControl ItemsSource="{Binding Path=Results}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                    <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
-                             FontFamily="Patrick Hand"
-                             FontSize="18"
-                             Foreground="DodgerBlue">
-                        <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="IsReadOnly" Value="True" />
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="TextWrapping" Value="Wrap" />
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding Path=Position.X}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Path=Position.Y}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <Grid>
+                <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"
+                     TextBlock.LineHeight="37" 
+                     TextBlock.LineStackingStrategy="BlockLineHeight"
+                     VerticalScrollBarVisibility="Disabled"/>
+                <ItemsControl ItemsSource="{Binding Path=Results}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                        <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
+                                 FontFamily="Resources/#Patrick Hand"
+                                 FontSize="18"
+                                 Foreground="DodgerBlue">
+                            <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="IsReadOnly" Value="True" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Margin" Value="{Binding Path=Margin}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>

@@ -12,11 +12,11 @@ namespace UnitTests.Execution {
 
         [Test]
         public void TestNumberParse() {
-            ExecutionUtils.AssertEqual((Rational)5.123, "5.123");
-            ExecutionUtils.AssertEqual(1_000_000, "1_000_000");
+            ExecutionTestUtils.AssertEqual((Rational)5.123, "5.123");
+            ExecutionTestUtils.AssertEqual(1_000_000, "1_000_000");
 
             string bigNumber = "100000000000000000000000";
-            ExecutionUtils.AssertEqual(new Rational(BigInteger.Parse(bigNumber)), bigNumber);
+            ExecutionTestUtils.AssertEqual(new Rational(BigInteger.Parse(bigNumber)), bigNumber);
         }
 
     }

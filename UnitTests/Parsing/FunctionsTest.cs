@@ -13,13 +13,13 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestSingleFunctions() {
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("sin", 
                     new NumberLiteral("5")
                 ), "sin(5)"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("sin",
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -29,7 +29,7 @@ namespace UnitTests.Parsing {
                 ), "sin(5+5)"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("max",
                     new NumberLiteral("1"),
                     new NumberLiteral("2")
@@ -40,14 +40,14 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestNonParenthesisParsing() {
             // sin 5 = sin(5)
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("sin",
                     new NumberLiteral("5")
                 ),"sin 5"
             );
 
             // sin 5 + 5 = sin(5) + 5
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new Function("sin",
                         new NumberLiteral("5")
@@ -58,7 +58,7 @@ namespace UnitTests.Parsing {
             );
 
             // sin 5 * 5 = sin(5) * 5
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new Function("sin",
                         new NumberLiteral("5")
@@ -69,7 +69,7 @@ namespace UnitTests.Parsing {
             );
 
             // sin 5 = 5 <=> sin(5) = 5
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new EqualsComparison(
                     new Function("sin",
                         new NumberLiteral("5")
@@ -80,7 +80,7 @@ namespace UnitTests.Parsing {
             );
 
             // sin 2x = sin(2x)
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("sin",
                     new BinaryOperation(
                         new NumberLiteral("2"),
@@ -91,7 +91,7 @@ namespace UnitTests.Parsing {
             );
 
             // sin 6x + x = sin(6x) + x
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
                     new Function("sin",
                         new BinaryOperation(
@@ -109,20 +109,20 @@ namespace UnitTests.Parsing {
         [Test]
         public void TestInlineParameterFunction() {
             
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("log", 
                     new NumberLiteral("5")
                 ), "log(5)"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("log", 
                     new NumberLiteral("5"),
                     new NumberLiteral("10")
                 ), "log10 5"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("log", 
                     new BinaryOperation(
                         new NumberLiteral("5"),
@@ -134,14 +134,14 @@ namespace UnitTests.Parsing {
             );
 
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new Function("log", 
                     new NumberLiteral("5"),
                     new Identifier("pi")
                 ), "log_pi(5)"
             );
 
-            ParsingUtils.AssertEqual(
+            ParsingTestUtils.AssertEqual(
                 new EqualsComparison(
                     new Function("log", 
                         new NumberLiteral("5"), 

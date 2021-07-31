@@ -12,9 +12,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public readonly Sign ValueSign;
 
-        public TooBigValue(Sign sign) {
+        public TooBigValue(Sign sign, bool triviallyAchieved) : base(triviallyAchieved) {
             ValueSign = sign;
         }
+
+        public TooBigValue(Sign sign) : this(sign, false) { }
 
         public override string ToString() {
             return "Very big";
@@ -30,6 +32,10 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public override int GetHashCode() {
             return ValueSign.GetHashCode();
+        }
+
+        public override Value Clone(bool? triviallyAchieved = null) {
+            return new TooBigValue(this.ValueSign, triviallyAchieved ?? TriviallyAchieved);
         }
 
         public bool IsPositive => ValueSign is Sign.Positive or Sign.PositiveInfinity;

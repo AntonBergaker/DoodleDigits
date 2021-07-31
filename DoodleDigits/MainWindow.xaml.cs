@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,8 +60,8 @@ namespace DoodleDigits {
                         this.Width = state.WindowDimensions.X;
                         this.Height = state.WindowDimensions.Y;
                         this.RichTextBox.Text = state.Content;
-                        var _0 = SetCaretIndexDelayed(state.CursorIndex, 0);
-                        var _1 = SetCaretIndexDelayed(state.CursorIndex, 100);
+                        _ = SetCaretIndexDelayed(state.CursorIndex, 0);
+                        _ = SetCaretIndexDelayed(state.CursorIndex, 100);
                     }
                 }
             }
@@ -71,25 +72,58 @@ namespace DoodleDigits {
             initialized = true;
         }
 
+        private DateTime lastSaveTime = DateTime.Now;
+        private bool startedSave = false;
+
+        private void AutoSave() {
+            if (startedSave) {
+                return;
+            }
+
+            TimeSpan diff = lastSaveTime + new TimeSpan(0, 0, 5) - DateTime.Now;
+
+            if (diff < new TimeSpan(0)) {
+                lastSaveTime = DateTime.Now;
+                _ = Save();
+            }
+            else {
+                startedSave = true;
+                Task.Delay(diff).ContinueWith(async o => {
+                    lastSaveTime = DateTime.Now;
+                    await Save();
+                    startedSave = false;
+                });
+            }
+        }
+
         private async Task Save() {
             if (initialized == false) {
                 return;
             }
 
-            string text = JsonSerializer.Serialize(new SerializedState(
-                this.RichTextBox.Text, 
-                this.RichTextBox.CaretIndex, 
-                new() {X = this.Width, Y = this.Height}));
+            try {
+                await this.Dispatcher.Invoke(async () => {
+                    string text = JsonSerializer.Serialize(new SerializedState(
+                        this.RichTextBox.Text,
+                        this.RichTextBox.CaretIndex,
+                        new() {X = this.Width, Y = this.Height}));
 
-            if (!Directory.Exists(saveDirectoryPath)) {
-                Directory.CreateDirectory(saveDirectoryPath);
+                    if (!Directory.Exists(saveDirectoryPath)) {
+                        Directory.CreateDirectory(saveDirectoryPath);
+                    }
+
+                    await File.WriteAllTextAsync(saveStatePath, text);
+                });
+            }
+            catch (Exception ex) {
+                MessageBox.Show("Error saving the calculator state!\n" + ex.ToString());
             }
 
-            await File.WriteAllTextAsync(saveStatePath, text);
+            Debug.WriteLine("Saved");
         }
 
         private async void RichTextBox_TextChanged(object sender, TextChangedEventArgs e) {
-            var saveTask = Save();
+            AutoSave();
 
             string text = RichTextBox.Text;
             var calculationResult = await RunExecution(text);
@@ -98,9 +132,6 @@ namespace DoodleDigits {
             foreach (Result result in calculationResult.Results) {
                 Results.Add(new ResultViewModel(result, measure));
             }
-
-            // To catch the error
-            await saveTask;
         }
 
         private Task<CalculationResult> RunExecution(string input) {

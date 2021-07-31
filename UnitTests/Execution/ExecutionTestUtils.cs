@@ -13,7 +13,7 @@ using NUnit.Framework;
 using Rationals;
 
 namespace UnitTests.Execution {
-    static class ExecutionUtils {
+    static class ExecutionTestUtils {
 
         public static void AssertEqual(Rational expected, string input) {
             AssertEqual(new RealValue(expected), input);
@@ -37,7 +37,7 @@ namespace UnitTests.Execution {
 
             ResultValue last = results.Results.OfType<ResultValue>().Last();
             
-            Assert.AreEqual(last.Value, expected);
+            Assert.AreEqual(expected, last.Value);
         }
     }
 }

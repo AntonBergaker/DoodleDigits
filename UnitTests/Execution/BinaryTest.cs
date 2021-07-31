@@ -11,32 +11,32 @@ namespace UnitTests.Execution {
         [Test]
         public void TestSingles() {
             
-            ExecutionUtils.AssertEqual(10, "5 + 5");
+            ExecutionTestUtils.AssertEqual(10, "5 + 5");
 
-            ExecutionUtils.AssertEqual(4, "2 ^ 2");
+            ExecutionTestUtils.AssertEqual(4, "2 ^ 2");
         }
 
         [Test]
         public void TestOrderOfOperations() {
-            ExecutionUtils.AssertEqual(7, "1 + 2 * 3");
+            ExecutionTestUtils.AssertEqual(7, "1 + 2 * 3");
         }
 
         [Test]
         public void TestUnary() {
-            ExecutionUtils.AssertEqual(-2, "2 + -4");
+            ExecutionTestUtils.AssertEqual(-2, "2 + -4");
 
-            ExecutionUtils.AssertEqual(6, "2 + -(-4)");
+            ExecutionTestUtils.AssertEqual(6, "2 + -(-4)");
         }
 
         [Test]
         public void TestShift() {
-            ExecutionUtils.AssertEqual(10, "5 << 1");
-            ExecutionUtils.AssertEqual(5, "5 << 0");
-            ExecutionUtils.AssertEqual(20, "5 << 2");
+            ExecutionTestUtils.AssertEqual(10, "5 << 1");
+            ExecutionTestUtils.AssertEqual(5, "5 << 0");
+            ExecutionTestUtils.AssertEqual(20, "5 << 2");
 
-            ExecutionUtils.AssertEqual(25, "50 >> 1");
-            ExecutionUtils.AssertEqual(25, "50 << -1");
-            ExecutionUtils.AssertEqual(10, "5 >> -1");
+            ExecutionTestUtils.AssertEqual(25, "50 >> 1");
+            ExecutionTestUtils.AssertEqual(25, "50 << -1");
+            ExecutionTestUtils.AssertEqual(10, "5 >> -1");
         }
     }
 }

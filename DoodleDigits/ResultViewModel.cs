@@ -14,26 +14,40 @@ namespace DoodleDigits {
 
         public Point Position { get; }
 
+        public Thickness Margin => new Thickness(Position.X, Position.Y, 0, 0);
+
         public ResultViewModel(Result result, LineMeasure measure) {
             switch (result) {
                 case ResultValue resultValue:
                     if (resultValue.Value is TooBigValue tooBig) {
                         Content = tooBig.ValueSign switch {
-                            TooBigValue.Sign.Positive => "Some huge number",
-                            TooBigValue.Sign.PositiveInfinity => "Infinity",
-                            TooBigValue.Sign.Negative => "Some negative huge number",
-                            TooBigValue.Sign.NegativeInfinity => "Negative infinity",
+                            TooBigValue.Sign.Positive => " → Some huge number",
+                            TooBigValue.Sign.PositiveInfinity => " = ∞",
+                            TooBigValue.Sign.Negative => " → Some negative huge number",
+                            TooBigValue.Sign.NegativeInfinity => " = -∞",
                             _ => throw new ArgumentOutOfRangeException()
                         };
                         break;
                     }
 
-                    if (resultValue.Value is UndefinedValue) {
-                        Content = "";
+                    if (resultValue.Value.TriviallyAchieved) {
                         break;
                     }
 
-                    Content = " = " + resultValue.Value.ToString();
+                    if (resultValue.Value is UndefinedValue) {
+                        break;
+                    }
+
+                    if (resultValue.Value is BooleanValue booleanValue) {
+                        Content = " → " + booleanValue.ToString();
+                        break;
+                    }
+
+                    if (resultValue.Value is RealValue realValue) {
+                        Content = " = " + realValue.ToString();
+                        break;
+                    }
+
                     break;
                 case ResultError resultError:
                     Content = resultError.Error;

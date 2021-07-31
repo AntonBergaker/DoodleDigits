@@ -117,7 +117,7 @@ namespace DoodleDigits.Core {
         private bool TryReadNumber() {
             int startIndex = index;
 
-            bool TryReadNumberInternal() {
+            bool TryReadNumberInternal(string allowedDigits) {
 
                 bool usedComma = false;
                 bool hasDigit = false;
@@ -144,7 +144,7 @@ namespace DoodleDigits.Core {
 
                         usedComma = true;
                     }
-                    else if (char.IsDigit(c)) {
+                    else if (allowedDigits.Contains(c)) {
                         hasDigit = true;
                     }
                     else if (c == '_') {
@@ -158,7 +158,23 @@ namespace DoodleDigits.Core {
                 return hasDigit;
             }
 
-            bool result = TryReadNumberInternal();
+            bool result = false;
+
+            if (PeekOne() == '0') {
+                string start = Peek(2);
+                if (start == "0x") {
+                    index += 2;
+                    result = TryReadNumberInternal("0123456789abcdefABCDEF");
+                } else if (start == "0b") {
+                    index += 2;
+                    result = TryReadNumberInternal("01");
+                }
+            }
+
+            if (result == false) {
+                result = TryReadNumberInternal("0123456789");
+            }
+
             if (result == false) {
                 index = startIndex;
             }
@@ -168,6 +184,10 @@ namespace DoodleDigits.Core {
 
         private char PeekOne() {
             return input[index];
+        }
+
+        private string Peek(int count) {
+            return input[index.. Math.Min(index + count, input.Length)];
         }
 
         private char ReadOne() {
