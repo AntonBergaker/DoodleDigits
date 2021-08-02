@@ -6,6 +6,22 @@ using Rationals;
 
 namespace DoodleDigits.Core.Utilities {
     public static class RationalUtils {
+
+        public static readonly Rational Pi = new Rational(
+            numerator:   BigInteger.Parse("31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"),
+            denominator: BigInteger.Parse("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+        );
+
+        public static readonly Rational Tau = new Rational(
+            numerator:   BigInteger.Parse("62831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359"),
+            denominator: BigInteger.Parse("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+        );
+
+        public static readonly Rational EulersNumber = new Rational(
+            numerator:   BigInteger.Parse("27182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274"),
+            denominator: BigInteger.Parse("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+        );
+
         private static readonly Dictionary<char, int> NumberCharacters = new() {
             {'0', 0},
             {'1', 1},
@@ -169,7 +185,7 @@ namespace DoodleDigits.Core.Utilities {
             var enumerator = value.Digits;
             int index = 0;
             foreach (char c in enumerator) {
-                if (index == magnitude+1) {
+                if (index > 0 && index == magnitude+1) {
                     sb.Append(".");
                 }
 

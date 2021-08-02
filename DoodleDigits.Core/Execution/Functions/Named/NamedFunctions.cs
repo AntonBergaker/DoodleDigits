@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Execution.Results;
@@ -79,14 +80,51 @@ namespace DoodleDigits.Core.Execution {
                 return new UndefinedValue();
             }
 
-            return Value.FromDouble(Math.Sin((double)ConvertArgumentToReal(convertibleToReal, 0, context).Value));
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            Rational rational = realValue.Value.Modulus(RationalUtils.Tau);
+
+            // Hardcoded to avoid double-unperfectness
+            if (rational == Rational.Zero) {
+                return new RealValue(Rational.Zero);
+            }
+            if (rational == RationalUtils.Tau / 4) {
+                return new RealValue(Rational.One);
+            }
+            if (rational == RationalUtils.Tau / 2) {
+                return new RealValue(Rational.Zero);
+            }
+            if (rational == 3 * RationalUtils.Tau / 4) {
+                return new RealValue(-Rational.One);
+            }
+
+            return Value.FromDouble(Math.Sin((double)rational));
         }
 
         public static Value Cos(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
             }
-            return Value.FromDouble(Math.Cos((double) ConvertArgumentToReal(convertibleToReal, 0, context).Value));
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            Rational rational = realValue.Value.Modulus(RationalUtils.Tau);
+
+            // Hardcoded to avoid double-unperfectness
+            if (rational == Rational.Zero) {
+                return new RealValue(Rational.One);
+            }
+            if (rational == RationalUtils.Tau / 4) {
+                return new RealValue(Rational.Zero);
+            }
+            if (rational == RationalUtils.Tau / 2) {
+                return new RealValue(-Rational.One);
+            }
+            if (rational == 3 * RationalUtils.Tau / 4) {
+                return new RealValue(Rational.Zero);
+            }
+
+            return Value.FromDouble(Math.Cos((double)rational));
         }
 
         public static Value Tan(Value value, ExecutionContext<Function> context) {

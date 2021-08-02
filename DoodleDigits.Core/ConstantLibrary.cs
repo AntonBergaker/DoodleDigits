@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core {
@@ -24,10 +25,12 @@ namespace DoodleDigits.Core {
         public static Constant[] Constants = {
             new("true", new BooleanValue(true)),
             new("false", new BooleanValue(false)),
-            new("pi", new RealValue((Rational) Math.PI)),
-            new("tau", new RealValue((Rational) Math.Tau)),
-            new("e", new RealValue((Rational) Math.E)),
+            new("pi", new RealValue(RationalUtils.Pi)),
+            new("π", new RealValue(RationalUtils.Pi)),
+            new("tau", new RealValue(RationalUtils.Tau)),
+            new("e", new RealValue(RationalUtils.EulersNumber)),
             new("infinity", new TooBigValue(TooBigValue.Sign.PositiveInfinity)),
+            new("∞", new TooBigValue(TooBigValue.Sign.PositiveInfinity)),
         };
 
 
