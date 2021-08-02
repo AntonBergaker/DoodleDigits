@@ -27,15 +27,15 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override string ToString() {
-            return ToString(100, 30);
+            return ToString(100, 30, "E");
         }
 
-        public string ToString(int maxNumberOfDigits, int scientificDecimals) {
+        public string ToString(int maxNumberOfDigits, int scientificDecimals, string exponentCharacter = "E") {
             int magnitude = Value.Magnitude;
             int numOfDigits = Math.Abs(magnitude);
 
             if (numOfDigits > maxNumberOfDigits) {
-                return Value.ToScientificString(scientificDecimals);
+                return Value.ToScientificString(scientificDecimals, exponentCharacter);
             }
 
             return Value.ToDecimalString(scientificDecimals);

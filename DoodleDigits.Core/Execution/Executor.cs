@@ -136,7 +136,7 @@ namespace DoodleDigits.Core.Execution {
                 form = RealValue.PresentedForm.Binary;
             }
 
-            if (RationalUtils.TryParse(number, out Rational result, @base)) {
+            if (RationalUtils.TryParse(number, out Rational result, 200, @base)) {
                 return new RealValue(result, trivial, form);
             }
 

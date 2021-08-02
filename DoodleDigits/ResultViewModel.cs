@@ -15,6 +15,7 @@ namespace DoodleDigits {
         public Point Position { get; }
 
         public Thickness Margin => new Thickness(Position.X, Position.Y, 0, 0);
+        
 
         public ResultViewModel(Result result, LineMeasure measure) {
             switch (result) {
@@ -44,7 +45,7 @@ namespace DoodleDigits {
                     }
 
                     if (resultValue.Value is RealValue realValue) {
-                        Content = " = " + realValue.ToString();
+                        Content = " = " + realValue.ToString(75, 30, "ᴇ");
                         break;
                     }
 

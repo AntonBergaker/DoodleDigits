@@ -126,20 +126,26 @@ namespace DoodleDigits {
             AutoSave();
 
             string text = RichTextBox.Text;
-            var calculationResult = await RunExecution(text);
-            LineMeasure measure = new LineMeasure(text, RichTextBox);
-            Results.Clear();
-            foreach (Result result in calculationResult.Results) {
-                Results.Add(new ResultViewModel(result, measure));
-            }
+            _ = RunExecution(text).ContinueWith(async task => {
+                var calculationResult = await task;
+                Dispatcher.Invoke(() => {
+                    LineMeasure measure = new LineMeasure(text, RichTextBox);
+                    Results.Clear();
+                    foreach (Result result in calculationResult.Results) {
+                        var vm = new ResultViewModel(result, measure);
+                        if (vm.Content != "") {
+                            Results.Add(vm);
+                        }
+                    }
+                });
+            });
         }
 
         private Task<CalculationResult> RunExecution(string input) {
-            var task = new Task<CalculationResult>(() => {
+            var task = Task.Run(() => {
                 Calculator calculator = new Calculator(FunctionLibrary.Functions, ConstantLibrary.Constants);
                 return calculator.Calculate(input);
             });
-            task.Start();
             return task;
         }
 

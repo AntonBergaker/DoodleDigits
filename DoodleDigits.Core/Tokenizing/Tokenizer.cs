@@ -173,6 +173,22 @@ namespace DoodleDigits.Core {
 
             if (result == false) {
                 result = TryReadNumberInternal("0123456789");
+                // See if it's in scientific notation
+                if (index < input.Length && input[index] is 'E' or 'e' or 'ᴇ') {
+                    int preScienceIndex = index;
+                    index++;
+                    if (index < input.Length && input[index] is '+' or '-') {
+                        index++;
+                    }
+
+                    if (index >= input.Length || char.IsNumber(input[index]) == false) {
+                        index = preScienceIndex;
+                    }
+                    else {
+                        JumpUntilFalse(x => char.IsNumber(x));
+                    }
+
+                }
             }
 
             if (result == false) {

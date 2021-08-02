@@ -21,6 +21,8 @@
                         <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
                                  FontFamily="Resources/#Patrick Hand"
                                  FontSize="18"
+                                 Height="24"
+                                 VerticalAlignment="Top"
                                  Foreground="DodgerBlue">
                             <TextBox.Style>
                                     <Style TargetType="TextBox">
