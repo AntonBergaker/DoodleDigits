@@ -25,6 +25,8 @@ namespace DoodleDigits.Core.Parsing
         private TokenReader reader;
         private readonly List<ParseError> errors;
 
+        private bool insideAbsoluteExpression;
+
         public Parser(IEnumerable<string> functionNames) {
             this.functionNames = functionNames.ToHashSet();
             tokenizer = new Tokenizer();
@@ -35,6 +37,8 @@ namespace DoodleDigits.Core.Parsing
 
         public ParseResult Parse(string input) {
             errors.Clear();
+            insideAbsoluteExpression = false;
+
             reader = new TokenReader(tokenizer.Tokenize(input));
 
             tokenizer.Tokenize(input);
@@ -154,8 +158,12 @@ namespace DoodleDigits.Core.Parsing
             Expression lhs = ReadPower();
 
             Token peek = reader.Peek(false);
-            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number) {
+            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number ||
+                   (peek.Type == TokenType.AbsoluteLine && insideAbsoluteExpression == false)) {
                 Expression rhs = ReadPower();
+                if (rhs is ErrorNode) {
+                    break;
+                }
                 lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply, rhs,
                     Utils.Join(lhs.Position, rhs.Position));
                 peek = reader.Peek();
@@ -202,6 +210,7 @@ namespace DoodleDigits.Core.Parsing
 
         private Expression ReadLiteral(Token token) {
             return token.Type switch {
+                TokenType.AbsoluteLine => ReadAbsoluteExpression(token),
                 TokenType.ParenthesisOpen => ReadParenthesis(token),
                 TokenType.Number => new NumberLiteral(token.Content, token.Position),
                 TokenType.Identifier => ReadIdentifier(token),
@@ -209,9 +218,36 @@ namespace DoodleDigits.Core.Parsing
             };
         }
 
+        // Assumes token is a |
+        private Expression ReadAbsoluteExpression(Token token) {
+            // Flag as being inside a absolute expression, and save the previous state
+            bool wasInsideAbsolute = insideAbsoluteExpression;
+            insideAbsoluteExpression = true;
+
+            Expression expression = ReadExpression();
+
+            insideAbsoluteExpression = wasInsideAbsolute;
+
+            // This should be a |
+            Token nextToken = reader.Read();
+            Index end = nextToken.Position.End;
+            if (nextToken.Type != TokenType.AbsoluteLine) {
+                errors.Add(new ParseError(nextToken.Position, "Unclosed absolute line"));
+                end = expression.Position.End;
+            }
+
+            return new Function("abs", new[] { expression}, token.Position.Start..end);
+        }
+
 
         private Expression ReadParenthesis(Token token) {
+            // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
+            bool wasInsideAbsolute = insideAbsoluteExpression;
+            insideAbsoluteExpression = true;
+
             Expression expression = ReadExpression();
+
+            insideAbsoluteExpression = wasInsideAbsolute;
 
             // This should be a parenthesis
             Token nextToken = reader.Read();
@@ -220,6 +256,8 @@ namespace DoodleDigits.Core.Parsing
                 errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
                 end = expression.Position.End;
             }
+
+
 
             expression.Position = token.Position.Start..end;
             return expression;
@@ -249,6 +287,10 @@ namespace DoodleDigits.Core.Parsing
             Index start = token.Position.Start;
             Index end = token.Position.End;
             if (next.Type == TokenType.ParenthesisOpen) {
+                // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
+                bool wasInsideAbsolute = insideAbsoluteExpression;
+                insideAbsoluteExpression = true;
+
                 List<Expression> parameters = new();
                 reader.Skip();
 
@@ -265,6 +307,9 @@ namespace DoodleDigits.Core.Parsing
                     if (peek.Type is TokenType.ParenthesisClose or TokenType.EndOfFile) {
                         reader.Skip();
                         end = peek.Position.End;
+
+                        // Go back to previous state
+                        insideAbsoluteExpression = wasInsideAbsolute;
                         break;
                     }
 

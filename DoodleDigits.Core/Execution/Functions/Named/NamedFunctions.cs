@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Execution.Functions.Binary;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
@@ -11,15 +12,9 @@ using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution {
-    public static class NamedFunctions {
-
-        private static RealValue ConvertArgumentToReal(IConvertibleToReal[] values, int index, ExecutionContext<Function> context) {
-            return ConvertArgumentToReal(values[index], index, context);
-        }
+    public static partial class NamedFunctions {
 
         private static RealValue ConvertArgumentToReal(IConvertibleToReal value, int index, ExecutionContext<Function> context) {
-            Function func = context.Node;
-
             return value.ConvertToReal(context, context.Node.Arguments[index].Position);
         }
         
@@ -75,83 +70,54 @@ namespace DoodleDigits.Core.Execution {
             return Value.FromDouble(Rational.Log(ConvertArgumentToReal(convertibleToReal, 0, context).Value));
         }
 
-        public static Value Sin(Value value, ExecutionContext<Function> context) {
-            if (value is not IConvertibleToReal convertibleToReal) {
+        public static Value GreatestCommonDivisor(Value value0, Value value1, ExecutionContext<Function> context) {
+            if (value0 is not IConvertibleToReal value0Ctr || value1 is not IConvertibleToReal value1Ctr) {
                 return new UndefinedValue();
             }
 
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+            var value0Real = ConvertArgumentToReal(value0Ctr, 0, context);
+            var value1Real = ConvertArgumentToReal(value1Ctr, 0, context);
+            value0Real = value0Real.Round(context, context.Node.Arguments[0].Position);
+            value1Real = value1Real.Round(context, context.Node.Arguments[1].Position);
 
-            Rational rational = realValue.Value.Modulus(RationalUtils.Tau);
-
-            // Hardcoded to avoid double-unperfectness
-            if (rational == Rational.Zero) {
-                return new RealValue(Rational.Zero);
-            }
-            if (rational == RationalUtils.Tau / 4) {
-                return new RealValue(Rational.One);
-            }
-            if (rational == RationalUtils.Tau / 2) {
-                return new RealValue(Rational.Zero);
-            }
-            if (rational == 3 * RationalUtils.Tau / 4) {
-                return new RealValue(-Rational.One);
-            }
-
-            return Value.FromDouble(Math.Sin((double)rational));
+            return new RealValue(BigInteger.GreatestCommonDivisor(value0Real.Value.Numerator, value1Real.Value.Numerator));
         }
 
-        public static Value Cos(Value value, ExecutionContext<Function> context) {
-            if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
-            }
-
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
-
-            Rational rational = realValue.Value.Modulus(RationalUtils.Tau);
-
-            // Hardcoded to avoid double-unperfectness
-            if (rational == Rational.Zero) {
-                return new RealValue(Rational.One);
-            }
-            if (rational == RationalUtils.Tau / 4) {
-                return new RealValue(Rational.Zero);
-            }
-            if (rational == RationalUtils.Tau / 2) {
-                return new RealValue(-Rational.One);
-            }
-            if (rational == 3 * RationalUtils.Tau / 4) {
-                return new RealValue(Rational.Zero);
-            }
-
-            return Value.FromDouble(Math.Cos((double)rational));
-        }
-
-        public static Value Tan(Value value, ExecutionContext<Function> context) {
-            if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
-            }
-            return Value.FromDouble(Math.Sin((double) ConvertArgumentToReal(convertibleToReal, 0, context).Value));
-        }
-
+        
         public static Value Sqrt(Value value, ExecutionContext<Function> context) {
-            if (value is TooBigValue {IsPositive: false}) {
+            if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
             }
 
-            if (value is TooBigValue) {
-                return value;
-            } 
+            return BinaryOperations.Power(ConvertArgumentToReal(convertibleToReal, 0, context), new RealValue(RationalUtils.Half));
+        }
+
+        public static Value Abs(Value value, ExecutionContext<Function> context) {
+            if (value is TooBigValue tbv) {
+                return tbv.IsPositive ? tbv : tbv.Negate();
+            }
 
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
-            if (realValue.Value < 0) {
+
+            return new RealValue(Rational.Abs(realValue.Value));
+        }
+
+        public static Value Sign(Value value, ExecutionContext<Function> context) {
+            if (value is TooBigValue tbv) {
+                return tbv.IsPositive ? new RealValue(Rational.One) : new RealValue(-1);
+            }
+
+            if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
             }
-            return Value.FromDouble( Math.Sqrt((double) realValue.Value));
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            return new RealValue(realValue.Value.Sign);
         }
 
         public static Value Max(Value[] values, ExecutionContext<Function> context) {

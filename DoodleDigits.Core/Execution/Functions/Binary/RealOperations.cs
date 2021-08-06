@@ -153,23 +153,32 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
 
             var (realValue0, realValue1) = ConvertToReal(ctrLhs, ctrRhs, context);
 
-            if (realValue0.Value == 0 && realValue1.Value < 0) {
+            return Power(realValue0, realValue1);
+        }
+
+        public static Value Power(RealValue lhs, RealValue rhs) {
+            if (lhs.Value.IsZero && rhs.Value < Rational.Zero) {
                 return new UndefinedValue();
             }
 
-            if (realValue1.HasDecimal == false) {
-                if (Rational.Abs((realValue0.Value.Magnitude + 1) * realValue1.Value) > 10000) {
+            if (rhs.Value.IsZero) {
+                return new RealValue(Rational.One);
+            }
+
+            if (rhs.HasDecimal == false) {
+                if (Rational.Abs((lhs.Value.Magnitude + 1) * rhs.Value) > 10000) {
                     return new TooBigValue(TooBigValue.Sign.Positive);
                 }
 
-                return new RealValue(Rational.Pow(realValue0.Value, (int) realValue1.Value));
+                return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value));
             }
 
-            if (realValue0.Value > (Rational)decimal.MaxValue || realValue1.Value > (Rational)decimal.MaxValue) {
+            if (lhs.Value > (Rational)decimal.MaxValue || rhs.Value > (Rational)decimal.MaxValue) {
                 return new TooBigValue(TooBigValue.Sign.Positive);
             }
-            return Value.FromDouble(Math.Pow((double) realValue0.Value, (double) realValue1.Value));
+            return Value.FromDouble(Math.Pow((double)lhs.Value, (double)rhs.Value));
         }
+
 
         public static Value LessThan(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {

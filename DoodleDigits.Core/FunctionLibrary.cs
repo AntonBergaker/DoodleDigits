@@ -59,6 +59,9 @@ namespace DoodleDigits.Core {
             new("floor", NamedFunctions.Floor),
             new(new [] {"ceil", "ceiling"}, NamedFunctions.Ceil),
             new("round", NamedFunctions.Round),
+            new(new [] {"gcd", "gcf"}, NamedFunctions.GreatestCommonDivisor),
+            new("sign", NamedFunctions.Sign),
+            new(new [] {"abs", "absolute"}, NamedFunctions.Abs),
         };
 
     }

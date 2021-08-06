@@ -1,45 +1,163 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Numerics;
 using System.Text;
 using Rationals;
 
 namespace DoodleDigits.Core.Utilities {
     public static class RationalUtils {
-
-        public static readonly Rational Pi = new Rational(
-            numerator:   BigInteger.Parse("31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"),
-            denominator: BigInteger.Parse("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-        );
-
-        public static readonly Rational Tau = new Rational(
-            numerator:   BigInteger.Parse("62831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359"),
-            denominator: BigInteger.Parse("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-        );
-
-        public static readonly Rational EulersNumber = new Rational(
-            numerator:   BigInteger.Parse("27182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274"),
-            denominator: BigInteger.Parse("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-        );
-
         private static readonly Dictionary<char, int> NumberCharacters = new() {
-            {'0', 0},
-            {'1', 1},
-            {'2', 2},
-            {'3', 3},
-            {'4', 4},
-            {'5', 5},
-            {'6', 6},
-            {'7', 7},
-            {'8', 8},
-            {'9', 9},
-            {'a', 10},
-            {'b', 11},
-            {'c', 12},
-            {'d', 13},
-            {'e', 14},
-            {'f', 15},
+            { '0', 0 },
+            { '1', 1 },
+            { '2', 2 },
+            { '3', 3 },
+            { '4', 4 },
+            { '5', 5 },
+            { '6', 6 },
+            { '7', 7 },
+            { '8', 8 },
+            { '9', 9 },
+            { 'a', 10 },
+            { 'b', 11 },
+            { 'c', 12 },
+            { 'd', 13 },
+            { 'e', 14 },
+            { 'f', 15 },
         };
+
+
+        public static readonly Rational Tau = RationalUtils.Parse(
+                "6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359");
+
+        public static readonly Rational Pi = Tau / 2;
+
+        public static readonly Rational EulersNumber = RationalUtils.Parse(
+                "2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274");
+
+        public static Rational Parse(string input, int maxMagnitude = 200, int @base = 10) {
+            if (TryParse(input, out Rational result, maxMagnitude, @base) == false) {
+                throw new FormatException("Input is not a parseable rational");
+            }
+            return result;
+        }
+
+
+        public static bool TryParse(string input, out Rational rational, int maxMagnitude = 200, int @base = 10) {
+            return TryParseInternal(input, out rational, maxMagnitude, @base, true);
+        }
+
+        public static bool TryParseInternal(string input, out Rational rational, int maxMagnitude, int @base, bool tryScientific) {
+            if (@base == 10 && TryParseScientific(input, maxMagnitude, out Rational scientificRational)) {
+                rational = scientificRational;
+                return true;
+            }
+
+            // Set rational so we don't have to do it at every early return
+            rational = default;
+
+            // For base 16 and base 10, we can use BigInteger parsing for a good speed increase
+            if (@base == 16 || @base == 10) {
+                StringBuilder numeratorString = new();
+                int denominatorMagnitude = 1;
+                bool passedDecimal = false;
+
+                if (input.StartsWith("-")) {
+                    input = input[1..];
+                    numeratorString.Append('-');
+                }
+
+                foreach (char @char in input) {
+                    if (@char == '_' || @char == ' ') {
+                        continue;
+                    }
+
+                    if (@char == '.') {
+                        if (passedDecimal) {
+                            return false;
+                        }
+
+                        passedDecimal = true;
+                        continue;
+                    }
+
+                    numeratorString.Append(@char);
+                    if (passedDecimal) {
+                        denominatorMagnitude += 1;
+                    }
+
+                    if (NumberCharacters.TryGetValue(@char, out int value)) {
+                        if (value >= @base) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+
+                if (BigInteger.TryParse(numeratorString.ToString(), @base == 16 ? NumberStyles.HexNumber : NumberStyles.Number, default, out BigInteger numerator) == false) {
+                    return false;
+                }
+
+                BigInteger denominator = denominatorMagnitude == 1
+                    ? BigInteger.One
+                    : BigInteger.Pow(@base, denominatorMagnitude-1);
+
+                rational = new Rational(numerator, denominator).CanonicalForm;
+
+                return true;
+            }
+            else {
+                BigInteger numerator = 0;
+                BigInteger denominator = 1;
+
+                if (@base <= 1 || @base > 16) {
+                    throw new ArgumentOutOfRangeException(nameof(@base));
+                }
+
+                if (input.StartsWith("-")) {
+                    input = input[1..];
+                    denominator = -denominator;
+                }
+
+                bool passedDecimal = false;
+
+                foreach (char @char in input) {
+                    if (@char == '_' || @char == ' ') {
+                        continue;
+                    }
+
+                    if (@char == '.') {
+                        if (passedDecimal) {
+                            return false;
+                        }
+
+                        passedDecimal = true;
+                        continue;
+                    }
+
+                    numerator *= @base;
+                    if (passedDecimal) {
+                        denominator *= @base;
+                    }
+
+                    if (NumberCharacters.TryGetValue(@char, out int value)) {
+                        if (value >= @base) {
+                            return false;
+                        }
+
+                        numerator += value;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+
+                rational = new Rational(numerator, denominator).CanonicalForm;
+                return true;
+            }
+        }
+
 
 
         private static bool TryParseScientific(string input, int maxMagnitude, out Rational rational) {
@@ -82,12 +200,12 @@ namespace DoodleDigits.Core.Utilities {
                 return false;
             }
 
-            if (TryParseInternal(input[.. (eIndex)], out Rational preEValue, 100, 10, false) == false) {
+            if (TryParseInternal(input[..(eIndex)], out Rational preEValue, 100, 10, false) == false) {
                 rational = default;
                 return false;
             }
 
-            if (int.TryParse(input[(eIndex+1)..], out int postEValue) == false) {
+            if (int.TryParse(input[(eIndex + 1)..], out int postEValue) == false) {
                 rational = default;
                 return false;
             }
@@ -99,71 +217,10 @@ namespace DoodleDigits.Core.Utilities {
 
             if (postEValue < 0) {
                 rational = preEValue * new Rational(1, BigInteger.Pow(10, -postEValue));
-            }
-            else {
+            } else {
                 rational = preEValue * BigInteger.Pow(10, postEValue);
             }
 
-            return true;
-        }
-
-        public static bool TryParse(string input, out Rational rational, int maxMagnitude = 200, int @base = 10) {
-            return TryParseInternal(input, out rational, maxMagnitude, @base, true);
-        }
-
-        public static bool TryParseInternal(string input, out Rational rational, int maxMagnitude, int @base, bool tryScientific) {
-            if (@base == 10 && TryParseScientific(input, maxMagnitude, out Rational scientificRational)) {
-                rational = scientificRational;
-                return true;
-            }
-
-            BigInteger numerator = 0;
-            BigInteger denominator = 1;
-
-            if (@base <= 1 || @base > 16) {
-                throw new ArgumentOutOfRangeException(nameof(@base));
-            }
-
-            if (input.StartsWith("-")) {
-                input = input[1..];
-                denominator = -denominator;
-            }
-            bool passedDecimal = false;
-
-            foreach (char @char in input) {
-                if (@char == '_' || @char == ' ') {
-                    continue;
-                }
-
-                if (@char == '.') {
-                    if (passedDecimal) {
-                        rational = default;
-                        return false;
-                    }
-
-                    passedDecimal = true;
-                    continue;
-                }
-
-                numerator *= @base;
-                if (passedDecimal) {
-                    denominator *= @base;
-                }
-
-                if (NumberCharacters.TryGetValue(@char, out int value)) {
-                    if (value >= @base) {
-                        rational = default;
-                        return false;
-                    }
-                    numerator += value;
-                }
-                else {
-                    rational = default;
-                    return false;
-                }
-            }
-
-            rational = new Rational(numerator, denominator).CanonicalForm;
             return true;
         }
 
