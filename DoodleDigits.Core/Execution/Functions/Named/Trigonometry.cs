@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core.Execution.ValueTypes;
@@ -77,9 +78,53 @@ namespace DoodleDigits.Core.Execution {
                 return new UndefinedValue();
             }
 
-            return Value.FromDouble(Math.Sin((double)ConvertArgumentToReal(convertibleToReal, 0, context).Value));
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            Rational rational = (realValue.Value + TauFourth).Modulus(RationalUtils.Pi) - TauFourth;
+
+            // Hardcoded to avoid double-unperfectness
+            if (rational == Rational.Zero) {
+                return new RealValue(Rational.Zero);
+            }
+            if (rational == TauFourth) {
+                return new UndefinedValue();
+            }
+            if (rational == -TauFourth) {
+                return new UndefinedValue();
+            }
+
+            return Value.FromDouble(Math.Tan((double)rational));
         }
 
+        public static Value ArcSin(Value value, ExecutionContext<Function> context) {
+            if (value is not IConvertibleToReal convertibleToReal) {
+                return new UndefinedValue();
+            }
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            return Value.FromDouble(Math.Asin((double)realValue.Value));
+        }
+
+        public static Value ArcCos(Value value, ExecutionContext<Function> context) {
+            if (value is not IConvertibleToReal convertibleToReal) {
+                return new UndefinedValue();
+            }
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            return Value.FromDouble(Math.Acos((double)realValue.Value));
+        }
+
+        public static Value ArcTan(Value value, ExecutionContext<Function> context) {
+            if (value is not IConvertibleToReal convertibleToReal) {
+                return new UndefinedValue();
+            }
+
+            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+            return Value.FromDouble(Math.Atan((double)realValue.Value));
+        }
 
     }
 }

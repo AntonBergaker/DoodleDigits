@@ -23,7 +23,7 @@
                          TextBlock.LineHeight="37" 
                          TextBlock.LineStackingStrategy="BlockLineHeight"
                          VerticalScrollBarVisibility="Disabled"/>
-                <ItemsControl ItemsSource="{Binding Path=Results}">
+                <ItemsControl ItemsSource="{Binding Path=ResultPresenter.Results}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"

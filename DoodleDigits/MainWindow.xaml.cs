@@ -1,24 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using DoodleDigits.Core;
-using DoodleDigits.Core.Execution.Results;
-using Path = System.IO.Path;
 
 namespace DoodleDigits {
     /// <summary>
@@ -26,8 +13,9 @@ namespace DoodleDigits {
     /// </summary>
     public partial class MainWindow : Window {
 
-        public ObservableCollection<ResultViewModel> Results { get; } = new();
-        
+        public ResultPresenter ResultPresenter { get; } = new();
+
+
         private readonly string saveDirectoryPath;
 
         private readonly string saveStatePath;
@@ -140,15 +128,8 @@ namespace DoodleDigits {
             string text = RichTextBox.Text;
             TextMeasure measure = new TextMeasure(text, RichTextBox);
             var calculationResult = await RunExecution(text);
-            Dispatcher.Invoke(() => {
-                Results.Clear();
-                foreach (Result result in calculationResult.Results) {
-                    var vm = new ResultViewModel(result, measure);
-                    if (vm.Content != "") {
-                        Results.Add(vm);
-                    }
-                }
-            });
+
+            ResultPresenter.ParseResults(measure, calculationResult);
         }
 
         private Task<CalculationResult> RunExecution(string input) {

@@ -13,7 +13,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override string ToString() {
-            return Value.ToString(CultureInfo.InvariantCulture);
+            return Value ? "true" : "false";
         }
 
         public RealValue ConvertToReal() {
