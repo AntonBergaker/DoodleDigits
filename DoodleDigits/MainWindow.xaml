@@ -18,11 +18,49 @@
                         </ImageBrush.Transform>
                     </ImageBrush>
                 </Grid.Background>
-                <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"
+                <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBoxTextChanged" AcceptsReturn="True" TextWrapping="Wrap"
                          Background="Transparent"
                          TextBlock.LineHeight="37" 
                          TextBlock.LineStackingStrategy="BlockLineHeight"
-                         VerticalScrollBarVisibility="Disabled"/>
+                         VerticalScrollBarVisibility="Disabled">
+                    <TextBox.ContextMenu>
+                        <ContextMenu 
+                            TextBlock.LineHeight="12"
+                        >
+                            <MenuItem 
+                                Header="Cut"
+                                Command="Cut"
+                            />
+                            <MenuItem 
+                                Header="Copy" 
+                                Command="Copy"
+                            />
+                            <MenuItem 
+                                Header="Paste"
+                                Command="Paste"
+                            />
+                            <Separator/>
+                            <MenuItem 
+                                Header="Select All"
+                                Command="SelectAll"
+                            />
+                            <Separator/>
+                            <MenuItem 
+                                Header="Undo"
+                                Command="Undo"
+                            />
+                            <MenuItem 
+                                Header="Redo"
+                                Command="Redo" 
+                            />
+                            <Separator/>
+                            <MenuItem 
+                                Header="Clear All Text"
+                                Click="ClickClear" 
+                            />
+                        </ContextMenu>
+                    </TextBox.ContextMenu>
+                </TextBox>
                 <ItemsControl ItemsSource="{Binding Path=ResultPresenter.Results}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>

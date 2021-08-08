@@ -118,7 +118,7 @@ namespace DoodleDigits {
         }
         
 
-        private async void RichTextBox_TextChanged(object sender, TextChangedEventArgs e) {
+        private async void RichTextBoxTextChanged(object sender, TextChangedEventArgs e) {
             AutoSave();
             if (initialized == false) {
                 // Delay for a little bit because of wpf wonkyness
@@ -149,5 +149,9 @@ namespace DoodleDigits {
                 Save().Wait();
             }
         }
+
+
+        void ClickClear(object sender, RoutedEventArgs args) { RichTextBox.Clear(); }
+
     }
 }
