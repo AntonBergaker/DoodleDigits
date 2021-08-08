@@ -62,9 +62,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return new BooleanValue(Value > new Rational(1, 2));
         }
 
-        public BooleanValue ConvertToBool(ExecutionContext context, Range position) {
+        public BooleanValue ConvertToBool(ExecutionContext context) {
             BooleanValue newValue = ConvertToBool();
-            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, context.Position));
             return newValue;
         }
 
@@ -86,7 +86,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return this;
         }
 
-        public RealValue ConvertToReal(ExecutionContext context, Range position) {
+        public RealValue ConvertToReal(ExecutionContext context) {
             return this;
         }
     }

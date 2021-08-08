@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\grid.png" />
+    <None Remove="Resources\GridPaper.png" />
     <None Remove="Resources\PatrickHand-Regular.ttf" />
   </ItemGroup>
 
@@ -17,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\grid.png" />
     <Resource Include="Resources\PatrickHand-Regular.ttf" />
   </ItemGroup>
 

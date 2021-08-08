@@ -81,15 +81,15 @@ namespace UnitTests.Parsing {
 
             ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
-                    new EqualsComparison(
+                    new Comparison(
                         new NumberLiteral("5"),
-                        EqualsComparison.EqualsSign.Equals,
+                        Comparison.ComparisonType.Equals,
                         new NumberLiteral("5")
                     ),
                     BinaryOperation.OperationType.BooleanAnd,
-                    new EqualsComparison(
+                    new Comparison(
                         new NumberLiteral("5"),
-                        EqualsComparison.EqualsSign.NotEquals,
+                        Comparison.ComparisonType.NotEquals,
                         new NumberLiteral("5")
                     )
                 )
@@ -99,9 +99,9 @@ namespace UnitTests.Parsing {
             // This is becoming quite unreadable
             ParsingTestUtils.AssertEqual(
                 new BinaryOperation(
-                    new EqualsComparison(
+                    new Comparison(
                         new NumberLiteral("5"),
-                        EqualsComparison.EqualsSign.Equals,
+                        Comparison.ComparisonType.Equals,
                         new BinaryOperation(
                             new NumberLiteral("5"),
                             BinaryOperation.OperationType.Add,
@@ -109,13 +109,13 @@ namespace UnitTests.Parsing {
                         )
                     ),
                     BinaryOperation.OperationType.BooleanAnd,
-                    new EqualsComparison(
+                    new Comparison(
                         new BinaryOperation(
                             new NumberLiteral("5"),
                             BinaryOperation.OperationType.Add,
                             new NumberLiteral("5")
                         ),
-                        EqualsComparison.EqualsSign.NotEquals,
+                        Comparison.ComparisonType.NotEquals,
                         new NumberLiteral("5")
                     )
                 )
@@ -188,13 +188,13 @@ namespace UnitTests.Parsing {
 
 
             ParsingTestUtils.AssertEqual(
-                new EqualsComparison(
+                new Comparison(
                     new BinaryOperation(
                         new NumberLiteral("5"),
                         BinaryOperation.OperationType.Multiply,
                         new NumberLiteral("5")
                     ),
-                    EqualsComparison.EqualsSign.Equals,
+                    Comparison.ComparisonType.Equals,
                     new NumberLiteral("5")
                 ),
                 "5(5) = 5"

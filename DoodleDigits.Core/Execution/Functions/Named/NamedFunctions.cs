@@ -15,7 +15,7 @@ namespace DoodleDigits.Core.Execution {
     public static partial class NamedFunctions {
 
         private static RealValue ConvertArgumentToReal(IConvertibleToReal value, int index, ExecutionContext<Function> context) {
-            return value.ConvertToReal(context, context.Node.Arguments[index].Position);
+            return value.ConvertToReal(context.ForNode(context.Node.Arguments[index]));
         }
         
 

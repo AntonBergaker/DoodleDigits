@@ -11,9 +11,11 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
 
     public static partial class BinaryOperations {
         private static (BooleanValue lhs, BooleanValue rhs) ConvertToBool(IConvertibleToBool lhs, IConvertibleToBool rhs, ExecutionContext<BinaryOperation> context) {
-            BinaryOperation bo = context.Node;
 
-            return (lhs.ConvertToBool(context, bo.Lhs.Position), rhs.ConvertToBool(context, bo.Rhs.Position));
+            return (
+                lhs.ConvertToBool(context.ForNode(context.Node.Lhs)),
+                rhs.ConvertToBool(context.ForNode(context.Node.Rhs))
+            );
         }
 
         public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {

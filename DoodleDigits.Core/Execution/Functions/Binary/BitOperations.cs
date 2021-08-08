@@ -104,7 +104,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                 return ShiftLeft(lhs, tbvRhs.Negate(), context);
             }
             if (rhs is IConvertibleToReal ctrRhs) {
-                var realRhs = ctrRhs.ConvertToReal(context, context.Node.Rhs.Position);
+                var realRhs = ctrRhs.ConvertToReal(context.ForNode(context.Node.Rhs));
                 return ShiftLeft(lhs, new RealValue(-realRhs.Value), context);
             }
 

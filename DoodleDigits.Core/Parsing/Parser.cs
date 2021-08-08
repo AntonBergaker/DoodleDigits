@@ -75,26 +75,37 @@ namespace DoodleDigits.Core.Parsing
         }
 
         private Expression ReadExpression() {
-            return ReadPreEqualsBinary();
+            return ReadBinaryBooleanOr();
         }
 
-        private Expression ReadEquals() {
-            Func<Expression> next = ReadPostEqualsBinary;
+        private Expression ReadBinaryBooleanOr() => GenericReadBinary(TokenType.BooleanOr, ReadBinaryBooleanXor);
+        private Expression ReadBinaryBooleanXor() => GenericReadBinary(TokenType.BooleanXor, ReadBinaryBooleanAnd);
+        private Expression ReadBinaryBooleanAnd() => GenericReadBinary(TokenType.BooleanAnd, ReadBinaryBitwiseOr);
+        private Expression ReadBinaryBitwiseOr() => GenericReadBinary(TokenType.BooleanOr, ReadBinaryBitwiseXor);
+        private Expression ReadBinaryBitwiseXor() => GenericReadBinary(TokenType.BooleanXor, ReadBinaryBitwiseAnd);
+        private Expression ReadBinaryBitwiseAnd() => GenericReadBinary(TokenType.BooleanAnd, ReadComparison);
+
+        private static readonly TokenType[] ComparisonTokens = new[] {
+            TokenType.Equals, TokenType.NotEquals, TokenType.GreaterOrEqualTo, TokenType.GreaterThan,
+            TokenType.LessThan, TokenType.LessOrEqualTo
+        };
+        private Expression ReadComparison() {
+            Func<Expression> next = ReadBinaryShifting;
 
             Expression lhs = next();
 
             Token nextToken = reader.Peek(false);
-            if (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
-                EqualsComparison.Builder builder = new(lhs, Utils.Join(nextToken.Position, lhs.Position));
+            if (ComparisonTokens.Contains(nextToken.Type)) {
+                Comparison.Builder builder = new(lhs, Utils.Join(nextToken.Position, lhs.Position));
 
-                while (nextToken.Type is TokenType.Equals or TokenType.NotEquals) {
+                while (ComparisonTokens.Contains(nextToken.Type)) {
                     reader.Skip(false);
                     Expression rhs = next();
                     if (rhs is ErrorNode) {
                         break;
                     }
 
-                    builder.Add(EqualsComparison.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(nextToken.Position, rhs.Position));
+                    builder.Add(Comparison.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(nextToken.Position, rhs.Position));
                     nextToken = reader.Peek();
                 }
 
@@ -104,55 +115,9 @@ namespace DoodleDigits.Core.Parsing
             return lhs;
         }
 
-
-        private static readonly TokenType[][] preEqualsBinaryOperationOrder = {
-            new[] {TokenType.BitwiseAnd},
-            new[] {TokenType.BitwiseXor},
-            new[] {TokenType.BitwiseOr},
-            new[] {TokenType.BooleanAnd},
-            new[] {TokenType.BooleanXor},
-            new[] {TokenType.BooleanOr},
-        };
-        private Expression ReadPreEqualsBinary() {
-            return GenericReadBinary(preEqualsBinaryOperationOrder, preEqualsBinaryOperationOrder.Length-1, ReadEquals);
-        }
-
-
-        private static readonly TokenType[][] postEqualsBinaryOperationOrder = {
-            new[] {TokenType.Multiply, TokenType.Divide, TokenType.Modulus},
-            new[] {TokenType.Add, TokenType.Subtract},
-            new[] {TokenType.ShiftLeft, TokenType.ShiftRight},
-            new[] {TokenType.GreaterOrEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.LessOrEqualTo},
-        };
-
-        private Expression ReadPostEqualsBinary() {
-            return GenericReadBinary(postEqualsBinaryOperationOrder, postEqualsBinaryOperationOrder.Length - 1, ReadImplicitMultiplication);
-        }
-
-
-        private Expression GenericReadBinary(TokenType[][] operations, int depth, Func<Expression> baseNext) {
-            if (depth == -1) {
-                return baseNext();
-            }
-            Expression Next() => this.GenericReadBinary(operations, depth - 1, baseNext);
-
-            Expression lhs = Next();
-
-            TokenType[] operatorsTop = operations[depth];
-
-            Token nextToken = reader.Peek(false);
-            while (operatorsTop.Contains(nextToken.Type)) {
-                reader.Skip(false);
-                Expression rhs = Next();
-                if (rhs is ErrorNode) {
-                    break;
-                }
-                lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(lhs.Position, nextToken.Position, rhs.Position));
-                nextToken = reader.Peek(false);
-            }
-
-            return lhs;
-        }
+        private Expression ReadBinaryShifting() => GenericReadBinary(new[] { TokenType.ShiftLeft, TokenType.ShiftRight }, ReadBinaryAddSubtract);
+        private Expression ReadBinaryAddSubtract() => GenericReadBinary(new[] { TokenType.Add, TokenType.Subtract }, ReadMultiplyDivide);
+        private Expression ReadMultiplyDivide() => GenericReadBinary(new[] { TokenType.Multiply, TokenType.Divide, TokenType.Modulus }, ReadImplicitMultiplication);
 
         private Expression ReadImplicitMultiplication() {
             Expression lhs = ReadPower();
@@ -166,15 +131,33 @@ namespace DoodleDigits.Core.Parsing
                 }
                 lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply, rhs,
                     Utils.Join(lhs.Position, rhs.Position));
-                peek = reader.Peek();
+                peek = reader.Peek(false);
             }
 
             return lhs;
         }
+        
+        private Expression ReadPower() => GenericReadBinary(TokenType.Power, ReadPreUnary);
 
-        private static readonly TokenType[][] powerOperationOrder = { new[] { TokenType.Power } };
-        private Expression ReadPower() {
-            return GenericReadBinary(powerOperationOrder, powerOperationOrder.Length - 1, ReadPreUnary);
+        private Expression GenericReadBinary(TokenType operation, Func<Expression> next) {
+            return GenericReadBinary(new[] {operation}, next);
+        }
+
+        private Expression GenericReadBinary(TokenType[] operations, Func<Expression> next) {
+            Expression lhs = next();
+
+            Token nextToken = reader.Peek(false);
+            while (operations.Contains(nextToken.Type)) {
+                reader.Skip(false);
+                Expression rhs = next();
+                if (rhs is ErrorNode) {
+                    break;
+                }
+                lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(lhs.Position, nextToken.Position, rhs.Position));
+                nextToken = reader.Peek(false);
+            }
+
+            return lhs;
         }
 
 
@@ -220,7 +203,7 @@ namespace DoodleDigits.Core.Parsing
 
         // Assumes token is a |
         private Expression ReadAbsoluteExpression(Token token) {
-            // Flag as being inside a absolute expression, and save the previous state
+            // Flag as being inside an absolute expression, and save the previous state
             bool wasInsideAbsolute = insideAbsoluteExpression;
             insideAbsoluteExpression = true;
 
@@ -243,7 +226,7 @@ namespace DoodleDigits.Core.Parsing
         private Expression ReadParenthesis(Token token) {
             // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
             bool wasInsideAbsolute = insideAbsoluteExpression;
-            insideAbsoluteExpression = true;
+            insideAbsoluteExpression = false;
 
             Expression expression = ReadExpression();
 
@@ -289,7 +272,7 @@ namespace DoodleDigits.Core.Parsing
             if (next.Type == TokenType.ParenthesisOpen) {
                 // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
                 bool wasInsideAbsolute = insideAbsoluteExpression;
-                insideAbsoluteExpression = true;
+                insideAbsoluteExpression = false;
 
                 List<Expression> parameters = new();
                 reader.Skip();

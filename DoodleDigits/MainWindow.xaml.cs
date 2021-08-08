@@ -33,12 +33,12 @@ namespace DoodleDigits {
         private readonly string saveStatePath;
 
         private bool initialized = false;
+        // If over 0, will block saving
+        private int blockSaving = 0;
 
-        private async Task SetCaretIndexDelayed(int index, int milliseconds) {
-            if (milliseconds > 0) {
-                await Task.Delay(milliseconds);
-            }
+        private int failedSaves = 0;
 
+        private void SetCaretIndex(int index) {
             this.RichTextBox.CaretIndex = index;
             this.RichTextBox.Select(index, 0);
             this.RichTextBox.Focus();
@@ -57,11 +57,12 @@ namespace DoodleDigits {
                     var state = JsonSerializer.Deserialize<SerializedState>(stateContent);
 
                     if (state != null) {
+                        blockSaving++;
                         this.Width = state.WindowDimensions.X;
                         this.Height = state.WindowDimensions.Y;
                         this.RichTextBox.Text = state.Content;
-                        _ = SetCaretIndexDelayed(state.CursorIndex, 0);
-                        _ = SetCaretIndexDelayed(state.CursorIndex, 100);
+                        SetCaretIndex(state.CursorIndex);
+                        blockSaving--;
                     }
                 }
             }
@@ -80,64 +81,73 @@ namespace DoodleDigits {
                 return;
             }
 
-            TimeSpan diff = lastSaveTime + new TimeSpan(0, 0, 5) - DateTime.Now;
-
-            if (diff < new TimeSpan(0)) {
-                lastSaveTime = DateTime.Now;
-                _ = Save();
-            }
-            else {
-                startedSave = true;
-                Task.Delay(diff).ContinueWith(async o => {
+            Task InvokeSave() {
+                return Dispatcher.Invoke(async () => {
+                    startedSave = true;
                     lastSaveTime = DateTime.Now;
                     await Save();
                     startedSave = false;
                 });
             }
+
+            TimeSpan diff = lastSaveTime + new TimeSpan(0, 0, 5) - DateTime.Now;
+
+            if (diff < new TimeSpan(0)) {
+                _ = InvokeSave();
+            }
+            else {
+                startedSave = true;
+                Task.Delay(diff).ContinueWith(o => InvokeSave());
+            }
         }
 
         private async Task Save() {
-            if (initialized == false) {
+            if (initialized == false || blockSaving > 0) {
                 return;
             }
 
             try {
-                await this.Dispatcher.Invoke(async () => {
-                    string text = JsonSerializer.Serialize(new SerializedState(
-                        this.RichTextBox.Text,
-                        this.RichTextBox.CaretIndex,
-                        new() {X = this.Width, Y = this.Height}));
+                string text = JsonSerializer.Serialize(new SerializedState(
+                    this.RichTextBox.Text,
+                    this.RichTextBox.CaretIndex,
+                    new() {X = this.Width, Y = this.Height}));
 
-                    if (!Directory.Exists(saveDirectoryPath)) {
-                        Directory.CreateDirectory(saveDirectoryPath);
-                    }
+                if (!Directory.Exists(saveDirectoryPath)) {
+                    Directory.CreateDirectory(saveDirectoryPath);
+                }
 
-                    await File.WriteAllTextAsync(saveStatePath, text);
-                });
+                await File.WriteAllTextAsync(saveStatePath, text);
+                failedSaves = 0;
             }
             catch (Exception ex) {
-                MessageBox.Show("Error saving the calculator state!\n" + ex.ToString());
+                failedSaves++;
+                if (failedSaves >= 2) {
+                    MessageBox.Show("Error saving the calculator state!\n" + ex.ToString());
+                }
             }
 
             Debug.WriteLine("Saved");
         }
+        
 
         private async void RichTextBox_TextChanged(object sender, TextChangedEventArgs e) {
             AutoSave();
+            if (initialized == false) {
+                // Delay for a little bit because of wpf wonkyness
+                await Task.Delay(100);
+            }
 
             string text = RichTextBox.Text;
-            _ = RunExecution(text).ContinueWith(async task => {
-                var calculationResult = await task;
-                Dispatcher.Invoke(() => {
-                    LineMeasure measure = new LineMeasure(text, RichTextBox);
-                    Results.Clear();
-                    foreach (Result result in calculationResult.Results) {
-                        var vm = new ResultViewModel(result, measure);
-                        if (vm.Content != "") {
-                            Results.Add(vm);
-                        }
+            TextMeasure measure = new TextMeasure(text, RichTextBox);
+            var calculationResult = await RunExecution(text);
+            Dispatcher.Invoke(() => {
+                Results.Clear();
+                foreach (Result result in calculationResult.Results) {
+                    var vm = new ResultViewModel(result, measure);
+                    if (vm.Content != "") {
+                        Results.Add(vm);
                     }
-                });
+                }
             });
         }
 
@@ -149,8 +159,14 @@ namespace DoodleDigits {
             return task;
         }
 
-        private async void Window_SizeChanged(object sender, SizeChangedEventArgs e) {
-            await Save();
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) {
+            AutoSave();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (startedSave) {
+                Save().Wait();
+            }
         }
     }
 }

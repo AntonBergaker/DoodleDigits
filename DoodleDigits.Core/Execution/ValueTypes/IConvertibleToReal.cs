@@ -9,6 +9,6 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public RealValue ConvertToReal();
 
-        public RealValue ConvertToReal(ExecutionContext context, Range position);
+        public RealValue ConvertToReal(ExecutionContext context);
     }
 }

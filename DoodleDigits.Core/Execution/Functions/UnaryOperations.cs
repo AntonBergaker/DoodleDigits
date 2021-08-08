@@ -17,7 +17,7 @@ namespace DoodleDigits.Core.Execution.Functions {
             }
 
             if (value is IConvertibleToReal convertibleToReal) {
-                return convertibleToReal.ConvertToReal(context, context.Node.Value.Position);
+                return convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
             }
 
             if (value is RealValue real) {
@@ -33,7 +33,7 @@ namespace DoodleDigits.Core.Execution.Functions {
             }
 
             if (value is IConvertibleToReal convertibleToReal) {
-                value = convertibleToReal.ConvertToReal(context, context.Node.Value.Position);
+                value = convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
             }
 
             if (value is RealValue real) {
@@ -45,7 +45,7 @@ namespace DoodleDigits.Core.Execution.Functions {
 
         public static Value UnaryNot(Value value, ExecutionContext<UnaryOperation> context) {
             if (value is IConvertibleToBool convertibleToBool) {
-                value = convertibleToBool.ConvertToBool(context, context.Node.Value.Position);
+                value = convertibleToBool.ConvertToBool(context.ForNode(context.Node.Value));
             }
 
             if (value is BooleanValue @bool) {
@@ -69,7 +69,7 @@ namespace DoodleDigits.Core.Execution.Functions {
 
         public static Value UnaryFactorial(Value value, ExecutionContext<UnaryOperation> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-                value = convertibleToReal.ConvertToReal(context, context.Node.Value.Position);
+                value = convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
             }
 
             if (value is RealValue real) {

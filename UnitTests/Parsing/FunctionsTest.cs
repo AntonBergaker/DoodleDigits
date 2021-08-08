@@ -70,11 +70,11 @@ namespace UnitTests.Parsing {
 
             // sin 5 = 5 <=> sin(5) = 5
             ParsingTestUtils.AssertEqual(
-                new EqualsComparison(
+                new Comparison(
                     new Function("sin",
                         new NumberLiteral("5")
                     ),
-                    EqualsComparison.EqualsSign.Equals,
+                    Comparison.ComparisonType.Equals,
                     new NumberLiteral("5")
                 ), "sin 5 = 5"
             );
@@ -142,12 +142,12 @@ namespace UnitTests.Parsing {
             );
 
             ParsingTestUtils.AssertEqual(
-                new EqualsComparison(
+                new Comparison(
                     new Function("log", 
                         new NumberLiteral("5"), 
                         new Identifier("e")
                     ),
-                    EqualsComparison.EqualsSign.Equals,
+                    Comparison.ComparisonType.Equals,
                     new Function("ln", 
                         new NumberLiteral("5")
                     )

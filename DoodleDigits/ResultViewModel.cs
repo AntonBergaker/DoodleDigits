@@ -17,7 +17,7 @@ namespace DoodleDigits {
         public Thickness Margin => new Thickness(Position.X, Position.Y, 0, 0);
         
 
-        public ResultViewModel(Result result, LineMeasure measure) {
+        public ResultViewModel(Result result, TextMeasure measure) {
             switch (result) {
                 case ResultValue resultValue:
                     if (resultValue.Value is TooBigValue tooBig) {
@@ -58,7 +58,7 @@ namespace DoodleDigits {
                     break;
             }
 
-            Position = measure.GetLineEndPosition(measure.GetLineIndex(result.Position.End.Value)) + new Vector(15, -11);
+            Position = measure.GetRectForLine(measure.GetLineForIndex(result.Position.End.Value)).BottomRight + new Vector(15, -23);
         }
     }
 }

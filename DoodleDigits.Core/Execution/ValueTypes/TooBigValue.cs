@@ -54,9 +54,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return new BooleanValue(IsPositive);
         }
 
-        public BooleanValue ConvertToBool(ExecutionContext context, Range position) {
+        public BooleanValue ConvertToBool(ExecutionContext context) {
             BooleanValue newValue = ConvertToBool();
-            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, context.Position));
             return newValue;
         }
 

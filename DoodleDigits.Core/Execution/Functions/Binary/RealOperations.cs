@@ -11,8 +11,10 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
     public static partial class BinaryOperations {
         private static (RealValue lhs, RealValue rhs) ConvertToReal(IConvertibleToReal lhs, IConvertibleToReal rhs,
             ExecutionContext<BinaryOperation> context) {
-            return (lhs.ConvertToReal(context, context.Node.Lhs.Position),
-                rhs.ConvertToReal(context, context.Node.Rhs.Position));
+            return (
+                lhs.ConvertToReal(context.ForNode(context.Node.Lhs)),
+                rhs.ConvertToReal(context.ForNode(context.Node.Rhs))
+            );
         }
 
         public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -179,90 +181,6 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
             return Value.FromDouble(Math.Pow((double)lhs.Value, (double)rhs.Value));
         }
 
-
-        public static Value LessThan(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
-                return new BooleanValue(tbLhs.GetSimplifiedSize() < tbRhs.GetSimplifiedSize());
-            }
-
-            if (lhs is TooBigValue) {
-                return new BooleanValue(false);
-            }
-
-            if (rhs is TooBigValue) {
-                return new BooleanValue(true);
-            }
-
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
-            }
-
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new BooleanValue(result.lhs.Value < result.rhs.Value);
-        }
-
-        public static Value LessOrEqualTo(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
-                return new BooleanValue(tbLhs.GetSimplifiedSize() <= tbRhs.GetSimplifiedSize());
-            }
-
-            if (lhs is TooBigValue) {
-                return new BooleanValue(false);
-            }
-
-            if (rhs is TooBigValue) {
-                return new BooleanValue(true);
-            }
-
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
-            }
-
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new BooleanValue(result.lhs.Value <= result.rhs.Value);
-        }
-
-        public static Value GreaterThan(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
-                return new BooleanValue(tbLhs.GetSimplifiedSize() > tbRhs.GetSimplifiedSize());
-            }
-
-            if (lhs is TooBigValue) {
-                return new BooleanValue(true);
-            }
-
-            if (rhs is TooBigValue) {
-                return new BooleanValue(false);
-            }
-
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
-            }
-
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new BooleanValue(result.lhs.Value > result.rhs.Value);
-        }
-
-        public static Value GreaterOrEqualTo(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
-                return new BooleanValue(tbLhs.GetSimplifiedSize() >= tbRhs.GetSimplifiedSize());
-            }
-
-            if (lhs is TooBigValue) {
-                return new BooleanValue(true);
-            }
-
-            if (rhs is TooBigValue) {
-                return new BooleanValue(false);
-            }
-
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
-            }
-
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new BooleanValue(result.lhs.Value >= result.rhs.Value);
-        }
 
     }
 }

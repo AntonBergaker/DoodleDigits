@@ -23,7 +23,7 @@ namespace UnitTests.Execution {
             ExecutionTestUtils.AssertEqual(false, "5 != 5");
             ExecutionTestUtils.AssertEqual(true, "5 != 4");
 
-            ExecutionTestUtils.AssertEqual(true, "5 > 4 != 5 < 4");
+            ExecutionTestUtils.AssertEqual(true, "true != false");
         }
 
         [Test]

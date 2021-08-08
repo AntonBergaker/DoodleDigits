@@ -71,7 +71,7 @@ namespace DoodleDigits.Core.Execution {
                     return Calculate(id);
                 case Function f:
                     return Calculate(f);
-                case EqualsComparison ec:
+                case Comparison ec:
                     return Calculate(ec);
                 case ErrorNode error:
                     return new UndefinedValue();
@@ -152,7 +152,7 @@ namespace DoodleDigits.Core.Execution {
             return func(value, context.ForNode(unaryOperation));
         }
 
-        private Value Calculate(EqualsComparison equalsComparison) {
+        private Value Calculate(Comparison comparison) {
 
             Value? CalculateExpression(Expression expression) {
                 if (expression is Identifier identifier) {
@@ -164,11 +164,11 @@ namespace DoodleDigits.Core.Execution {
                 return Calculate(expression);
             }
 
-            Value?[] calculatedResults = equalsComparison.Expressions.Select(x => CalculateExpression(x)).ToArray();
+            Value?[] calculatedResults = comparison.Expressions.Select(x => CalculateExpression(x)).ToArray();
 
             bool isAssignmentChain = 
                 calculatedResults.Count(x => x != null) == 1 && 
-                equalsComparison.Signs.Contains(EqualsComparison.EqualsSign.NotEquals) == false;
+                comparison.Signs.All(x => x == Comparison.ComparisonType.Equals);
 
             if (isAssignmentChain) {
                 Value? calculatedResult = calculatedResults.First(x => x != null);
@@ -176,11 +176,11 @@ namespace DoodleDigits.Core.Execution {
                     throw new Exception("This shouldn't be possible");
                 }
 
-                for (var i = 0; i < equalsComparison.Expressions.Length; i++) {
+                for (var i = 0; i < comparison.Expressions.Length; i++) {
                     if (calculatedResults[i] != null) {
                         continue;
                     }
-                    Identifier value = (Identifier)equalsComparison.Expressions[i];
+                    Identifier value = (Identifier)comparison.Expressions[i];
 
                     context.Variables[value.Value] = calculatedResult.Clone(false);
                 }
@@ -188,15 +188,15 @@ namespace DoodleDigits.Core.Execution {
                 return calculatedResult;
             }
             else {
-                for (int i = 0; i < equalsComparison.Signs.Length; i++) {
-                    var type = equalsComparison.Signs[i];
-                    Value lhs = calculatedResults[i] ?? Calculate(equalsComparison.Expressions[i]);
-                    Value rhs = calculatedResults[i + 1] ?? Calculate(equalsComparison.Expressions[i + 1]);
+                for (int i = 0; i < comparison.Signs.Length; i++) {
+                    var type = comparison.Signs[i];
+                    Value lhs = calculatedResults[i] ?? Calculate(comparison.Expressions[i]);
+                    Value rhs = calculatedResults[i + 1] ?? Calculate(comparison.Expressions[i + 1]);
 
-                    Value result = type == EqualsComparison.EqualsSign.Equals
-                        ? BinaryOperations.Equals(lhs, rhs, i, context.ForNode(equalsComparison))
-                        : BinaryOperations.NotEquals(lhs, rhs, i, context.ForNode(equalsComparison));
-
+                    Comparison.BinaryEqualsFunction func = Comparison.GetOperationFromType(type);
+                    var equalsContext = context.ForNode(comparison);
+                    Value result = func(lhs, rhs, i, equalsContext);
+                    
                     if (result is not BooleanValue booleanValue) {
                         return new UndefinedValue();
                     }

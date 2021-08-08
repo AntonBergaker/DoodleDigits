@@ -24,6 +24,8 @@ namespace DoodleDigits.Core.Execution {
 
         protected ExecutionContextData data;
 
+        public virtual Range Position => 0..0;
+
         public IReadOnlyDictionary<string, Value> Constants => data.Constants;
         public Dictionary<string, Value> Variables => data.Variables;
         public IReadOnlyList<Result> Results => data.Results;
@@ -59,5 +61,6 @@ namespace DoodleDigits.Core.Execution {
 
         public T Node { private set; get; }
 
+        public override Range Position => Node.Position;
     }
 }

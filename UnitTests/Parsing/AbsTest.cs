@@ -40,6 +40,19 @@ namespace UnitTests.Parsing {
 
             ParsingTestUtils.AssertEqual(
                 new Function("abs",
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Multiply,
+                        new Function("abs",
+                            new NumberLiteral("2")
+                        )
+                    )
+                ),
+                "|(5|2|)|"
+            );
+
+            ParsingTestUtils.AssertEqual(
+                new Function("abs",
                     new Function("sin",
                         new Function("abs", 
                             new NumberLiteral("5")    

@@ -6,25 +6,33 @@
         xmlns:local="clr-namespace:DoodleDigits"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged">
+        Title="Doodle Digits" Height="200" Width="400"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Grid>
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Resources/grid.png" TileMode="Tile" Stretch="None" AlignmentY="Top" ViewportUnits="Absolute" Viewport="0 0 666 666">
+                        <ImageBrush.Transform>
+                            <ScaleTransform CenterY="2" ScaleX="0.277777" ScaleY="0.277777"/>
+                        </ImageBrush.Transform>
+                    </ImageBrush>
+                </Grid.Background>
                 <TextBox x:Name="RichTextBox" FontSize="19" TextChanged="RichTextBox_TextChanged" AcceptsReturn="True" TextWrapping="Wrap"
-                     TextBlock.LineHeight="37" 
-                     TextBlock.LineStackingStrategy="BlockLineHeight"
-                     VerticalScrollBarVisibility="Disabled"/>
+                         Background="Transparent"
+                         TextBlock.LineHeight="37" 
+                         TextBlock.LineStackingStrategy="BlockLineHeight"
+                         VerticalScrollBarVisibility="Disabled"/>
                 <ItemsControl ItemsSource="{Binding Path=Results}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                        <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
+                            <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
                                  FontFamily="Resources/#Patrick Hand"
                                  FontSize="18"
                                  Height="24"
                                  VerticalAlignment="Top"
                                  Foreground="DodgerBlue">
-                            <TextBox.Style>
+                                <TextBox.Style>
                                     <Style TargetType="TextBox">
                                         <Setter Property="IsReadOnly" Value="True" />
                                         <Setter Property="BorderThickness" Value="0" />
@@ -34,11 +42,11 @@
                             </TextBox>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
                             <Setter Property="Margin" Value="{Binding Path=Margin}" />
