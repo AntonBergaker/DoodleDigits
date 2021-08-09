@@ -50,7 +50,7 @@ namespace UnitTests {
             );
 
             Assert.AreEqual(
-                "1234567891011121314151617181920.2",
+                "1234567891011121314151617181920.2...",
                 RationalUtils.ToDecimalString(
                     new Rational(
                         BigInteger.Parse("123456789101112131415161718192021"),
@@ -59,7 +59,7 @@ namespace UnitTests {
             );
 
             Assert.AreEqual(
-                "1234567891011121314151617181920.21",
+                "1234567891011121314151617181920.21...",
                 RationalUtils.ToDecimalString(
                     new Rational(
                         BigInteger.Parse("1234567891011121314151617181920212223"),
