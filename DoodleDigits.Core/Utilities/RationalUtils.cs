@@ -247,6 +247,7 @@ namespace DoodleDigits.Core.Utilities {
                 }
 
                 if (index > magnitude && index - magnitude > maximumDecimals) {
+                    sb.Append("...");
                     break;
                 }
 
