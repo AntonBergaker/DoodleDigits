@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using DoodleDigits.Core;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
@@ -47,11 +48,14 @@ namespace DoodleDigits {
 
             List<ResultViewModel> resultViewModels = new();
 
+            measure.ApplyNewTextBoxDimensions();
+
             foreach (int line in resultsPerLine.Keys) {
                 var results = resultsPerLine[line];
                 results.Sort(CompareResults);
                 string content = string.Join(", ", results.Select(x => x.Content));
-                Point position = measure.GetRectForLine(line).BottomRight + new Vector(15, -23);
+
+                Point position = measure.GetFinalRectOfLine(line).BottomRight + new Vector(15, -23);
                 resultViewModels.Add(new ResultViewModel(content, position));
             }
 

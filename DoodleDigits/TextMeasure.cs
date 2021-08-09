@@ -7,60 +7,80 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace DoodleDigits {
-
+    /// <summary>
+    /// Measures text before and after calculation, to give results an approximately correct position if the textbox has changed a lot during the calculation
+    /// </summary>
 
     public class TextMeasure {
-        private record CharacterInfo(char Char, int Line, Rect Position);
+        private readonly TextBox textBox;
+
+        private record CharacterInfo(char Char, int Line);
 
         public int Length { get; }
 
         private readonly CharacterInfo[] characterInfos;
 
-        private readonly Rect[] lineRects;
+        // The final character on each line of the textbox
+        private readonly List<int> lineRanges;
 
         public TextMeasure(string input, TextBox textBox) {
+            lineRanges = new List<int>();
+            this.textBox = textBox;
             Length = input.Length;
             characterInfos = new CharacterInfo[Length];
 
-            List<Rect> lineRectList = new();
-
             int line = 0;
-            Rect? lineRect = null;
-            
+
             for (int i = 0; i < Length; i++) {
                 char c = input[i];
-                Rect rect = textBox.GetRectFromCharacterIndex(i);
 
-                if (c is '\n' or '\r' == false) {
-                    lineRect = lineRect == null ? rect : Rect.Union(lineRect.Value, rect);
-                }
-
-                characterInfos[i] = new CharacterInfo(c, line, rect);
+                characterInfos[i] = new CharacterInfo(c, line);
                 
                 if (c == '\n') {
-                    lineRectList.Add(lineRect ?? rect);
-                    lineRect = null;
                     line++;
                 }
             }
+            
+        }
 
-            if (lineRect != null) {
-                lineRectList.Add(lineRect.Value);
+        public void ApplyNewTextBoxDimensions() {
+            // Because of WPF weirdness, GetCharacterIndexFromLineIndex is busted with custom margins.
+            // Instead of relying on the box itself, before we go to place our labels we figure out what character belongs to once more
+            // Hence the need for this function
+            
+            lineRanges.Clear();
+
+            string text = textBox.Text;
+            int lastNonNewline = 0;
+            for (int i = 0; i < text.Length; i++) {
+                if (text[i] is '\r' or '\n' == false) {
+                    lastNonNewline = i;
+                }
+                if (text[i] == '\n') {
+                    lineRanges.Add(lastNonNewline);
+                    lastNonNewline = i + 1;
+                }
             }
 
-            lineRects = lineRectList.ToArray();
+            lineRanges.Add(text.Length-1);
         }
 
         public int GetLineForIndex(int index) {
             return characterInfos[Math.Min(Length - 1, index)].Line;
         }
 
-        public Rect GetRectForIndex(int index) {
-            return characterInfos[Math.Min(Length - 1, index)].Position;
-        }
 
-        public Rect GetRectForLine(int line) {
-            return lineRects[line];
+        public Rect GetFinalRectOfLine(int line) {
+            int index;
+            // If linecount is less than line, grab the final index
+            if (line >= lineRanges.Count) {
+                index = lineRanges[^1];
+            } else {
+                // To get the final character, get the first index of the following line and go backwards
+                index = lineRanges[line];
+            }
+
+            return textBox.GetRectFromCharacterIndex(index);
         }
     }
 }
