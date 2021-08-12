@@ -14,6 +14,7 @@
   <ItemGroup>
     <None Remove="Resources\grid.png" />
     <None Remove="Resources\GridPaper.png" />
+    <None Remove="Resources\grid_dark.png" />
     <None Remove="Resources\PatrickHand-Regular.ttf" />
   </ItemGroup>
 
@@ -23,6 +24,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\grid.png" />
+    <Resource Include="Resources\grid_dark.png" />
     <Resource Include="Resources\PatrickHand-Regular.ttf" />
   </ItemGroup>
 

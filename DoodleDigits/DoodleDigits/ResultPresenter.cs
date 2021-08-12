@@ -17,12 +17,11 @@ namespace DoodleDigits {
 
     public class ResultPresenter : INotifyPropertyChanged {
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        private readonly Dictionary<int, List<TempResult>> resultsPerLine = new();
-
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private readonly Dictionary<int, List<TempResult>> resultsPerLine = new();
 
 
         private record TempResult(Range Position, string Content, Result Result);

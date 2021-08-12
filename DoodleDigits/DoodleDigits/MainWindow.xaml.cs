@@ -13,12 +13,9 @@ namespace DoodleDigits {
     /// </summary>
     public partial class MainWindow : Window {
 
+        public PresentationProperties PresentationProperties { get; } = new();
+        
         public ResultPresenter ResultPresenter { get; } = new();
-
-
-        private readonly string saveDirectoryPath;
-
-        private readonly string saveStatePath;
 
         private bool initialized = false;
         // If over 0, will block saving
@@ -27,31 +24,24 @@ namespace DoodleDigits {
         private int failedSaves = 0;
 
         private void SetCaretIndex(int index) {
-            this.RichTextBox.CaretIndex = index;
-            this.RichTextBox.Select(index, 0);
-            this.RichTextBox.Focus();
+            this.InputTextBox.CaretIndex = index;
+            this.InputTextBox.Select(index, 0);
+            this.InputTextBox.Focus();
         }
 
         public MainWindow() {
-            saveDirectoryPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Doodle Digits");
-            saveStatePath = Path.Join(saveDirectoryPath, "state.json");
 
             InitializeComponent();
 
             try {
-                if (File.Exists(saveStatePath)) {
-                    string stateContent = File.ReadAllText(saveStatePath);
-                    var state = JsonSerializer.Deserialize<SerializedState>(stateContent);
-
-                    if (state != null) {
-                        blockSaving++;
-                        this.Width = state.WindowDimensions.X;
-                        this.Height = state.WindowDimensions.Y;
-                        this.RichTextBox.Text = state.Content;
-                        SetCaretIndex(state.CursorIndex);
-                        blockSaving--;
-                    }
+                var state = SerializedState.Load();
+                if (state != null) {
+                    blockSaving++;
+                    this.Width = state.WindowDimensions.X;
+                    this.Height = state.WindowDimensions.Y;
+                    this.InputTextBox.Text = state.Content;
+                    SetCaretIndex(state.CursorIndex);
+                    blockSaving--;
                 }
             }
             catch {
@@ -73,7 +63,7 @@ namespace DoodleDigits {
                 return Dispatcher.Invoke(async () => {
                     startedSave = true;
                     lastSaveTime = DateTime.Now;
-                    await Save();
+                    await SaveState();
                     startedSave = false;
                 });
             }
@@ -89,22 +79,18 @@ namespace DoodleDigits {
             }
         }
 
-        private async Task Save() {
+        private async Task SaveState() {
             if (initialized == false || blockSaving > 0) {
                 return;
             }
 
             try {
-                string text = JsonSerializer.Serialize(new SerializedState(
-                    this.RichTextBox.Text,
-                    this.RichTextBox.CaretIndex,
-                    new() {X = this.Width, Y = this.Height}));
+                var state = new SerializedState(
+                    this.InputTextBox.Text,
+                    this.InputTextBox.CaretIndex,
+                    new() {X = this.Width, Y = this.Height});
 
-                if (!Directory.Exists(saveDirectoryPath)) {
-                    Directory.CreateDirectory(saveDirectoryPath);
-                }
-
-                await File.WriteAllTextAsync(saveStatePath, text);
+                await state.Save();
                 failedSaves = 0;
             }
             catch (Exception ex) {
@@ -121,12 +107,12 @@ namespace DoodleDigits {
         private async void RichTextBoxTextChanged(object sender, TextChangedEventArgs e) {
             AutoSave();
             if (initialized == false) {
-                // Delay for a little bit because of wpf wonkyness
+                // Delay for a little bit because of wpf wonkyness if we just started the app
                 await Task.Delay(100);
             }
 
-            string text = RichTextBox.Text;
-            TextMeasure measure = new TextMeasure(text, RichTextBox);
+            string text = InputTextBox.Text;
+            TextMeasure measure = new TextMeasure(text, InputTextBox);
             var calculationResult = await RunExecution(text);
 
             ResultPresenter.ParseResults(measure, calculationResult);
@@ -138,6 +124,8 @@ namespace DoodleDigits {
                 return calculator.Calculate(input);
             });
             return task;
+
+            
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) {
@@ -146,12 +134,15 @@ namespace DoodleDigits {
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             if (startedSave) {
-                Save().Wait();
+                SaveState().Wait();
             }
         }
 
 
-        void ClickClear(object sender, RoutedEventArgs args) { RichTextBox.Clear(); }
+        void ClickClear(object sender, RoutedEventArgs args) { InputTextBox.Clear(); }
 
+        private void ToggleDarkMode(object sender, RoutedEventArgs e) {
+            PresentationProperties.DarkMode = !PresentationProperties.DarkMode;
+        }
     }
 }
