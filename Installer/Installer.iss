@@ -20,6 +20,7 @@ WizardStyle=modern
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
+AppPublisher="Anton Bergåker"
 Compression=lzma2
 SolidCompression=yes
 ; "ArchitecturesAllowed=x64" specifies that Setup cannot run on

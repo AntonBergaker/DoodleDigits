@@ -1,3 +1,6 @@
+Remove-Item ./dist -Recurse
+New-Item ./dist -ItemType "directory"
+
 dotnet publish DoodleDigits\DoodleDigits /p:PublishProfile=Runtime
 dotnet publish DoodleDigits\DoodleDigits /p:PublishProfile=Standalone
 
