@@ -105,7 +105,10 @@ namespace DoodleDigits.Core.Execution {
             Value result = trigFunction(value, context);
 
             if (result is IConvertibleToReal convertibleToReal) {
-                return new RealValue(1 / convertibleToReal.ConvertToReal(context).Value);
+                RealValue realResult = convertibleToReal.ConvertToReal(context);
+                if (realResult.Value.IsZero == false) {
+                    return new RealValue(1 / realResult.Value);
+                }
             }
 
             return new UndefinedValue();
@@ -154,9 +157,12 @@ namespace DoodleDigits.Core.Execution {
 
         private static Value TrigArcReciprocal(Value value, ExecutionContext<Function> context, Func<Value, ExecutionContext<Function>, Value> trigArcFunction) {
             if (value is IConvertibleToReal convertibleToReal) {
-                RealValue real = new RealValue(1 / ConvertArgumentToReal(convertibleToReal, 0, context).Value);
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                if (realValue.Value.IsZero == false) {
+                    RealValue real = new RealValue(1 / realValue.Value);
 
-                return trigArcFunction(real, context);
+                    return trigArcFunction(real, context);
+                }
             }
 
             return new UndefinedValue();
