@@ -13,14 +13,8 @@ This approach lets you easily go back and change things in your equation and is 
 * Bitwise operations (keywords are `bxor`, `bor` and `band` to not clash with some other math notations)
 * Hex and binary numbers (`0xE32C2C`, `0b10`)
 
-## Installation
-1. Download a zip file from the [Releases](https://github.com/AntonBergaker/DoodleDigits/releases)
-   - The one marked *Runtime Dependent* requires .NET5 to be installed on your computer. Running the .exe will instruct you how to get it.
-   - The one marked *Standalone* does not require any additional downloads.
-
-2. Unzip the file into an empty directory
-
-3. Run DoodleDigits.exe to start the calculator
+## Download and Install
+Downloads and installation instructions can be found on the [releases](https://github.com/AntonBergaker/DoodleDigits/releases) page.
 
 ## Contributing
 The project uses NET5.0 and C# 9 as I like having all the latest features.  
