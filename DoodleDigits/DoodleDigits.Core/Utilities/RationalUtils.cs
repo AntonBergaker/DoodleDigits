@@ -296,6 +296,80 @@ namespace DoodleDigits.Core.Utilities {
             return $"{sb}{exponentCharacter}{magnitude}";
         }
 
+        public static double ToDouble(this Rational rational) {
+            // Lifted from https://github.com/tompazourek/Rationals/tree/master/src/Rationals made to work with doubles
+            if (rational < 0)
+                return -ToDouble(-rational);
+
+            double result = 0;
+            var numerator = rational.Numerator;
+            var denominator = rational.Denominator;
+            var scale = 1D;
+            var previousScale = 0D;
+            while (numerator != 0) {
+                var divided = BigInteger.DivRem(numerator, denominator, out var rem);
+
+                if (scale == 0) {
+                    if (divided >= 5)
+                        result += previousScale; // round up last digit
+
+                    break;
+                }
+
+                result += (double)divided * scale;
+
+                numerator = rem * 10;
+                previousScale = scale;
+                scale /= 10;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Approximates given double number as a rational number. If a higher tolerance is given, simpler double might be returned.
+        /// </summary>
+        /// <param name="input">Input double</param>
+        /// <param name="tolerance">Optional tolerance</param>
+        /// <returns>Output rational</returns>
+        public static Rational FromDouble(double input, double tolerance = 0) {
+            if (tolerance < 0) throw new ArgumentOutOfRangeException(nameof(tolerance));
+            // Lifted from https://github.com/tompazourek/Rationals/tree/master/src/Rationals made to work with doubles
+            var continuedFraction = ExpandToContinuedFraction(input);
+
+            var sequence = new List<BigInteger>();
+            var previousDifference = double.MaxValue;
+            var currentNumber = Rational.Zero;
+            foreach (var coefficient in continuedFraction) {
+                sequence.Add(coefficient);
+                currentNumber = Rational.FromContinuedFraction(sequence);
+                var currentDifference = Math.Abs(currentNumber.ToDouble() - input);
+                if (currentDifference <= tolerance) {
+                    break;
+                }
+                if (currentDifference < previousDifference) {
+                    previousDifference = currentDifference;
+                } else {
+                    break;
+                }
+            }
+            return currentNumber;
+        } private static IEnumerable<BigInteger> ExpandToContinuedFraction(double d) {
+            // Lifted from https://github.com/tompazourek/Rationals/tree/master/src/Rationals made to work with doubles
+            var wholePart = Math.Truncate(d);
+            var fractionPart = d - wholePart;
+            yield return (BigInteger)wholePart;
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            while (fractionPart != 0) {
+                d = 1d / fractionPart;
+
+                wholePart = Math.Truncate(d);
+                fractionPart = d - wholePart;
+                yield return (BigInteger)wholePart;
+            }
+        }
+
 
         public static readonly Rational Half = new Rational(BigInteger.One, 2);
 
@@ -325,5 +399,6 @@ namespace DoodleDigits.Core.Utilities {
 
             return (divided - floored) * divisor;
         } 
+
     }
 }
