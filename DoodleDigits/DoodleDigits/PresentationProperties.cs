@@ -5,10 +5,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Media;
+using ControlzEx.Theming;
 
 namespace DoodleDigits {
     public class PresentationProperties : INotifyPropertyChanged {
+        private readonly MainWindow window;
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -23,10 +26,20 @@ namespace DoodleDigits {
         private readonly Brush labelTextColorLight = new SolidColorBrush(Color.FromRgb(0x1E, 0x90, 0xFF));
 
 
-        public PresentationProperties() {
+        public PresentationProperties(MainWindow window, SettingsViewModel settings) {
+            this.window = window;
             imageSourceField = imageSourceLight;
             inputTextColorField = inputTextColorLight;
             labelTextColorField = labelTextColorLight;
+
+            DarkMode = settings.DarkMode;
+            settings.PropertyChanged += (s, e) => {
+                switch (e.PropertyName) {
+                    case nameof(settings.DarkMode):
+                        DarkMode = settings.DarkMode;
+                        break;
+                }
+            };
         }
 
         private Uri imageSourceField;
@@ -43,16 +56,20 @@ namespace DoodleDigits {
             get => darkModeField;
             set {
                 darkModeField = value;
+                string theme;
                 if (darkModeField) {
                     ImageSource = imageSourceDark;
                     InputTextColor = inputTextColorDark;
                     LabelTextColor = labelTextColorDark;
+                    theme = "Dark.Blue";
                 }
                 else {
                     ImageSource = imageSourceLight;
                     InputTextColor = inputTextColorLight;
                     LabelTextColor = labelTextColorLight;
+                    theme = "Light.Blue";
                 }
+                ThemeManager.Current.ChangeTheme(window, theme);
                 OnPropertyChanged();
             }
         }

@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace DoodleDigits {
-    class Settings {
+    public class Settings {
         class SettingsData {
             [JsonPropertyName("dark_mode")]
             public bool DarkMode { get; set; }
 
         }
 
-        private readonly SettingsData data;
+        private SettingsData data;
 
         public bool UnsavedChanges { get; private set; }
 
@@ -31,23 +34,44 @@ namespace DoodleDigits {
             data = new SettingsData();
         }
 
+
+        private static string DirectoryPath => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Doodle Digits");
+        public static string FilePath => Path.Join(DirectoryPath, "settings.json");
+
         public async Task Save() {
+            if (UnsavedChanges == false) {
+                return;
+            }
 
+            if (!Directory.Exists(DirectoryPath)) {
+                Directory.CreateDirectory(DirectoryPath);
+            }
 
+            string serializedData = JsonSerializer.Serialize(data);
+            await File.WriteAllTextAsync(FilePath, serializedData);
         }
-    }
-}
 
-class Foo {
-    protected Foo() {
-        Baz();
-    }
+        /// <summary>
+        /// Returns true if loaded from file, false if populated from defaults
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> LoadOrPopulateDefaults() {
+            if (File.Exists(FilePath) == false) {
+                object? lightValue = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme", "unknown");
+                if (lightValue is int @int) {
+                    if (@int == 1) {
+                        DarkMode = false;
+                    }
+                    else if (@int == 0) {
+                        DarkMode = true;
+                    }
+                }
+                return false;
+            }
 
-    protected virtual void Baz() { }
-}
-
-class Bar : Foo {
-    protected override void Baz() {
-        throw new NotImplementedException("hi!");
+            string serializedData = await File.ReadAllTextAsync(FilePath);
+            data = JsonSerializer.Deserialize<SettingsData>(serializedData) ?? data;
+            return true;
+        }
     }
 }

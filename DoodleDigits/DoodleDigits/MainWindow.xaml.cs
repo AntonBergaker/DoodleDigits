@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using DoodleDigits.Core;
+using MahApps.Metro.Controls;
 
 namespace DoodleDigits {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : MetroWindow {
 
-        public PresentationProperties PresentationProperties { get; } = new();
+        public PresentationProperties PresentationProperties { get; }
         
         public ResultPresenter ResultPresenter { get; } = new();
 
@@ -23,6 +24,8 @@ namespace DoodleDigits {
 
         private int failedSaves = 0;
 
+        private readonly SettingsViewModel settings;
+
         private void SetCaretIndex(int index) {
             this.InputTextBox.CaretIndex = index;
             this.InputTextBox.Select(index, 0);
@@ -30,11 +33,13 @@ namespace DoodleDigits {
         }
 
         public MainWindow() {
-
+            settings = new SettingsViewModel(new Settings());
+            settings.Load().Wait();
+            PresentationProperties = new(this, settings);
             InitializeComponent();
 
             try {
-                var state = SerializedState.Load();
+                var state = SerializedState.Load().Result;
                 if (state != null) {
                     blockSaving++;
                     this.Width = state.WindowDimensions.X;
@@ -141,8 +146,11 @@ namespace DoodleDigits {
 
         void ClickClear(object sender, RoutedEventArgs args) { InputTextBox.Clear(); }
 
-        private void ToggleDarkMode(object sender, RoutedEventArgs e) {
-            PresentationProperties.DarkMode = !PresentationProperties.DarkMode;
+        private async void ToggleDarkMode(object sender, RoutedEventArgs e) {
+            settings.DarkMode = !settings.DarkMode;
+            if (settings.UnsavedChanges) {
+                await settings.Save();
+            }
         }
     }
 }

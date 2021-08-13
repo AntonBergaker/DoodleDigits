@@ -1,15 +1,30 @@
-﻿<Window x:Class="DoodleDigits.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DoodleDigits"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        x:Name="mainWindow"
-        mc:Ignorable="d"
-        Title="Doodle Digits" Height="200" Width="400"
-        ResizeMode="CanResize"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+﻿<mah:MetroWindow x:Class="DoodleDigits.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:DoodleDigits"
+                 xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                 xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                 x:Name="mainWindow"
+                 mc:Ignorable="d"
+                 Title="doodle digits" Height="200" Width="400"
+                 TitleCharacterCasing="Normal"
+                 TitleBarHeight="27"
+                 ShowIconOnTitleBar="True"
+                 ResizeMode="CanResize"
+                 DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+    <mah:MetroWindow.TitleTemplate>
+        <DataTemplate>
+            <TextBlock Text="{TemplateBinding Content}"
+                       TextTrimming="CharacterEllipsis"
+                       VerticalAlignment="Center"
+                       Margin="8 -1 8 0"
+                       FontWeight="Normal"
+                       FontSize="18"
+                       FontFamily="Resources/#Patrick Hand" />
+        </DataTemplate>
+    </mah:MetroWindow.TitleTemplate>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Grid>
@@ -27,6 +42,9 @@
                      BorderBrush="Transparent"
                      TextBlock.LineHeight="37" 
                      TextBlock.LineStackingStrategy="BlockLineHeight"
+                     FontFamily="Segoe UI"
+                     FontWeight="Normal"
+                     Margin="10 0 0 0"
                      VerticalScrollBarVisibility="Disabled">
                     <TextBox.ContextMenu>
                         <ContextMenu 
@@ -95,11 +113,11 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding Content, Mode=OneWay}" IsReadOnly="True" Background="Transparent"
-                             FontFamily="Resources/#Patrick Hand"
-                             FontSize="18"
-                             Height="24"
-                             VerticalAlignment="Top"
-                             Foreground="{Binding Path=PresentationProperties.LabelTextColor, ElementName=mainWindow}">
+                                     FontFamily="Resources/#Patrick Hand"
+                                     FontSize="18"
+                                     Height="24"
+                                     VerticalAlignment="Top"
+                                     Foreground="{Binding Path=PresentationProperties.LabelTextColor, Source={x:Reference mainWindow}}">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox">
                                         <Setter Property="IsReadOnly" Value="True" />
@@ -107,12 +125,48 @@
                                         <Setter Property="TextWrapping" Value="Wrap" />
                                     </Style>
                                 </TextBox.Style>
+                                <TextBox.ContextMenu>
+                                    <ContextMenu 
+                                        TextBlock.LineHeight="Auto"
+                                        TextBlock.LineStackingStrategy="MaxHeight"
+                                    >
+                                        <MenuItem 
+                                            Header="Cut"
+                                            Command="Cut"
+                                        />
+                                        <MenuItem 
+                                            Header="Copy" 
+                                            Command="Copy"
+                                        />
+                                        <MenuItem 
+                                            Header="Paste"
+                                            Command="Paste"
+                                        />
+                                        <Separator/>
+                                        <MenuItem 
+                                            Header="Select All"
+                                            Command="SelectAll"
+                                        />
+                                        <Separator/>
+                                        <MenuItem 
+                                            Header="Clear All Text"
+                                            Click="ClickClear" 
+                                        />
+                                        <Separator/>
+                                        <MenuItem
+                                            Header="Enable Dark Mode"
+                                            IsCheckable="false"
+                                            IsChecked="{Binding PresentationProperties.DarkMode, Source={x:Reference mainWindow}}"
+                                            Click="ToggleDarkMode"
+                                        />
+                                    </ContextMenu>
+                                </TextBox.ContextMenu>
                             </TextBox>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Grid />
+                            <Grid Margin="10 0 0 0"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>
@@ -124,4 +178,4 @@
             </Grid>
         </ScrollViewer>
     </Grid>
-</Window>
+</mah:MetroWindow>
