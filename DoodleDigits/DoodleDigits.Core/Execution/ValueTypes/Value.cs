@@ -1,4 +1,5 @@
 ﻿using System;
+using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
@@ -24,7 +25,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
                 return new UndefinedValue();
             }
 
-            return new RealValue((Rational) value);
+            return new RealValue(RationalUtils.FromDouble(value));
         }
 
         public abstract bool Equals(Value? other);
