@@ -130,5 +130,25 @@ namespace UnitTests {
             Assert.AreEqual(2, RationalUtils.Modulus(-1, 3));
             Assert.AreEqual(1, RationalUtils.Modulus(-2, 3));
         }
+
+        [Test]
+        public void TestFromDouble() {
+            // Because doubles be innacurate af
+            void AreRoughlyEqual(Rational expected, Rational actual) {
+                Rational difference = expected - actual;
+                if (Rational.Abs(difference) > Rational.Abs(expected) * new Rational(1, 10000)) {
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+
+            AreRoughlyEqual(Rational.One, RationalUtils.FromDouble(1));
+            AreRoughlyEqual(Rational.Zero, RationalUtils.FromDouble(0));
+            AreRoughlyEqual(new Rational(3, 2), RationalUtils.FromDouble(1.5));
+            AreRoughlyEqual(new Rational(-3, 2), RationalUtils.FromDouble(-1.5));
+            AreRoughlyEqual(1_000_000_000_000, RationalUtils.FromDouble(1_000_000_000_000));
+            AreRoughlyEqual(-1_000_000_000_000, RationalUtils.FromDouble(-1_000_000_000_000));
+            AreRoughlyEqual(new Rational(1, 1_000_000_000), RationalUtils.FromDouble(0.00_000_000_1));
+            AreRoughlyEqual(new Rational(-1, 1_000_000_000), RationalUtils.FromDouble(-0.00_000_000_1));
+        }
     }
 }
