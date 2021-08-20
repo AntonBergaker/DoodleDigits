@@ -163,22 +163,21 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                 return new UndefinedValue();
             }
 
+            if (lhs.Value.IsZero) {
+                return new RealValue(Rational.Zero);
+            }
             if (rhs.Value.IsZero) {
                 return new RealValue(Rational.One);
             }
 
             if (rhs.HasDecimal == false) {
-                if (Rational.Abs((lhs.Value.Magnitude + 1) * rhs.Value) > 10000) {
-                    return new TooBigValue(TooBigValue.Sign.Positive);
+                // Only calculate if the value isn't too complex as the math would take years
+                if (Rational.Abs(lhs.Value.GetComplexity()* rhs.Value) < 20000) {
+                    return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value).CanonicalForm);
                 }
-
-                return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value));
             }
 
-            if (lhs.Value > (Rational)decimal.MaxValue || rhs.Value > (Rational)decimal.MaxValue) {
-                return new TooBigValue(TooBigValue.Sign.Positive);
-            }
-            return Value.FromDouble(Math.Pow((double)lhs.Value, (double)rhs.Value));
+            return Value.FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()));
         }
 
 

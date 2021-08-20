@@ -83,9 +83,9 @@ namespace DoodleDigits {
                 case ResultValue resultValue:
                     if (resultValue.Value is TooBigValue tooBig) {
                         return tooBig.ValueSign switch {
-                            TooBigValue.Sign.Positive => " → Some huge number",
+                            TooBigValue.Sign.Positive => " → A huge number",
                             TooBigValue.Sign.PositiveInfinity => " = ∞",
-                            TooBigValue.Sign.Negative => " → Some negative huge number",
+                            TooBigValue.Sign.Negative => " → A huge negative number",
                             TooBigValue.Sign.NegativeInfinity => " = -∞",
                             _ => throw new ArgumentOutOfRangeException()
                         };
@@ -104,7 +104,7 @@ namespace DoodleDigits {
                     }
 
                     if (resultValue.Value is RealValue realValue) {
-                        return " = " + realValue.ToString(75, 30, "ᴇ");
+                        return " = " + realValue.ToString(25, 30, "ᴇ");
                     }
 
                     break;
