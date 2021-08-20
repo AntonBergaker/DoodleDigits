@@ -172,7 +172,7 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
 
             if (rhs.HasDecimal == false) {
                 // Only calculate if the value isn't too complex as the math would take years
-                if ((lhs.Value.GetComplexity()* rhs.Value) < 20000) {
+                if (Rational.Abs(lhs.Value.GetComplexity()* rhs.Value) < 20000) {
                     return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value).CanonicalForm);
                 }
             }
