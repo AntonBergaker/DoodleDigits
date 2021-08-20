@@ -80,7 +80,7 @@ namespace DoodleDigits {
                 index = lineRanges[line];
             }
 
-            return textBox.GetRectFromCharacterIndex(index);
+            return textBox.GetRectFromCharacterIndex(index, true);
         }
     }
 }

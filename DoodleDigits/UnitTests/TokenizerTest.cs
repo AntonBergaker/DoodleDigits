@@ -97,6 +97,14 @@ namespace UnitTests {
 
         }
 
+        [Test]
+        public void TestEmoji() {
+            AssertTokenEqual(new Token[] {
+                new("☕", TokenType.Identifier),
+                new("+", TokenType.Add),
+                new("☕", TokenType.Identifier),
+            }, "☕ + ☕");
+        }
 
         private void AssertTokenEqual(Token[] expectedTokens, string input) {
 

@@ -10,8 +10,10 @@ namespace DoodleDigits.Core {
         private int index;
         private string input;
 
-
         private static readonly Dictionary<char, string[]> IdentifyTokens;
+
+        private static readonly HashSet<string> AllEmoji = new(EmojiList.AllEmoji);
+        private static readonly int EmojiMaxLength = EmojiList.AllEmoji.Select(x => x.Length).Max();
 
         static Tokenizer() {
 
@@ -95,8 +97,11 @@ namespace DoodleDigits.Core {
                     }
                 }
             }
-            if (IsIdentifierFirstLetter(c)) {
-                JumpUntilFalse(x => IsIdentifierLetter(x));
+            if (IsIdentifierFirstCharacter(index, out int readLength)) {
+                index += readLength;
+                while (CanRead && IsIdentifierCharacter(index, out readLength)) {
+                    index+= readLength;
+                }
                 return new Token(input[startIndex..index], TokenType.Identifier, startIndex..index);
             }
 
@@ -106,11 +111,36 @@ namespace DoodleDigits.Core {
 
         private bool CanRead => index < input.Length;
         
-        private bool IsIdentifierFirstLetter(char character) {
-            return char.IsLetter(character) || character == '_';
+        private bool IsIdentifierFirstCharacter(int index, out int length) {
+            char @char = input[index];
+            if (char.IsLetter(@char) || @char == '_') {
+                length = 1;
+                return true;
+            }
+            // Early return
+            if (char.IsWhiteSpace(@char) || char.IsDigit(@char)) {
+                length = 0;
+                return false;
+            }
+
+            // Compare to every length of emoji, starting with the longest
+            for (int i = Math.Min(input.Length, index + EmojiMaxLength); i > index; i--) {
+                if (AllEmoji.Contains(input[index..i])) {
+                    length = i - index;
+                    return true;
+                }
+            }
+
+            length = 0;
+            return false;
         }
-        private bool IsIdentifierLetter(char character) {
-            return IsIdentifierFirstLetter(character) || char.IsDigit(character);
+        private bool IsIdentifierCharacter(int index, out int length) {
+            if (char.IsDigit(input[index])) {
+                length = 1;
+                return true;
+            }
+
+            return IsIdentifierFirstCharacter(index, out length);
         }
 
         

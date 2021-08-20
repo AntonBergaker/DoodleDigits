@@ -54,7 +54,7 @@ namespace DoodleDigits {
                 results.Sort(CompareResults);
                 string content = string.Join(", ", results.Select(x => x.Content));
 
-                Point position = measure.GetFinalRectOfLine(line).BottomRight + new Vector(15, -23);
+                Point position = measure.GetFinalRectOfLine(line).BottomRight + new Vector(11, -23);
                 resultViewModels.Add(new ResultViewModel(content, position));
             }
 
