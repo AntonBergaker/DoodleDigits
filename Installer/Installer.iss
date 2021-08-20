@@ -37,7 +37,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; \
     GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\DoodleDigits\DoodleDigits\bin\publish\runtime\*"; DestDir: "{app}"; Flags: recursesubdirs
+Source: "..\DoodleDigits\DoodleDigits\bin\publish\runtime\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 Source: ".\InnoDependencyInstaller\src\netcorecheck_x64.exe"; Flags: dontcopy noencryption
 
 [Icons]
