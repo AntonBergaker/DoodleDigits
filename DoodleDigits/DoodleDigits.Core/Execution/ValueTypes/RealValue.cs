@@ -27,7 +27,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override string ToString() {
-            return ToString(100, 30, "E");
+            return ToString(50, 20, "E");
         }
 
         public string ToString(int maxNumberOfDigits, int scientificDecimals, string exponentCharacter = "E") {

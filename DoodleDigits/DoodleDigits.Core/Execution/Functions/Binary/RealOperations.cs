@@ -170,18 +170,13 @@ namespace DoodleDigits.Core.Execution.Functions.Binary {
                 return new RealValue(Rational.One);
             }
 
-            if (rhs.HasDecimal == false && rhs.Value < 10000) {
-                int lhsMagnitude = lhs.Value.Magnitude;
-                if (Rational.Abs((lhsMagnitude + 1) * rhs.Value) > 10000) {
-                    return new TooBigValue(TooBigValue.Sign.Positive);
+            if (rhs.HasDecimal == false) {
+                // Only calculate if the value isn't too complex as the math would take years
+                if ((lhs.Value.GetComplexity()* rhs.Value) < 20000) {
+                    return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value).CanonicalForm);
                 }
-
-                return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value).CanonicalForm);
             }
 
-            /*if (lhs.Value > RationalUtils.MaxDouble || rhs.Value > RationalUtils.MaxDouble) {
-                return new TooBigValue(TooBigValue.Sign.Positive);
-            }*/
             return Value.FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()));
         }
 

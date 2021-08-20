@@ -134,21 +134,43 @@ namespace UnitTests {
         [Test]
         public void TestFromDouble() {
             // Because doubles be innacurate af
-            void AreRoughlyEqual(Rational expected, Rational actual) {
-                Rational difference = expected - actual;
+            void AreRoughlyEqual(Rational expected, double actual) {
+                Rational rActual = RationalUtils.FromDouble(actual);
+                Rational difference = expected - rActual;
                 if (Rational.Abs(difference) > Rational.Abs(expected) * new Rational(1, 10000)) {
-                    Assert.AreEqual(expected, actual);
+                    Assert.AreEqual(expected, rActual);
                 }
             }
 
-            AreRoughlyEqual(Rational.One, RationalUtils.FromDouble(1));
-            AreRoughlyEqual(Rational.Zero, RationalUtils.FromDouble(0));
-            AreRoughlyEqual(new Rational(3, 2), RationalUtils.FromDouble(1.5));
-            AreRoughlyEqual(new Rational(-3, 2), RationalUtils.FromDouble(-1.5));
-            AreRoughlyEqual(1_000_000_000_000, RationalUtils.FromDouble(1_000_000_000_000));
-            AreRoughlyEqual(-1_000_000_000_000, RationalUtils.FromDouble(-1_000_000_000_000));
-            AreRoughlyEqual(new Rational(1, 1_000_000_000), RationalUtils.FromDouble(0.00_000_000_1));
-            AreRoughlyEqual(new Rational(-1, 1_000_000_000), RationalUtils.FromDouble(-0.00_000_000_1));
+            AreRoughlyEqual(Rational.One, 1);
+            AreRoughlyEqual(Rational.Zero, 0);
+            AreRoughlyEqual(new Rational(3, 2), 1.5);
+            AreRoughlyEqual(new Rational(-3, 2), -1.5);
+            AreRoughlyEqual(1_000_000_000_000, 1_000_000_000_000);
+            AreRoughlyEqual(-1_000_000_000_000, -1_000_000_000_000);
+            AreRoughlyEqual(new Rational(1, 1_000_000_000), 0.00_000_000_1);
+            AreRoughlyEqual(new Rational(-1, 1_000_000_000), -0.00_000_000_1);
+        }
+
+        [Test]
+        public void TestRoughMagnitude() {
+            void AreMagnitudesRoughlyEqual(Rational rational) {
+                int expected = rational.Magnitude;
+                int actual = rational.RoughMagnitude();
+
+                Assert.AreEqual(expected, actual, 1);
+                
+            }
+
+            AreMagnitudesRoughlyEqual(Rational.Zero);
+            AreMagnitudesRoughlyEqual(Rational.One);
+            AreMagnitudesRoughlyEqual(-Rational.One);
+            AreMagnitudesRoughlyEqual(1000000);
+            AreMagnitudesRoughlyEqual(-1000000);
+            AreMagnitudesRoughlyEqual((Rational)1.123456789);
+            AreMagnitudesRoughlyEqual(-(Rational)1.123456789);
+            AreMagnitudesRoughlyEqual((Rational)1000000000.123456789);
+            AreMagnitudesRoughlyEqual(-(Rational)1000000000.123456789);
         }
     }
 }

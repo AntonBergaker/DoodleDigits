@@ -54,7 +54,7 @@ namespace DoodleDigits.Core.Utilities {
                 return Rational.Zero;
             }
 
-            // Relocate exponent to proper value, 1023 for how doubles work and 52 for the denominator
+            // Relocate exponent to proper value, 1023 for how doubles work and 52 for the denominator if the mantissa was expressed as a rational
             exponent = exponent - 1023 - 52;
             
             // Add the leading 1 to mantissa
