@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using DoodleDigits.Core;
 using MahApps.Metro.Controls;
 
@@ -17,6 +18,8 @@ namespace DoodleDigits {
         public PresentationProperties PresentationProperties { get; }
         
         public ResultPresenter ResultPresenter { get; } = new();
+
+        private float zoomStep = 0.1f;
 
         private bool initialized = false;
         // If over 0, will block saving
@@ -46,6 +49,14 @@ namespace DoodleDigits {
                     this.Height = state.WindowDimensions.Y;
                     this.InputTextBox.Text = state.Content;
                     SetCaretIndex(state.CursorIndex);
+                    if (state.Zoom <= 0)
+                    {
+                        PresentationProperties.GridScale = 1;
+                    }
+                    else
+                    {
+                        PresentationProperties.GridScale = state.Zoom*zoomStep;
+                    }
                     blockSaving--;
                 }
             }
@@ -93,7 +104,8 @@ namespace DoodleDigits {
                 var state = new SerializedState(
                     this.InputTextBox.Text,
                     this.InputTextBox.CaretIndex,
-                    new() {X = this.Width, Y = this.Height});
+                    new() { X = this.Width, Y = this.Height },
+                    (int)Math.Round(PresentationProperties.GridScale/zoomStep));
 
                 await state.Save();
                 failedSaves = 0;
@@ -151,6 +163,35 @@ namespace DoodleDigits {
             if (settings.UnsavedChanges) {
                 await settings.Save();
             }
+        }
+
+        private void TextBoxKeyDownEvent(object sender, KeyEventArgs e)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
+            {
+                if (e.Key == Key.OemPlus)
+                {
+                    ZoomIn(sender, e);
+                }
+                if (e.Key == Key.OemMinus)
+                {
+                    ZoomOut(sender, e);
+                }
+            }
+        }
+        void ZoomOut(object sender, RoutedEventArgs e)
+        {
+            if (PresentationProperties.GridScale-zoomStep > 0)
+            {
+                PresentationProperties.GridScale -= zoomStep;
+                AutoSave();
+            }
+        }
+
+        void ZoomIn(object sender, RoutedEventArgs e)
+        {
+            PresentationProperties.GridScale += zoomStep;
+            AutoSave();
         }
     }
 }

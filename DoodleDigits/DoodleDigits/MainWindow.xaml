@@ -26,6 +26,9 @@
         </DataTemplate>
     </mah:MetroWindow.TitleTemplate>
     <Grid>
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding PresentationProperties.GridScale}" ScaleY="{Binding PresentationProperties.GridScale}" />
+        </Grid.LayoutTransform>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.Background>
@@ -45,7 +48,8 @@
                      FontFamily="Segoe UI"
                      FontWeight="Normal"
                      Margin="10 0 0 0"
-                     VerticalScrollBarVisibility="Disabled">
+                     VerticalScrollBarVisibility="Disabled"
+                     KeyDown="TextBoxKeyDownEvent">
                     <TextBox.ContextMenu>
                         <ContextMenu 
                         TextBlock.LineHeight="Auto"
@@ -81,6 +85,15 @@
                             <MenuItem 
                             Header="Clear All Text"
                             Click="ClickClear" 
+                        />
+                            <Separator/>
+                            <MenuItem 
+                            Header="Zoom In"
+                            Click="ZoomIn" 
+                        />
+                            <MenuItem 
+                            Header="Zoom Out"
+                            Click="ZoomOut" 
                         />
                             <Separator/>
                             <MenuItem

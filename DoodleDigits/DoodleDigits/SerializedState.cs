@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DoodleDigits {
     class SerializedState {
-        public SerializedState(string content, int cursorIndex, SerializedPoint windowDimensions) {
+        public SerializedState(string content, int cursorIndex, SerializedPoint windowDimensions, float zoom) {
             Content = content;
             CursorIndex = cursorIndex;
             WindowDimensions = windowDimensions;
+            Zoom = zoom;
         }
 
         [JsonPropertyName("content")]
@@ -23,6 +21,9 @@ namespace DoodleDigits {
 
         [JsonPropertyName("window_dimensions")]
         public SerializedPoint WindowDimensions { get; set; }
+
+        [JsonPropertyName("zoom_level")]
+        public float Zoom { get; set; }
 
         [JsonIgnore]
         private static string DirectoryPath => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Doodle Digits");

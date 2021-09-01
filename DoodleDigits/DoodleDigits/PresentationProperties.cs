@@ -83,6 +83,18 @@ namespace DoodleDigits {
             }
         }
 
+        private float gridScaleField;
+
+        public float GridScale
+        {
+            get => gridScaleField;
+            set
+            {
+                gridScaleField = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Brush labelTextColorField;
         public Brush LabelTextColor {
             get => labelTextColorField;
