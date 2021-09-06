@@ -42,9 +42,9 @@ namespace DoodleDigits.Core.Parsing.Ast
                         (TokenType.BooleanAnd, OperationType.BooleanAnd, BinaryOperations.BooleanAnd),
                         (TokenType.BooleanXor, OperationType.BooleanXor, BinaryOperations.BooleanXor),
                         (TokenType.BooleanOr, OperationType.BooleanOr, BinaryOperations.BooleanOr),
-                        (TokenType.BitwiseOr, OperationType.BitwiseOr, BinaryOperations.BitwiseAnd),
+                        (TokenType.BitwiseOr, OperationType.BitwiseOr, BinaryOperations.BitwiseOr),
                         (TokenType.BitwiseXor, OperationType.BitwiseXor, BinaryOperations.Xor),
-                        (TokenType.BitwiseAnd, OperationType.BitwiseAnd, BinaryOperations.BitwiseOr),
+                        (TokenType.BitwiseAnd, OperationType.BitwiseAnd, BinaryOperations.BitwiseAnd),
                     };
 
             TypeDictionary = new TwoWayDictionary<TokenType, OperationType>();

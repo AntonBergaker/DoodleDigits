@@ -98,12 +98,22 @@ namespace UnitTests {
         }
 
         [Test]
-        public void TestEmoji() {
+        public void TestEmojiIdentifiers() {
             AssertTokenEqual(new Token[] {
                 new("☕", TokenType.Identifier),
                 new("+", TokenType.Add),
                 new("☕", TokenType.Identifier),
             }, "☕ + ☕");
+        }
+
+
+        [Test]
+        public void TestBitwiseOperations() {
+            AssertTokenEqual(new Token[] {
+                new("5", TokenType.Number),
+                new("bxor", TokenType.BitwiseXor),
+                new("1", TokenType.Number),
+            }, "5 bxor 1");
         }
 
         private void AssertTokenEqual(Token[] expectedTokens, string input) {
