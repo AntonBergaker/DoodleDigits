@@ -81,9 +81,9 @@ namespace DoodleDigits.Core.Parsing
         private Expression ReadBinaryBooleanOr() => GenericReadBinary(TokenType.BooleanOr, ReadBinaryBooleanXor);
         private Expression ReadBinaryBooleanXor() => GenericReadBinary(TokenType.BooleanXor, ReadBinaryBooleanAnd);
         private Expression ReadBinaryBooleanAnd() => GenericReadBinary(TokenType.BooleanAnd, ReadBinaryBitwiseOr);
-        private Expression ReadBinaryBitwiseOr() => GenericReadBinary(TokenType.BooleanOr, ReadBinaryBitwiseXor);
-        private Expression ReadBinaryBitwiseXor() => GenericReadBinary(TokenType.BooleanXor, ReadBinaryBitwiseAnd);
-        private Expression ReadBinaryBitwiseAnd() => GenericReadBinary(TokenType.BooleanAnd, ReadComparison);
+        private Expression ReadBinaryBitwiseOr() => GenericReadBinary(TokenType.BitwiseOr, ReadBinaryBitwiseXor);
+        private Expression ReadBinaryBitwiseXor() => GenericReadBinary(TokenType.BitwiseXor, ReadBinaryBitwiseAnd);
+        private Expression ReadBinaryBitwiseAnd() => GenericReadBinary(TokenType.BitwiseAnd, ReadComparison);
 
         private static readonly TokenType[] ComparisonTokens = new[] {
             TokenType.Equals, TokenType.NotEquals, TokenType.GreaterOrEqualTo, TokenType.GreaterThan,

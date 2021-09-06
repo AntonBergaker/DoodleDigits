@@ -239,5 +239,38 @@ namespace UnitTests.Parsing {
                 ), "5a(5)"
             );
         }
+
+
+        [Test]
+        public void TestBitwiseOperations() {
+
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.BitwiseXor,
+                        new NumberLiteral("1")
+
+                ), "5 bxor 1"
+            );
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new NumberLiteral("5"),
+                    BinaryOperation.OperationType.BitwiseAnd,
+                    new NumberLiteral("1")
+
+                ), "5 band 1"
+            );
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new NumberLiteral("5"),
+                    BinaryOperation.OperationType.BitwiseXor,
+                    new NumberLiteral("1")
+
+                ), "5 bxor 1"
+            );
+        }
     }
 }
