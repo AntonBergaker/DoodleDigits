@@ -157,8 +157,7 @@ namespace DoodleDigits {
             }
         }
 
-        private void TextBoxKeyDownEvent(object sender, KeyEventArgs e)
-        {
+        private void TextBoxKeyDownEvent(object sender, KeyEventArgs e) {
             if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
             {
                 if (e.Key == Key.OemPlus)
@@ -171,8 +170,7 @@ namespace DoodleDigits {
                 }
             }
         }
-        private void ZoomOut(object sender, RoutedEventArgs e)
-        {
+        private void ZoomOut(object sender, RoutedEventArgs e) {
             PresentationProperties.ZoomTicks --;
 
             if (PresentationProperties.Zoom < 0) {
@@ -184,8 +182,7 @@ namespace DoodleDigits {
             }
         }
 
-        private void ZoomIn(object sender, RoutedEventArgs e)
-        {
+        private void ZoomIn(object sender, RoutedEventArgs e) {
             PresentationProperties.ZoomTicks++;
             PresentationProperties.GridScale = PresentationProperties.Zoom;
             AutoSave();
