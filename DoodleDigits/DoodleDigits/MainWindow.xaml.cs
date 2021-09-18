@@ -175,8 +175,7 @@ namespace DoodleDigits {
         {
             PresentationProperties.ZoomTicks --;
 
-            if (PresentationProperties.Zoom < 0)
-            {
+            if (PresentationProperties.Zoom < 0) {
                 PresentationProperties.ZoomTicks ++;
             } 
             else {
