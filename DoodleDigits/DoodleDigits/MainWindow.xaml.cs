@@ -160,12 +160,10 @@ namespace DoodleDigits {
         private void TextBoxKeyDownEvent(object sender, KeyEventArgs e) {
             if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
             {
-                if (e.Key == Key.OemPlus)
-                {
+                if (e.Key == Key.OemPlus) {
                     ZoomIn(sender, e);
                 }
-                if (e.Key == Key.OemMinus)
-                {
+                if (e.Key == Key.OemMinus) {
                     ZoomOut(sender, e);
                 }
             }
