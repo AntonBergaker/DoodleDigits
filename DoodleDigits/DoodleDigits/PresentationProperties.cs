@@ -25,6 +25,8 @@ namespace DoodleDigits {
         private readonly Brush inputTextColorLight = new SolidColorBrush(Color.FromRgb(0x11, 0x11, 0x11));
         private readonly Brush labelTextColorLight = new SolidColorBrush(Color.FromRgb(0x1E, 0x90, 0xFF));
 
+        public int ZoomTicks = 0;
+        public float Zoom => 1 + ZoomTicks * 0.1f;
 
         public PresentationProperties(MainWindow window, SettingsViewModel settings) {
             this.window = window;
@@ -79,6 +81,15 @@ namespace DoodleDigits {
             get => inputTextColorField;
             set {
                 inputTextColorField = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private float gridScaleField;
+        public float GridScale {
+            get => gridScaleField;
+            set {
+                gridScaleField = value;
                 OnPropertyChanged();
             }
         }
