@@ -47,10 +47,8 @@ namespace DoodleDigits {
                     this.Height = state.WindowDimensions.Y;
                     this.InputTextBox.Text = state.Content;
                     SetCaretIndex(state.CursorIndex);
-                    PresentationProperties.ZoomTicks = state.Zoom;
                     blockSaving--;
                 }
-                PresentationProperties.GridScale = PresentationProperties.Zoom;
             }
             catch {
                 // ignored
@@ -96,8 +94,8 @@ namespace DoodleDigits {
                 var state = new SerializedState(
                     this.InputTextBox.Text,
                     this.InputTextBox.CaretIndex,
-                    new() { X = this.Width, Y = this.Height },
-                    PresentationProperties.ZoomTicks);
+                    new() { X = this.Width, Y = this.Height }
+                );
 
                 await state.Save();
                 failedSaves = 0;
@@ -108,8 +106,7 @@ namespace DoodleDigits {
                     MessageBox.Show("Error saving the calculator state!\n" + ex.ToString());
                 }
             }
-
-            Debug.WriteLine("Saved");
+            
         }
         
 
@@ -159,30 +156,26 @@ namespace DoodleDigits {
 
         private void TextBoxKeyDownEvent(object sender, KeyEventArgs e) {
             if ((Keyboard.Modifiers & ModifierKeys.Control) != 0) {
-                if (e.Key == Key.OemPlus) {
+                if (e.Key is Key.OemPlus or Key.Add) {
                     ZoomIn(sender, e);
                 }
-                if (e.Key == Key.OemMinus) {
+                if (e.Key is Key.OemMinus or Key.Subtract) {
                     ZoomOut(sender, e);
                 }
             }
         }
-        private void ZoomOut(object sender, RoutedEventArgs e) {
-            PresentationProperties.ZoomTicks --;
-
-            if (PresentationProperties.Zoom < 0) {
-                PresentationProperties.ZoomTicks ++;
-            } 
-            else {
-                PresentationProperties.GridScale = PresentationProperties.Zoom;
-                AutoSave();
+        private async void ZoomOut(object sender, RoutedEventArgs e) {
+            settings.ZoomTicks --;
+            if (settings.UnsavedChanges) {
+                await settings.Save();
             }
         }
 
-        private void ZoomIn(object sender, RoutedEventArgs e) {
-            PresentationProperties.ZoomTicks++;
-            PresentationProperties.GridScale = PresentationProperties.Zoom;
-            AutoSave();
+        private async void ZoomIn(object sender, RoutedEventArgs e) {
+            settings.ZoomTicks++;
+            if (settings.UnsavedChanges) {
+                await settings.Save();
+            }
         }
     }
 }

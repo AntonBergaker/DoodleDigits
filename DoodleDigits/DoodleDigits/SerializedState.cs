@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace DoodleDigits {
     class SerializedState {
-        public SerializedState(string content, int cursorIndex, SerializedPoint windowDimensions, int zoom) {
+        public SerializedState(string content, int cursorIndex, SerializedPoint windowDimensions) {
             Content = content;
             CursorIndex = cursorIndex;
             WindowDimensions = windowDimensions;
-            Zoom = zoom;
         }
 
         [JsonPropertyName("content")]
@@ -21,9 +20,6 @@ namespace DoodleDigits {
 
         [JsonPropertyName("window_dimensions")]
         public SerializedPoint WindowDimensions { get; set; }
-
-        [JsonPropertyName("zoom_level")]
-        public int Zoom { get; set; }
 
         [JsonIgnore]
         private static string DirectoryPath => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Doodle Digits");

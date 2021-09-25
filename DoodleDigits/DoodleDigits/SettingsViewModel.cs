@@ -21,6 +21,14 @@ namespace DoodleDigits {
 
         public bool UnsavedChanges => settings.UnsavedChanges;
 
+        public int ZoomTicks {
+            get => settings.ZoomTicks;
+            set {
+                settings.ZoomTicks = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool DarkMode {
             get => settings.DarkMode;
             set {

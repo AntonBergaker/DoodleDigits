@@ -14,6 +14,9 @@ namespace DoodleDigits {
             [JsonPropertyName("dark_mode")]
             public bool DarkMode { get; set; }
 
+            [JsonPropertyName("zoom")]
+            public int ZoomTicks { get; set; }
+
         }
 
         private SettingsData data;
@@ -27,6 +30,19 @@ namespace DoodleDigits {
                     UnsavedChanges = true;
                 }
                 data.DarkMode = value;
+            }
+        }
+
+        public int ZoomTicks {
+            get => data.ZoomTicks;
+            set {
+                if (value < -8) {
+                    value = -8;
+                }
+                if (data.ZoomTicks != value) {
+                    UnsavedChanges = true;
+                }
+                data.ZoomTicks = value;
             }
         }
 

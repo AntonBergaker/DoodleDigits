@@ -27,7 +27,7 @@
     </mah:MetroWindow.TitleTemplate>
     <Grid>
         <Grid.LayoutTransform>
-            <ScaleTransform ScaleX="{Binding PresentationProperties.GridScale}" ScaleY="{Binding PresentationProperties.GridScale}" />
+            <ScaleTransform ScaleX="{Binding PresentationProperties.Zoom}" ScaleY="{Binding PresentationProperties.Zoom}" />
         </Grid.LayoutTransform>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Grid>
@@ -99,7 +99,7 @@
                             <MenuItem
                             Header="Enable Dark Mode"
                             IsCheckable="false"
-                            IsChecked="{Binding PresentationProperties.DarkMode}"
+                            IsChecked="{Binding PresentationProperties.DarkMode, Mode=OneWay}"
                             Click="ToggleDarkMode"
                         />
                         </ContextMenu>
@@ -170,7 +170,7 @@
                                         <MenuItem
                                             Header="Enable Dark Mode"
                                             IsCheckable="false"
-                                            IsChecked="{Binding PresentationProperties.DarkMode, Source={x:Reference mainWindow}}"
+                                            IsChecked="{Binding PresentationProperties.DarkMode, Source={x:Reference mainWindow}, Mode=OneWay}"
                                             Click="ToggleDarkMode"
                                         />
                                     </ContextMenu>

@@ -25,9 +25,6 @@ namespace DoodleDigits {
         private readonly Brush inputTextColorLight = new SolidColorBrush(Color.FromRgb(0x11, 0x11, 0x11));
         private readonly Brush labelTextColorLight = new SolidColorBrush(Color.FromRgb(0x1E, 0x90, 0xFF));
 
-        public int ZoomTicks = 0;
-        public float Zoom => 1 + ZoomTicks * 0.1f;
-
         public PresentationProperties(MainWindow window, SettingsViewModel settings) {
             this.window = window;
             imageSourceField = imageSourceLight;
@@ -35,10 +32,15 @@ namespace DoodleDigits {
             labelTextColorField = labelTextColorLight;
 
             DarkMode = settings.DarkMode;
+            ZoomTicks = settings.ZoomTicks;
+
             settings.PropertyChanged += (s, e) => {
                 switch (e.PropertyName) {
                     case nameof(settings.DarkMode):
                         DarkMode = settings.DarkMode;
+                        break;
+                    case nameof(settings.ZoomTicks):
+                        ZoomTicks = settings.ZoomTicks;
                         break;
                 }
             };
@@ -53,10 +55,22 @@ namespace DoodleDigits {
             }
         }
 
+        private int zoomTicksField;
+
+        public int ZoomTicks {
+            get => zoomTicksField;
+            set {
+                zoomTicksField = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(Zoom));
+            }
+        }
+        public float Zoom => 1 + ZoomTicks * 0.1f;
+
         private bool darkModeField;
         public bool DarkMode {
             get => darkModeField;
-            set {
+            private set {
                 darkModeField = value;
                 string theme;
                 if (darkModeField) {
@@ -79,17 +93,8 @@ namespace DoodleDigits {
         private Brush inputTextColorField;
         public Brush InputTextColor {
             get => inputTextColorField;
-            set {
+            private set {
                 inputTextColorField = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private float gridScaleField;
-        public float GridScale {
-            get => gridScaleField;
-            set {
-                gridScaleField = value;
                 OnPropertyChanged();
             }
         }
@@ -97,7 +102,7 @@ namespace DoodleDigits {
         private Brush labelTextColorField;
         public Brush LabelTextColor {
             get => labelTextColorField;
-            set {
+            private set {
                 labelTextColorField = value;
                 OnPropertyChanged();
             }
