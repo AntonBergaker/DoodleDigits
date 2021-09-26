@@ -81,7 +81,6 @@ namespace SourceGenerator {
             builder.Unindent();
             builder.AddLine("}");
             
-            File.WriteAllText("C:\\Users\\Anton\\Desktop\\uwu.cs", builder.ToString());
             context.AddSource("Generated_FunctionLibrary", builder.ToString());
         }
 
