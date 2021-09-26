@@ -16,7 +16,7 @@ namespace DoodleDigits.Core.Parsing.Ast
             Add,
             Subtract,
             Factorial,
-            Not
+            Not,
         }
 
         static UnaryOperation() {

@@ -113,25 +113,22 @@ namespace DoodleDigits.Core.Execution {
         private Value Calculate(NumberLiteral numberLiteral) {
             string number = numberLiteral.Number;
             int @base = 10;
-            bool trivial = true;
-            RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
+            RealValue.PresentedForm form = RealValue.PresentedForm.Decimal;
 
             if (number.StartsWith("0x")) {
                 @base = 16;
                 number = number[2..];
-                trivial = false;
                 form = RealValue.PresentedForm.Hex;
             }
 
             if (number.StartsWith("0b")) {
                 @base = 2;
                 number = number[2..];
-                trivial = false;
                 form = RealValue.PresentedForm.Binary;
             }
 
             if (RationalUtils.TryParse(number, out Rational result, 200, @base)) {
-                return new RealValue(result, trivial, form);
+                return new RealValue(result, true, form);
             }
 
             return new UndefinedValue();

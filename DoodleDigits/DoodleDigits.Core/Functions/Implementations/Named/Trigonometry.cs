@@ -31,7 +31,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             if (result is IConvertibleToReal convertibleToReal) {
                 RealValue realResult = convertibleToReal.ConvertToReal(context);
                 if (realResult.Value.IsZero == false) {
-                    return new RealValue(1 / realResult.Value);
+                    return new RealValue(1 / realResult.Value, false, realResult.Form);
                 }
             }
 
@@ -49,7 +49,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
                 if (realValue.Value.IsZero == false) {
-                    RealValue real = new RealValue(1 / realValue.Value);
+                    RealValue real = new RealValue(1 / realValue.Value, false, realValue.Form);
 
                     return trigArcFunction(real, context);
                 }
@@ -70,22 +70,22 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
                 if (rational == TauFourth) {
-                    return new RealValue(Rational.One);
+                    return new RealValue(Rational.One, false, realValue.Form);
                 }
 
                 if (rational == TauHalf) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
                 if (rational == TauThreeFourths) {
-                    return new RealValue(-Rational.One);
+                    return new RealValue(-Rational.One, false, realValue.Form);
                 }
 
-                return Value.FromDouble(Math.Sin((double) rational));
+                return Value.FromDouble(Math.Sin((double) rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -100,19 +100,19 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.One);
+                    return new RealValue(Rational.One, false, realValue.Form);
                 }
                 if (rational == TauFourth) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
                 if (rational == TauHalf) {
-                    return new RealValue(-Rational.One);
+                    return new RealValue(-Rational.One, false, realValue.Form);
                 }
                 if (rational == TauThreeFourths) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
-                return Value.FromDouble(Math.Cos((double)rational));
+                return Value.FromDouble(Math.Cos((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -127,7 +127,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
                 if (rational == TauFourth) {
                     return new UndefinedValue();
@@ -136,7 +136,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                     return new UndefinedValue();
                 }
 
-                return Value.FromDouble(Math.Tan((double)rational));
+                return Value.FromDouble(Math.Tan((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -162,7 +162,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 
-            return Value.FromDouble(Math.Asin((double)realValue.Value));
+            return Value.FromDouble(Math.Asin((double)realValue.Value), false, realValue.Form);
         }
 
         [CalculatorFunction("arccos", "acos")]
@@ -173,7 +173,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 
-            return Value.FromDouble(Math.Acos((double)realValue.Value));
+            return Value.FromDouble(Math.Acos((double)realValue.Value), false, realValue.Form);
         }
 
         [CalculatorFunction("arctan", "atan")]
@@ -184,7 +184,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 
-            return Value.FromDouble(Math.Atan((double)realValue.Value));
+            return Value.FromDouble(Math.Atan((double)realValue.Value), false, realValue.Form);
         }
 
         [CalculatorFunction("arcsec", "asec")]
@@ -199,7 +199,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             Value result = ArcTangent(value, context);
             if (result is IConvertibleToReal resultReal) {
                 RealValue realValue = resultReal.ConvertToReal(context);
-                return new RealValue(TauFourth - realValue.Value);
+                return new RealValue(TauFourth - realValue.Value, false, realValue.Form);
             }
         
 
@@ -213,15 +213,14 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("sinh")]
         public static Value SineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-
-                Rational rational = ConvertArgumentToReal(convertibleToReal, 0, context).Value;
-
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                Rational rational = realValue.Value;
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
                     return new RealValue(Rational.Zero);
                 }
 
-                return Value.FromDouble(Math.Sinh((double)rational));
+                return Value.FromDouble(Math.Sinh((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -230,15 +229,15 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("cosh")]
         public static Value CosineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-
-                Rational rational = ConvertArgumentToReal(convertibleToReal, 0, context).Value;
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                Rational rational = realValue.Value;
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
                     return new RealValue(Rational.One);
                 }
 
-                return Value.FromDouble(Math.Cosh((double)rational));
+                return Value.FromDouble(Math.Cosh((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -247,15 +246,15 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("tanh")]
         public static Value TangentHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-
-                Rational rational = ConvertArgumentToReal(convertibleToReal, 0, context).Value;
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                Rational rational = realValue.Value;
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
                     return new RealValue(Rational.Zero);
                 }
 
-                return Value.FromDouble(Math.Tanh((double)rational));
+                return Value.FromDouble(Math.Tanh((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -276,15 +275,15 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("arcsinh", "asinh")]
         public static Value ArcSineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-
-                Rational rational = ConvertArgumentToReal(convertibleToReal, 0, context).Value;
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                Rational rational = realValue.Value;
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
-                return Value.FromDouble(Math.Asinh((double)rational));
+                return Value.FromDouble(Math.Asinh((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -293,15 +292,15 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("arccosh", "acosh")]
         public static Value ArcCosineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-
-                Rational rational = ConvertArgumentToReal(convertibleToReal, 0, context).Value;
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                Rational rational = realValue.Value;
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.One) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
-                return Value.FromDouble(Math.Acosh((double)rational));
+                return Value.FromDouble(Math.Acosh((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();
@@ -310,15 +309,15 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("arctanh", "atanh")]
         public static Value ArcTangentHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
-
-                Rational rational = ConvertArgumentToReal(convertibleToReal, 0, context).Value;
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+                Rational rational = realValue.Value;
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
-                return Value.FromDouble(Math.Atanh((double)rational));
+                return Value.FromDouble(Math.Atanh((double)rational), false, realValue.Form);
             }
 
             return new UndefinedValue();

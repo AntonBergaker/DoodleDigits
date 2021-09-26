@@ -38,7 +38,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
             }
 
             if (value is RealValue real) {
-                return new RealValue(-real.Value);
+                return real.Clone(value: -real.Value);
             }
 
             return new UndefinedValue();
@@ -65,7 +65,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 val *= i;
             }
 
-            return new RealValue(val);
+            return new RealValue(val, false, value.Form);
         }
 
         public static Value UnaryFactorial(Value value, ExecutionContext<UnaryOperation> context) {
@@ -78,7 +78,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                     return IntegerFactorial(real);
                 }
 
-                return Value.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)));
+                return Value.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form);
             }
 
             return new UndefinedValue();

@@ -24,7 +24,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
                 rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
 
-                return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator);
+                return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator, false, lhsReal.Form);
             }
 
             return new UndefinedValue();
@@ -36,7 +36,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
                 rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
 
-                return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator);
+                return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator, false, lhsReal.Form);
             }
 
             return new UndefinedValue();
@@ -48,7 +48,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
                 rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
 
-                return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator);
+                return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator, false, lhsReal.Form);
             }
 
             return new UndefinedValue();
@@ -62,13 +62,12 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             {
                 if (rhs is TooBigValue tbvRhs && lhs is RealValue realLhs) {
                     if (realLhs.Value.IsZero) {
-                        return new RealValue(Rational.Zero);
-                        ;
+                        return new RealValue(Rational.Zero, false, realLhs.Form);
                     }
 
                     return tbvRhs.IsPositive
                         ? new TooBigValue(TooBigValue.Sign.Positive)
-                        : new RealValue(Rational.Zero);
+                        : new RealValue(Rational.Zero, false, realLhs.Form);
                     ;
                 }
             }
@@ -79,7 +78,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                     realRhs = realRhs.Round(context, context.Node.Rhs.Position);
 
                     if (realLhs.Value.IsZero) {
-                        return new RealValue(Rational.Zero);
+                        return new RealValue(Rational.Zero, false, realLhs.Form);
                     }
 
                     if (Rational.Abs(realRhs.Value) > 10000) {
@@ -91,10 +90,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                             RationalUtils.Floor(new Rational(
                                 realLhs.Value.Numerator,
                                 realRhs.Value.Denominator * BigInteger.Pow(2, -(int)realRhs.Value))
-                            )
+                            ), false, realLhs.Form
                         );
                     }
-                    return new RealValue(RationalUtils.Floor(realLhs.Value * Rational.Pow(2, (int)realRhs.Value)));
+                    return new RealValue(RationalUtils.Floor(realLhs.Value * Rational.Pow(2, (int)realRhs.Value)), false, realLhs.Form);
                 }
             }
             return new UndefinedValue();

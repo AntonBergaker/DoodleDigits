@@ -104,7 +104,13 @@ namespace DoodleDigits {
                     }
 
                     if (resultValue.Value is RealValue realValue) {
-                        return " = " + realValue.ToString(25, 30, "ᴇ");
+                        string formPrefix = "";
+                        if (realValue.Form == RealValue.PresentedForm.Hex) {
+                            formPrefix = "0x";
+                        } else if (realValue.Form == RealValue.PresentedForm.Binary) {
+                            formPrefix = "0b";
+                        }
+                        return " = " + formPrefix + realValue.ToString(25, 30, "ᴇ");
                     }
 
                     break;

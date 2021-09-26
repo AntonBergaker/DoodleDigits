@@ -36,7 +36,9 @@ namespace DoodleDigits.Core {
         BitwiseAnd,
         BitwiseXor,
         NewLine,
-        AbsoluteLine
+        AbsoluteLine,
+        As,
+        In,
     }
 
     public class Token : IEquatable<Token> {
@@ -77,6 +79,8 @@ namespace DoodleDigits.Core {
                 ("bitxor", TokenType.BitwiseXor),
                 ("band", TokenType.BitwiseAnd),
                 ("bitand", TokenType.BitwiseAnd),
+                ("in", TokenType.In),
+                ("as", TokenType.As),
             };
 
             Tokens = tokens.ToDictionary(x => x.token, x => x.type);
