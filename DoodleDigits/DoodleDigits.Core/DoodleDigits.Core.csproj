@@ -10,4 +10,11 @@
     <PackageReference Include="Rationals" Version="1.4.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj"
+                      ReferenceOutputAssembly="false"
+                      OutputItemType="Analyzer" />
+  </ItemGroup>
+
+
 </Project>
