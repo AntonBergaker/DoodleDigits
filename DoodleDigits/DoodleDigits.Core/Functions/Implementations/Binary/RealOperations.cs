@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Numerics;
 using DoodleDigits.Core.Execution;
-using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution.Functions.Binary {
+namespace DoodleDigits.Core.Functions.Implementations.Binary {
     public static partial class BinaryOperations {
         private static (RealValue lhs, RealValue rhs) ConvertToReal(IConvertibleToReal lhs, IConvertibleToReal rhs,
             ExecutionContext<BinaryOperation> context) {

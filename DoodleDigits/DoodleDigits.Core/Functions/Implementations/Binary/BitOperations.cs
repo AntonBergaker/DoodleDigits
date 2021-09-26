@@ -4,13 +4,14 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution.Functions.Binary {
+namespace DoodleDigits.Core.Functions.Implementations.Binary {
     public static partial class BinaryOperations {
 
         public static Value Xor(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {

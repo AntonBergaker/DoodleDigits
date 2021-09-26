@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Execution.Functions.Binary;
-using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
+using MathNet.Numerics;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution {
+namespace DoodleDigits.Core.Functions.Implementations.Named {
     public static partial class NamedFunctions {
 
         private static RealValue ConvertArgumentToReal(IConvertibleToReal value, int index, ExecutionContext<Function> context) {
             return value.ConvertToReal(context.ForNode(context.Node.Arguments[index]));
         }
         
-
+        [CalculatorFunction(1, 2, "log")]
         public static Value Log(Value[] values, ExecutionContext<Function> context) {
             if (values[0] is not IConvertibleToReal convertibleToReal0) {
                 return new UndefinedValue();
@@ -46,6 +43,7 @@ namespace DoodleDigits.Core.Execution {
             ));
         }
 
+        [CalculatorFunction("root")]
         public static Value Root(Value value, Value root, ExecutionContext<Function> context) {
 
             if (value is IConvertibleToReal rValue && root is IConvertibleToReal rRoot) {
@@ -62,6 +60,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("ln")]
         public static Value Ln(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
@@ -70,6 +69,7 @@ namespace DoodleDigits.Core.Execution {
             return Value.FromDouble(Rational.Log(ConvertArgumentToReal(convertibleToReal, 0, context).Value));
         }
 
+        [CalculatorFunction("gcd", "gcf")]
         public static Value GreatestCommonDivisor(Value value0, Value value1, ExecutionContext<Function> context) {
             if (value0 is not IConvertibleToReal value0Ctr || value1 is not IConvertibleToReal value1Ctr) {
                 return new UndefinedValue();
@@ -83,7 +83,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(BigInteger.GreatestCommonDivisor(value0Real.Value.Numerator, value1Real.Value.Numerator));
         }
 
-        
+        [CalculatorFunction("sqrt", "square_root")]
         public static Value Sqrt(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
@@ -92,6 +92,7 @@ namespace DoodleDigits.Core.Execution {
             return BinaryOperations.Power(ConvertArgumentToReal(convertibleToReal, 0, context), new RealValue(RationalUtils.Half));
         }
 
+        [CalculatorFunction("abs", "absolute")]
         public static Value Abs(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue tbv) {
                 return tbv.IsPositive ? tbv : tbv.Negate();
@@ -106,6 +107,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(Rational.Abs(realValue.Value));
         }
 
+        [CalculatorFunction("sign", "sig")]
         public static Value Sign(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue tbv) {
                 return tbv.IsPositive ? new RealValue(Rational.One) : new RealValue(-1);
@@ -120,6 +122,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(realValue.Value.Sign);
         }
 
+        [CalculatorFunction(1, int.MaxValue,  "max")]
         public static Value Max(Value[] values, ExecutionContext<Function> context) {
             Rational? max = null;
             
@@ -149,6 +152,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(max.Value);
         }
 
+        [CalculatorFunction(1, int.MaxValue, "min")]
         public static Value Min(Value[] values, ExecutionContext<Function> context) {
             Rational? min = null;
 
@@ -180,7 +184,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(min.Value);
         }
 
-
+        [CalculatorFunction("floor")]
         public static Value Floor(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue) {
                 return value;
@@ -194,6 +198,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(RationalUtils.Floor(realValue.Value));
         }
 
+        [CalculatorFunction("round")]
         public static Value Round(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue) {
                 return value;
@@ -207,6 +212,7 @@ namespace DoodleDigits.Core.Execution {
             return new RealValue(RationalUtils.Round(realValue.Value));
         }
 
+        [CalculatorFunction("ceil", "ceiling")]
         public static Value Ceil(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue) {
                 return value;

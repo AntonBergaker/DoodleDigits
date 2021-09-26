@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution {
+namespace DoodleDigits.Core.Functions.Implementations.Named {
     public static partial class NamedFunctions {
 
 
@@ -64,6 +60,7 @@ namespace DoodleDigits.Core.Execution {
 
         #region Non Hyperbolic Functions
 
+        [CalculatorFunction("sin")]
         public static Value Sine(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -94,6 +91,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("cos")]
         public static Value Cosine(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -120,6 +118,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("tan")]
         public static Value Tangent(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -143,17 +142,19 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("sec")]
         public static Value Secant(Value value, ExecutionContext<Function> context) =>
             TrigReciprocal(value, context, Cosine);
 
+        [CalculatorFunction("csc", "cosec")]
         public static Value Cosecant(Value value, ExecutionContext<Function> context) =>
             TrigReciprocal(value, context, Sine);
 
+        [CalculatorFunction("cot", "cotan", "ctg")]
         public static Value Cotangent(Value value, ExecutionContext<Function> context) =>
             TrigReciprocal(value, context, Tangent);
 
-
-
+        [CalculatorFunction("arcsin", "asin")]
         public static Value ArcSine(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
@@ -164,6 +165,7 @@ namespace DoodleDigits.Core.Execution {
             return Value.FromDouble(Math.Asin((double)realValue.Value));
         }
 
+        [CalculatorFunction("arccos", "acos")]
         public static Value ArcCosine(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
@@ -174,6 +176,7 @@ namespace DoodleDigits.Core.Execution {
             return Value.FromDouble(Math.Acos((double)realValue.Value));
         }
 
+        [CalculatorFunction("arctan", "atan")]
         public static Value ArcTangent(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
                 return new UndefinedValue();
@@ -184,12 +187,14 @@ namespace DoodleDigits.Core.Execution {
             return Value.FromDouble(Math.Atan((double)realValue.Value));
         }
 
+        [CalculatorFunction("arcsec", "asec")]
         public static Value ArcSecant(Value value, ExecutionContext<Function> context) =>
             TrigArcReciprocal(value, context, ArcCosine);
 
+        [CalculatorFunction("arccsc", "arccosec", "acsc", "acosec")]
         public static Value ArcCosecant(Value value, ExecutionContext<Function> context) =>
             TrigArcReciprocal(value, context, ArcSine);
-
+        [CalculatorFunction("arccot", "arccotan", "arcctg", "acot", "acotan", "actg")]
         public static Value ArcCotangent(Value value, ExecutionContext<Function> context) {
             Value result = ArcTangent(value, context);
             if (result is IConvertibleToReal resultReal) {
@@ -205,6 +210,7 @@ namespace DoodleDigits.Core.Execution {
 
 
         #region Hyperbolic functions
+        [CalculatorFunction("sinh")]
         public static Value SineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -221,6 +227,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("cosh")]
         public static Value CosineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -237,6 +244,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("tanh")]
         public static Value TangentHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -253,16 +261,19 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("sech")]
         public static Value SecantHyperbolic(Value value, ExecutionContext<Function> context) =>
             TrigReciprocal(value, context, CosineHyperbolic);
 
+        [CalculatorFunction("csch", "cosech")]
         public static Value CosecantHyperbolic(Value value, ExecutionContext<Function> context) =>
             TrigReciprocal(value, context, SineHyperbolic);
 
+        [CalculatorFunction("coth", "cotanh", "ctgh")]
         public static Value CotangentHyperbolic(Value value, ExecutionContext<Function> context) =>
             TrigReciprocal(value, context, TangentHyperbolic);
 
-
+        [CalculatorFunction("arcsinh", "asinh")]
         public static Value ArcSineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -279,6 +290,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("arccosh", "acosh")]
         public static Value ArcCosineHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -295,6 +307,7 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("arctanh", "atanh")]
         public static Value ArcTangentHyperbolic(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
 
@@ -311,12 +324,15 @@ namespace DoodleDigits.Core.Execution {
             return new UndefinedValue();
         }
 
+        [CalculatorFunction("arcsech", "asech")]
         public static Value ArcSecantHyperbolic(Value value, ExecutionContext<Function> context) =>
             TrigArcReciprocal(value, context, ArcCosineHyperbolic);
 
+        [CalculatorFunction("arccsch", "arccosech", "acsch", "acosech")]
         public static Value ArcCosecantHyperbolic(Value value, ExecutionContext<Function> context) =>
             TrigArcReciprocal(value, context, ArcSineHyperbolic);
 
+        [CalculatorFunction("arccoth", "arccotanh", "arcctgh", "acoth", "acotanh", "actgh")]
         public static Value ArcCotangentHyperbolic(Value value, ExecutionContext<Function> context) =>
             TrigArcReciprocal(value, context, ArcTangentHyperbolic);
 

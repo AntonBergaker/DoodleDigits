@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution.Functions.Binary {
+namespace DoodleDigits.Core.Functions.Implementations.Binary {
     public static partial class BinaryOperations {
         public static Value Equals(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {
             {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DoodleDigits.Core.Execution;
-using DoodleDigits.Core.Execution.Functions;
+using DoodleDigits.Core.Functions.Implementations;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Utilities;
 
