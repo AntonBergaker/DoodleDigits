@@ -67,6 +67,8 @@ namespace DoodleDigits.Core.Execution {
                     return Calculate(f);
                 case Comparison ec:
                     return Calculate(ec);
+                case BaseCast bc:
+                    return Calculate(bc);
                 case ErrorNode error:
                     return new UndefinedValue();
                 default: throw new Exception("Expression not handled for " + expression.GetType());
@@ -210,5 +212,26 @@ namespace DoodleDigits.Core.Execution {
             return func(lhs, rhs, context.ForNode(bo));
         }
 
+        private Value Calculate(BaseCast baseCast) {
+            Value expression = Calculate(baseCast.Expression);
+
+            if (expression is TooBigValue) {
+                return expression;
+            }
+
+            if (expression is RealValue realValue) {
+                RealValue.PresentedForm form = baseCast.Target switch {
+                    BaseCast.TargetType.Hex => RealValue.PresentedForm.Hex,
+                    BaseCast.TargetType.Binary => RealValue.PresentedForm.Binary,
+                    BaseCast.TargetType.Decimal => RealValue.PresentedForm.Decimal,
+                    _ => RealValue.PresentedForm.Unset
+                };
+
+                return realValue.Clone(triviallyAchieved: false, form: form);
+
+            }
+
+            return expression;
+        }
     }
 }

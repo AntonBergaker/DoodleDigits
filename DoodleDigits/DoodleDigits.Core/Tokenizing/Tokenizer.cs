@@ -19,7 +19,7 @@ namespace DoodleDigits.Core {
 
             Dictionary<char, List<string>> charDictionary = new();
 
-            foreach (KeyValuePair<string, TokenType> pair in Token.Tokens) {
+            foreach (KeyValuePair<string, TokenType> pair in Token.SymbolTokens) {
                 char c = pair.Key[0];
 
                 List<string>? list = charDictionary.GetValueOrDefault(c);
@@ -93,7 +93,7 @@ namespace DoodleDigits.Core {
                     int endIndex = index + str.Length;
                     if (input.Length >= endIndex && input[index..endIndex] == str) {
                         index += str.Length;
-                        return new Token(str, Token.Tokens[str], startIndex..index);
+                        return new Token(str, Token.SymbolTokens[str], startIndex..index);
                     }
                 }
             }
@@ -102,7 +102,13 @@ namespace DoodleDigits.Core {
                 while (CanRead && IsIdentifierCharacter(index, out readLength)) {
                     index+= readLength;
                 }
-                return new Token(input[startIndex..index], TokenType.Identifier, startIndex..index);
+                string identifier = input[startIndex..index];
+
+                if (Token.TryTokenTypeForString(identifier, out TokenType type)) {
+                    return new Token(identifier, type, startIndex..index);
+                }
+
+                return new Token(identifier, TokenType.Identifier, startIndex..index);
             }
 
             index++;

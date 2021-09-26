@@ -42,11 +42,13 @@ namespace DoodleDigits.Core {
     }
 
     public class Token : IEquatable<Token> {
+        public static readonly Dictionary<string, TokenType> SymbolTokens;
 
-        public static readonly Dictionary<string, TokenType> Tokens;
+        private static readonly Dictionary<string, TokenType> stringToToken;
         private static readonly Dictionary<TokenType, string> tokenToString;
 
         static Token() {
+
             var tokens = new (string token, TokenType type)[] {             
                 ("+", TokenType.Add),
                 ("-", TokenType.Subtract),
@@ -65,14 +67,19 @@ namespace DoodleDigits.Core {
                 (">=", TokenType.GreaterOrEqualTo),
                 (">", TokenType.GreaterThan),
                 ("&&", TokenType.BooleanAnd),
-                ("and", TokenType.BooleanAnd),
                 ("||", TokenType.BooleanOr),
-                ("or", TokenType.BooleanOr),
                 ("^^", TokenType.BooleanXor),
-                ("xor", TokenType.BooleanXor),
                 ("!", TokenType.Exclamation),
                 ("<<", TokenType.ShiftLeft),
                 (">>", TokenType.ShiftRight),
+            };
+
+            SymbolTokens = tokens.ToDictionary(x => x.token, x => x.type);
+
+            tokens = tokens.Concat(new (string token, TokenType type)[] {
+                ("or", TokenType.BooleanOr),
+                ("xor", TokenType.BooleanXor),
+                ("and", TokenType.BooleanAnd),
                 ("bor", TokenType.BitwiseOr),
                 ("bitor", TokenType.BitwiseOr),
                 ("bxor", TokenType.BitwiseXor),
@@ -81,10 +88,9 @@ namespace DoodleDigits.Core {
                 ("bitand", TokenType.BitwiseAnd),
                 ("in", TokenType.In),
                 ("as", TokenType.As),
-            };
+            }).ToArray();
 
-            Tokens = tokens.ToDictionary(x => x.token, x => x.type);
-
+            stringToToken = tokens.ToDictionary(x => x.token, x => x.type);
             tokenToString = new Dictionary<TokenType, string>();
             foreach (var token in tokens) {
                 if (tokenToString.ContainsKey(token.type)) {
@@ -97,6 +103,10 @@ namespace DoodleDigits.Core {
 
         public static string StringForTokenType(TokenType type) {
             return tokenToString[type];
+        }
+
+        public static bool TryTokenTypeForString(string @string, out TokenType tokenType) {
+            return stringToToken.TryGetValue(@string, out tokenType);
         }
 
 

@@ -73,7 +73,8 @@ namespace DoodleDigits.Core.Utilities {
                     }
                 }
 
-                if (BigInteger.TryParse(numeratorString.ToString(),
+                // Leading 0 because of biginteger weirdness
+                if (BigInteger.TryParse("0" + numeratorString.ToString(),
                         @base == 16 ? NumberStyles.HexNumber : NumberStyles.Number, default,
                         out BigInteger numerator)
                     == false) {
@@ -285,7 +286,6 @@ namespace DoodleDigits.Core.Utilities {
         /// </summary>
         /// Copied straight from the rational library with base changed
         public static IEnumerable<char> Digits(this Rational rational, int @base) {
-
             var numerator = BigInteger.Abs(rational.Numerator);
             var denominator = BigInteger.Abs(rational.Denominator);
             var removeLeadingZeros = true;

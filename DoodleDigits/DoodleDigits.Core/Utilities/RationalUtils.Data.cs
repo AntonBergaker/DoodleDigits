@@ -32,13 +32,13 @@ namespace DoodleDigits.Core.Utilities {
         /// <summary>
         /// Returns the number of digits of the given number
         /// </summary>
-        public static int GetNumberOfDigits(BigInteger x) {
+        public static int GetNumberOfDigits(BigInteger x, int @base) {
             x = BigInteger.Abs(x);
 
             var digits = 0;
             while (x > 0) {
                 digits++;
-                x /= 10;
+                x /= @base;
             }
 
             return digits;
@@ -58,8 +58,8 @@ namespace DoodleDigits.Core.Utilities {
             // thanks to 0jpq0 for this magnitude algorithm
             // https://github.com/tompazourek/Rationals/issues/20#issue-398771661
 
-            var numeratorDigits = GetNumberOfDigits(rational.Numerator);
-            var denominatorDigits = GetNumberOfDigits(rational.Denominator);
+            var numeratorDigits = GetNumberOfDigits(rational.Numerator, @base);
+            var denominatorDigits = GetNumberOfDigits(rational.Denominator, @base);
 
             var magnitude = numeratorDigits - denominatorDigits;
 
