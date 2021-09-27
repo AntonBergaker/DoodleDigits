@@ -44,6 +44,9 @@ namespace DoodleDigits.Core.Utilities {
                     numeratorString.Append('-');
                 }
 
+                // Leading 0 because of biginteger weirdness
+                numeratorString.Append("0");
+
                 foreach (char @char in input) {
                     if (@char == '_' || @char == ' ') {
                         continue;
@@ -74,7 +77,7 @@ namespace DoodleDigits.Core.Utilities {
                 }
 
                 // Leading 0 because of biginteger weirdness
-                if (BigInteger.TryParse("0" + numeratorString.ToString(),
+                if (BigInteger.TryParse(numeratorString.ToString(),
                         @base == 16 ? NumberStyles.HexNumber : NumberStyles.Number, default,
                         out BigInteger numerator)
                     == false) {
