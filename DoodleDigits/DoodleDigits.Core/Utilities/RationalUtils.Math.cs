@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using Rationals;
@@ -26,6 +27,8 @@ namespace DoodleDigits.Core.Utilities {
             { 'f', 15 },
         };
 
+        private static readonly Dictionary<int, char> CharactersNumbers =
+            NumberCharacters.ToDictionary(x => x.Value, x => x.Key);
 
         public static readonly Rational Tau = RationalUtils.Parse(
                 "6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359");

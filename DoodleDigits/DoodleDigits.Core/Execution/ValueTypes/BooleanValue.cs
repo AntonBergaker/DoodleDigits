@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Globalization;
 using DoodleDigits.Core.Execution.Results;
+using Rationals;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
     public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
+        public enum PresentationForm {
+            Unset,
+            FromBooleanOperation,
+            FromComparison,
+        }
+        
         public readonly bool Value;
 
-        public BooleanValue(bool value) : this(value, false) { }
+        public readonly PresentationForm Form;
 
-        public BooleanValue(bool value, bool triviallyAchieved) : base(triviallyAchieved) {
+        public BooleanValue(bool value) : this(value, false, PresentationForm.Unset) { }
+
+        public BooleanValue(bool value, bool triviallyAchieved, PresentationForm presentationForm) : base(triviallyAchieved) {
             Value = value;
+            Form = presentationForm;
         }
 
         public override string ToString() {
@@ -17,7 +27,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public RealValue ConvertToReal() {
-            return new RealValue(Value ? 1 : 0);
+            return new RealValue(Value ? Rational.One : Rational.Zero);
         }
 
         public RealValue ConvertToReal(ExecutionContext context) {
@@ -47,7 +57,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved);
+            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved, PresentationForm.Unset);
+        }
+
+        public Value Clone(bool? triviallyAchieved = null, PresentationForm? form = null) {
+            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved, form ?? this.Form);
         }
     }
 }

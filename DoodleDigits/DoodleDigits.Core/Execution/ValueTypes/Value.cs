@@ -12,7 +12,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             TriviallyAchieved = triviallyAchieved;
         }
 
-        public static Value FromDouble(double value, bool resultOfInfinity = false) {
+        public static Value FromDouble(double value, bool triviallyAchieved, RealValue.PresentedForm form, bool resultOfInfinity = false) {
             if (double.IsPositiveInfinity(value)) {
                 return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.PositiveInfinity : TooBigValue.Sign.Positive);
             }
@@ -25,7 +25,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
                 return new UndefinedValue();
             }
 
-            return new RealValue(RationalUtils.FromDouble(value));
+            return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
         }
 
         public abstract bool Equals(Value? other);

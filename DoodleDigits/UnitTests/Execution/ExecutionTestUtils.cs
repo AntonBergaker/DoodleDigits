@@ -24,10 +24,7 @@ namespace UnitTests.Execution {
         }
 
         public static void AssertEqual(Value expected, string input) {
-
-            Calculator calculator = new(FunctionLibrary.Functions, ConstantLibrary.Constants);
-
-            var results = calculator.Calculate(input);
+            var results = CalculateString(input);
 
             foreach (Result result in results.Results) {
                 if (result is ResultError error) {
@@ -38,6 +35,29 @@ namespace UnitTests.Execution {
             ResultValue last = results.Results.OfType<ResultValue>().Last();
             
             Assert.AreEqual(expected, last.Value);
+        }
+
+        public static CalculationResult CalculateString(string input) {
+            Calculator calculator = new(FunctionLibrary.Functions, ConstantLibrary.Constants);
+
+            return calculator.Calculate(input);
+        }
+
+        public static Value CalculateValueString(string input) {
+            var result = CalculateString(input);
+
+            var first = result.Results.First();
+            if (first is not ResultValue rv) {
+                Assert.Fail("Input did not return a result");
+                throw new Exception();
+            }
+
+            if (rv.Value is UndefinedValue) {
+                Assert.Fail("Input resulted in an undefined value");
+                throw new Exception();
+            }
+
+            return rv.Value;
         }
     }
 }

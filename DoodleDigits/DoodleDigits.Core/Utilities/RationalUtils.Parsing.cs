@@ -14,6 +14,7 @@ namespace DoodleDigits.Core.Utilities {
             if (TryParse(input, out Rational result, maxMagnitude, @base) == false) {
                 throw new FormatException("Input is not a parseable rational");
             }
+
             return result;
         }
 
@@ -22,7 +23,8 @@ namespace DoodleDigits.Core.Utilities {
             return TryParseInternal(input, out rational, maxMagnitude, @base, true);
         }
 
-        public static bool TryParseInternal(string input, out Rational rational, int maxMagnitude, int @base, bool tryScientific) {
+        public static bool TryParseInternal(string input, out Rational rational, int maxMagnitude, int @base,
+            bool tryScientific) {
             if (@base == 10 && TryParseScientific(input, maxMagnitude, out Rational scientificRational)) {
                 rational = scientificRational;
                 return true;
@@ -41,6 +43,9 @@ namespace DoodleDigits.Core.Utilities {
                     input = input[1..];
                     numeratorString.Append('-');
                 }
+
+                // Leading 0 because of biginteger weirdness
+                numeratorString.Append("0");
 
                 foreach (char @char in input) {
                     if (@char == '_' || @char == ' ') {
@@ -61,16 +66,21 @@ namespace DoodleDigits.Core.Utilities {
                         denominatorMagnitude += 1;
                     }
 
-                    if (NumberCharacters.TryGetValue(@char, out int value)) {
+                    if (NumberCharacters.TryGetValue(char.ToLowerInvariant(@char), out int value)) {
                         if (value >= @base) {
                             return false;
                         }
-                    } else {
+                    }
+                    else {
                         return false;
                     }
                 }
 
-                if (BigInteger.TryParse(numeratorString.ToString(), @base == 16 ? NumberStyles.HexNumber : NumberStyles.Number, default, out BigInteger numerator) == false) {
+                // Leading 0 because of biginteger weirdness
+                if (BigInteger.TryParse(numeratorString.ToString(),
+                        @base == 16 ? NumberStyles.HexNumber : NumberStyles.Number, default,
+                        out BigInteger numerator)
+                    == false) {
                     return false;
                 }
 
@@ -81,7 +91,8 @@ namespace DoodleDigits.Core.Utilities {
                 rational = new Rational(numerator, denominator).CanonicalForm;
 
                 return true;
-            } else {
+            }
+            else {
                 BigInteger numerator = 0;
                 BigInteger denominator = 1;
 
@@ -121,7 +132,8 @@ namespace DoodleDigits.Core.Utilities {
                         }
 
                         numerator += value;
-                    } else {
+                    }
+                    else {
                         return false;
                     }
                 }
@@ -190,14 +202,15 @@ namespace DoodleDigits.Core.Utilities {
 
             if (postEValue < 0) {
                 rational = preEValue * new Rational(1, BigInteger.Pow(10, -postEValue));
-            } else {
+            }
+            else {
                 rational = preEValue * BigInteger.Pow(10, postEValue);
             }
 
             return true;
         }
 
-        public static string ToDecimalString(this Rational value, int maximumDecimals = 30) {
+        public static string ToDecimalString(this Rational value, int maximumDecimals = 30, int @base = 10) {
             value = value.CanonicalForm;
             StringBuilder sb = new StringBuilder(maximumDecimals);
 
@@ -205,14 +218,14 @@ namespace DoodleDigits.Core.Utilities {
                 sb.Append('-');
             }
 
-            int magnitude = value.Magnitude;
+            int magnitude = value.Magnitude(@base);
             if (magnitude < 0) {
                 sb.Append('0');
                 sb.Append('.');
                 sb.Append('0', -magnitude - 1);
             }
 
-            var enumerator = value.Digits;
+            var enumerator = value.Digits(@base);
             int index = 0;
             foreach (char c in enumerator) {
                 if (index > 0 && index == magnitude + 1) {
@@ -239,25 +252,26 @@ namespace DoodleDigits.Core.Utilities {
 
         }
 
-        public static string ToScientificString(this Rational value, int decimals = 10, string exponentCharacter = "E") {
+        public static string ToScientificString(this Rational value, int decimals = 10, int @base = 10, string exponentCharacter = "E") {
             value = value.CanonicalForm;
             if (value.IsZero) {
                 return "0";
             }
 
-            int magnitude = value.Magnitude;
+            int magnitude = value.Magnitude(@base);
 
             StringBuilder sb = new StringBuilder(decimals);
             if (value.Numerator < 0) {
                 sb.Append('-');
             }
 
-            var enumerator = value.Digits;
+            var enumerator = value.Digits(@base);
             int index = 0;
             foreach (char c in enumerator) {
                 if (index == 1) {
                     sb.Append('.');
                 }
+
                 sb.Append(c);
                 index++;
                 if (index > decimals) {
@@ -269,6 +283,59 @@ namespace DoodleDigits.Core.Utilities {
             return $"{sb}{exponentCharacter}{magnitude}";
         }
 
+        /// <summary>
+        /// Enumerates significant digits of the rational number with the given base
+        /// Omits leading and trailing zeros (only exception is number zero).
+        /// </summary>
+        /// Copied straight from the rational library with base changed
+        public static IEnumerable<char> Digits(this Rational rational, int @base) {
+            var numerator = BigInteger.Abs(rational.Numerator);
+            var denominator = BigInteger.Abs(rational.Denominator);
+            var removeLeadingZeros = true;
+            var returnedAny = false;
+            while (numerator > 0) {
+                var divided = BigInteger.DivRem(numerator, denominator, out var rem);
+
+                var digits = divided.ToStringBase(@base);
+
+                if (rem == 0)
+                    digits = digits.TrimEnd('0'); // remove trailing zeros
+
+                foreach (var digit in digits) {
+                    if (removeLeadingZeros && digit == '0')
+                        continue;
+
+                    yield return digit;
+                    removeLeadingZeros = false;
+                    returnedAny = true;
+                }
+
+                numerator = rem * @base;
+            }
+
+            if (!returnedAny)
+                yield return '0';
+        }
+
+        private static string ToStringBase(this BigInteger integer, int @base) {
+            if (@base == 10) {
+                return integer.ToString(CultureInfo.InvariantCulture);
+            }
+            if (@base == 16) {
+                return integer.ToString("X", CultureInfo.InvariantCulture);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            while (integer > 0) {
+                var divided= BigInteger.DivRem(integer, @base, out var rem);
+
+                sb.Insert(0, CharactersNumbers[(int)rem]);
+
+                integer = divided;
+            }
+
+            return sb.ToString();
+        }
 
     }
 }

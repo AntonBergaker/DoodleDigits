@@ -67,6 +67,8 @@ namespace DoodleDigits.Core.Execution {
                     return Calculate(f);
                 case Comparison ec:
                     return Calculate(ec);
+                case BaseCast bc:
+                    return Calculate(bc);
                 case ErrorNode error:
                     return new UndefinedValue();
                 default: throw new Exception("Expression not handled for " + expression.GetType());
@@ -113,25 +115,22 @@ namespace DoodleDigits.Core.Execution {
         private Value Calculate(NumberLiteral numberLiteral) {
             string number = numberLiteral.Number;
             int @base = 10;
-            bool trivial = true;
-            RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
+            RealValue.PresentedForm form = RealValue.PresentedForm.Decimal;
 
             if (number.StartsWith("0x")) {
                 @base = 16;
                 number = number[2..];
-                trivial = false;
                 form = RealValue.PresentedForm.Hex;
             }
 
             if (number.StartsWith("0b")) {
                 @base = 2;
                 number = number[2..];
-                trivial = false;
                 form = RealValue.PresentedForm.Binary;
             }
 
             if (RationalUtils.TryParse(number, out Rational result, 200, @base)) {
-                return new RealValue(result, trivial, form);
+                return new RealValue(result, true, form);
             }
 
             return new UndefinedValue();
@@ -213,5 +212,26 @@ namespace DoodleDigits.Core.Execution {
             return func(lhs, rhs, context.ForNode(bo));
         }
 
+        private Value Calculate(BaseCast baseCast) {
+            Value expression = Calculate(baseCast.Expression);
+
+            if (expression is TooBigValue) {
+                return expression;
+            }
+
+            if (expression is RealValue realValue) {
+                RealValue.PresentedForm form = baseCast.Target switch {
+                    BaseCast.TargetType.Hex => RealValue.PresentedForm.Hex,
+                    BaseCast.TargetType.Binary => RealValue.PresentedForm.Binary,
+                    BaseCast.TargetType.Decimal => RealValue.PresentedForm.Decimal,
+                    _ => RealValue.PresentedForm.Unset
+                };
+
+                return realValue.Clone(triviallyAchieved: false, form: form);
+
+            }
+
+            return expression;
+        }
     }
 }

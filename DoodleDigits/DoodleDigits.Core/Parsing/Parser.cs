@@ -75,7 +75,27 @@ namespace DoodleDigits.Core.Parsing
         }
 
         private Expression ReadExpression() {
-            return ReadBinaryBooleanOr();
+            return ReadBaseCast();
+        }
+
+        private Expression ReadBaseCast() {
+            Expression expression = ReadBinaryBooleanOr();
+
+            if (reader.Peek().Type is TokenType.As or TokenType.In) {
+                reader.Skip();
+
+                Token type = reader.Peek();
+
+                if (type.Type != TokenType.Identifier) {
+                    errors.Add(new ParseError(type.Position, $"{type.Content} is not a base identifier"));
+                    return expression;
+                }
+                reader.Skip();
+
+                return new BaseCast(expression, BaseCast.StringToTarget(type.Content), expression.Position.Start..type.Position.End);
+            }
+
+            return expression;
         }
 
         private Expression ReadBinaryBooleanOr() => GenericReadBinary(TokenType.BooleanOr, ReadBinaryBooleanXor);

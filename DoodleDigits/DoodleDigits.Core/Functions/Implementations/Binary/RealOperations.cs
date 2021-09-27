@@ -29,7 +29,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
             var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new RealValue((result.lhs.Value + result.rhs.Value).CanonicalForm);
+            return new RealValue((result.lhs.Value + result.rhs.Value).CanonicalForm, false, result.lhs.Form);
         }
 
         public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -46,7 +46,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
             var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new RealValue((result.lhs.Value - result.rhs.Value).CanonicalForm);
+            return new RealValue((result.lhs.Value - result.rhs.Value).CanonicalForm, false, result.lhs.Form);
         }
 
 
@@ -73,7 +73,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return new UndefinedValue();
             }
 
-            return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm);
+            return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm, false, result.lhs.Form);
         }
 
         public static Value Multiply(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -111,7 +111,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
             var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new RealValue((result.lhs.Value * result.rhs.Value).CanonicalForm);
+            return new RealValue((result.lhs.Value * result.rhs.Value).CanonicalForm, false, result.lhs.Form);
         }
 
 
@@ -134,7 +134,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
 
-            return new RealValue(result.lhs.Value.Modulus(result.rhs.Value).CanonicalForm);
+            return new RealValue(result.lhs.Value.Modulus(result.rhs.Value).CanonicalForm, false, result.lhs.Form);
         }
 
 
@@ -175,7 +175,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 }
             }
 
-            return Value.FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()));
+            return Value.FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()), false, lhs.Form);
         }
 
 

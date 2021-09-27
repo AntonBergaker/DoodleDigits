@@ -34,11 +34,18 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             int magnitude = Value.Magnitude;
             int numOfDigits = Math.Abs(magnitude);
 
+            int @base = Form switch {
+                PresentedForm.Decimal => 10,
+                PresentedForm.Binary => 2,
+                PresentedForm.Hex => 16,
+                _ => 10
+            };
+
             if (numOfDigits > maxNumberOfDigits) {
-                return Value.ToScientificString(scientificDecimals, exponentCharacter);
+                return Value.ToScientificString(scientificDecimals, @base, exponentCharacter);
             }
 
-            return Value.ToDecimalString(scientificDecimals);
+            return Value.ToDecimalString(scientificDecimals, @base);
         }
 
         
@@ -56,6 +63,18 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public override Value Clone(bool? triviallyAchieved = null) {
             return new RealValue(Value, triviallyAchieved ?? this.TriviallyAchieved, Form);
+        }
+
+        public RealValue Clone(Rational? value = null, bool? triviallyAchieved = null, PresentedForm? form = null) {
+            value ??= this.Value;
+            triviallyAchieved ??= this.TriviallyAchieved;
+            form ??= this.Form;
+
+            if (triviallyAchieved == this.TriviallyAchieved && form == this.Form && this.Value == value) {
+                return this;
+            }
+
+            return new RealValue(value.Value, triviallyAchieved.Value, form.Value);
         }
 
         public BooleanValue ConvertToBool() {
