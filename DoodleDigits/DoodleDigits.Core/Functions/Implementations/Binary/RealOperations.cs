@@ -24,12 +24,16 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return rhs;
             }
 
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
+            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
+                var result = ConvertToReal(ctrLhs, ctrRhs, context);
+                return new RealValue((result.lhs.Value + result.rhs.Value).CanonicalForm, false, result.lhs.Form);
             }
 
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new RealValue((result.lhs.Value + result.rhs.Value).CanonicalForm, false, result.lhs.Form);
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -41,12 +45,16 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return tbvRhs.Negate();
             }
 
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
+            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
+                var result = ConvertToReal(ctrLhs, ctrRhs, context);
+                return new RealValue((result.lhs.Value - result.rhs.Value).CanonicalForm, false, result.lhs.Form);
             }
 
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new RealValue((result.lhs.Value - result.rhs.Value).CanonicalForm, false, result.lhs.Form);
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
 
@@ -64,24 +72,19 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return new RealValue(0);
             }
 
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
+            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
+                var result = ConvertToReal(ctrLhs, ctrRhs, context);
+                return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm, false, result.lhs.Form);
             }
 
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            if (result.rhs.Value == 0) {
-                return new UndefinedValue();
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
             }
 
-            return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm, false, result.lhs.Form);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value Multiply(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            // Undefined check, undefined times undefined is undefined
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue();
-            }
-
             // 0 checks, 0's always result in 0s
             {
                 if (lhs is RealValue rLhs && rLhs.Value == 0) {
@@ -106,35 +109,46 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return rhs;
             }
 
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
+
+            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
+                var result = ConvertToReal(ctrLhs, ctrRhs, context);
+                return new RealValue((result.lhs.Value * result.rhs.Value).CanonicalForm, false, result.lhs.Form);
             }
 
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            return new RealValue((result.lhs.Value * result.rhs.Value).CanonicalForm, false, result.lhs.Form);
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
 
         public static Value Modulus(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is TooBigValue) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             if (rhs is TooBigValue) {
                 return lhs;
             }
 
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
+
+            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
+                var result = ConvertToReal(ctrLhs, ctrRhs, context);
+
+                if (result.rhs.Value == Rational.Zero) {
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                }
+
+                return new RealValue(result.lhs.Value.Modulus(result.rhs.Value).CanonicalForm, false, result.lhs.Form);
             }
 
-            var result = ConvertToReal(ctrLhs, ctrRhs, context);
-            if (result.rhs.Value == 0) {
-                return new UndefinedValue();
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
             }
 
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
 
-            return new RealValue(result.lhs.Value.Modulus(result.rhs.Value).CanonicalForm, false, result.lhs.Form);
         }
 
 
@@ -147,18 +161,22 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return rhs;
             }
 
-            if (lhs is not IConvertibleToReal ctrLhs || rhs is not IConvertibleToReal ctrRhs) {
-                return new UndefinedValue();
+
+            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
+                var result = ConvertToReal(ctrLhs, ctrRhs, context);
+                return Power(result.lhs, result.rhs);
             }
 
-            var (realValue0, realValue1) = ConvertToReal(ctrLhs, ctrRhs, context);
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
 
-            return Power(realValue0, realValue1);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value Power(RealValue lhs, RealValue rhs) {
             if (lhs.Value.IsZero && rhs.Value < Rational.Zero) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
             if (lhs.Value.IsZero) {

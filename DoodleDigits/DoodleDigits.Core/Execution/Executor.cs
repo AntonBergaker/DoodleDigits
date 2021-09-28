@@ -70,7 +70,7 @@ namespace DoodleDigits.Core.Execution {
                 case BaseCast bc:
                     return Calculate(bc);
                 case ErrorNode error:
-                    return new UndefinedValue();
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 default: throw new Exception("Expression not handled for " + expression.GetType());
             }
 
@@ -89,14 +89,14 @@ namespace DoodleDigits.Core.Execution {
                         $"Function expects {minParameters} parameters" : 
                         $"Function expects between {minParameters} and {maxParameters} parameters", 
                         function.Position));
-                    return new UndefinedValue();
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 }
 
                 return functionData.Function(function.Arguments.Select(x => Calculate(x)).ToArray(), context.ForNode(function));
             }
 
             results.Add(new ResultError($"Unknown function: {function.Identifier}", function.Position));
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private Value Calculate(Identifier identifier) {
@@ -109,7 +109,7 @@ namespace DoodleDigits.Core.Execution {
             }
 
             results.Add(new ResultError("Unknown identifier", identifier.Position));
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private Value Calculate(NumberLiteral numberLiteral) {
@@ -133,7 +133,7 @@ namespace DoodleDigits.Core.Execution {
                 return new RealValue(result, true, form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private Value Calculate(UnaryOperation unaryOperation) {
@@ -191,7 +191,7 @@ namespace DoodleDigits.Core.Execution {
                     Value result = func(lhs, rhs, i, equalsContext);
                     
                     if (result is not BooleanValue booleanValue) {
-                        return new UndefinedValue();
+                        return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                     }
 
                     if (booleanValue.Value == false) {

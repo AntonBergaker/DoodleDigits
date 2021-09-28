@@ -25,7 +25,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return real;
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
         }
 
         public static Value UnaryNegate(Value value, ExecutionContext<UnaryOperation> context) {
@@ -41,7 +41,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return real.Clone(value: -real.Value);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value UnaryNot(Value value, ExecutionContext<UnaryOperation> context) {
@@ -53,7 +53,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return new BooleanValue(!@bool.Value);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private static Value IntegerFactorial(RealValue value) {
@@ -81,7 +81,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return Value.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
     }
 }

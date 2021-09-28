@@ -18,21 +18,25 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction(1, 2, "log")]
         public static Value Log(Value[] values, ExecutionContext<Function> context) {
             if (values[0] is not IConvertibleToReal convertibleToReal0) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             var value = ConvertArgumentToReal(convertibleToReal0, 0, context);
+
+            if (value.Value <= Rational.Zero) {
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+            }
 
             if (values.Length == 1) {
                 return Value.FromDouble(Rational.Log10( value.Value ), false, value.Form);
             }
 
             if (values[1] is TooBigValue {IsPositive: true}) {
-                return new RealValue(0, false, value.Form);
+                return new RealValue(Rational.Zero, false, value.Form);
             }
 
             if (values[1] is not IConvertibleToReal convertibleToReal1) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             var @base = ConvertArgumentToReal(convertibleToReal1, 1, context);
@@ -51,47 +55,62 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 var dRoot = ConvertArgumentToReal(rRoot, 1, context);
 
                 if (dRoot.Value == Rational.Zero) {
-                    return new UndefinedValue();
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                }
+
+                if (dValue.Value < Rational.Zero && dRoot.Value.Modulus(2) == 0) {
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
                 }
 
                 return Value.FromDouble(Math.Pow((double) dValue.Value, (double) (1 / dRoot.Value)), false, dValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("ln")]
         public static Value Ln(Value value, ExecutionContext<Function> context) {
-            if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+            if (value is IConvertibleToReal convertibleToReal) {
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+                if (realValue.Value <= Rational.Zero) {
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                }
+
+                return Value.FromDouble(Rational.Log(realValue.Value), false, realValue.Form);
             }
 
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
-
-            return Value.FromDouble(Rational.Log(realValue.Value), false, realValue.Form);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("gcd", "gcf")]
         public static Value GreatestCommonDivisor(Value value0, Value value1, ExecutionContext<Function> context) {
-            if (value0 is not IConvertibleToReal value0Ctr || value1 is not IConvertibleToReal value1Ctr) {
-                return new UndefinedValue();
+            if (value0 is IConvertibleToReal value0Ctr && value1 is IConvertibleToReal value1Ctr) {
+                var value0Real = ConvertArgumentToReal(value0Ctr, 0, context);
+                var value1Real = ConvertArgumentToReal(value1Ctr, 0, context);
+                value0Real = value0Real.Round(context, context.Node.Arguments[0].Position);
+                value1Real = value1Real.Round(context, context.Node.Arguments[1].Position);
+
+                return new RealValue(BigInteger.GreatestCommonDivisor(value0Real.Value.Numerator, value1Real.Value.Numerator), false, value0Real.Form);
+
             }
 
-            var value0Real = ConvertArgumentToReal(value0Ctr, 0, context);
-            var value1Real = ConvertArgumentToReal(value1Ctr, 0, context);
-            value0Real = value0Real.Round(context, context.Node.Arguments[0].Position);
-            value1Real = value1Real.Round(context, context.Node.Arguments[1].Position);
-
-            return new RealValue(BigInteger.GreatestCommonDivisor(value0Real.Value.Numerator, value1Real.Value.Numerator), false, value0Real.Form);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("sqrt", "square_root")]
         public static Value Sqrt(Value value, ExecutionContext<Function> context) {
-            if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+            if (value is IConvertibleToReal convertibleToReal) {
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+                if (realValue.Value < Rational.Zero) {
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                }
+
+                return BinaryOperations.Power(realValue, new RealValue(RationalUtils.Half));
             }
 
-            return BinaryOperations.Power(ConvertArgumentToReal(convertibleToReal, 0, context), new RealValue(RationalUtils.Half));
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("abs", "absolute")]
@@ -100,13 +119,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return tbv.IsPositive ? tbv : tbv.Negate();
             }
 
-            if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+            if (value is IConvertibleToReal convertibleToReal) {
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+                return new RealValue(Rational.Abs(realValue.Value), false, realValue.Form);
             }
 
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
-
-            return new RealValue(Rational.Abs(realValue.Value), false, realValue.Form);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("sign", "sig")]
@@ -115,13 +134,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return tbv.IsPositive ? new RealValue(Rational.One) : new RealValue(-1);
             }
 
-            if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+            if (value is IConvertibleToReal convertibleToReal) {
+                RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
+
+                return new RealValue(realValue.Value.Sign, false, realValue.Form);
             }
 
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
-
-            return new RealValue(realValue.Value.Sign, false, realValue.Form);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction(1, int.MaxValue,  "max")]
@@ -151,7 +170,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
 
             if (max == null) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
             return new RealValue(max.Value, false, form);
         }
@@ -185,7 +204,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
 
             if (min == null) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
             return new RealValue(min.Value, false, form);
         }
@@ -197,7 +216,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
 
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -211,7 +230,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
 
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -225,7 +244,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
 
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);

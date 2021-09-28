@@ -26,8 +26,12 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
 
                 return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator, false, lhsReal.Form);
             }
+            
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value BitwiseOr(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -39,7 +43,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator, false, lhsReal.Form);
             }
 
-            return new UndefinedValue();
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value BitwiseAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -51,7 +59,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator, false, lhsReal.Form);
             }
 
-            return new UndefinedValue();
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value ShiftLeft(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -96,7 +108,12 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                     return new RealValue(RationalUtils.Floor(realLhs.Value * Rational.Pow(2, (int)realRhs.Value)), false, realLhs.Form);
                 }
             }
-            return new UndefinedValue();
+
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         public static Value ShiftRight(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -108,7 +125,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return ShiftLeft(lhs, new RealValue(-realRhs.Value), context);
             }
 
-            return new UndefinedValue();
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
     }

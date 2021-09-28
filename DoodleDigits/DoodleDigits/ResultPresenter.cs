@@ -95,8 +95,8 @@ namespace DoodleDigits {
                         return null;
                     }
 
-                    if (resultValue.Value is UndefinedValue) {
-                        return null;
+                    if (resultValue.Value is UndefinedValue undefinedValue) {
+                        return undefinedValue.Type == UndefinedValue.UndefinedType.Undefined ? " = undefined" : null;
                     }
 
                     if (resultValue.Value is BooleanValue booleanValue) {

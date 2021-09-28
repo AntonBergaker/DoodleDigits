@@ -19,31 +19,30 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             );
         }
 
-        public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
-                return new UndefinedValue();
+        private static Value BooleanOperation(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, 
+                                              Func<bool, bool, bool> func) {
+            if (lhs is IConvertibleToBool ctbLhs && rhs is IConvertibleToBool ctbRhs) {
+                var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
+                return new BooleanValue(func(boolLhs.Value, boolRhs.Value));
             }
 
-            var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
-            return new BooleanValue(boolLhs.Value && boolRhs.Value);
+            if (lhs is UndefinedValue || rhs is UndefinedValue) {
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+        }
+
+        public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            return BooleanOperation(lhs, rhs, context, (lhs, rhs) =>  lhs && rhs);
         }
 
         public static Value BooleanXor(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
-                return new UndefinedValue();
-            }
-
-            var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
-            return new BooleanValue(boolLhs.Value ^ boolRhs.Value);
+            return BooleanOperation(lhs, rhs, context, (lhs, rhs) => lhs ^ rhs);
         }
 
         public static Value BooleanOr(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is not IConvertibleToBool ctbLhs || rhs is not IConvertibleToBool ctbRhs) {
-                return new UndefinedValue();
-            }
-
-            var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context);
-            return new BooleanValue(boolLhs.Value || boolRhs.Value);
+            return BooleanOperation(lhs, rhs, context, (lhs, rhs) => lhs || rhs);
         }
     }
 

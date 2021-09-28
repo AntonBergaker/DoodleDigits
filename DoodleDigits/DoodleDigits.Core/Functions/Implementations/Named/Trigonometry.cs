@@ -35,7 +35,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 }
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 }
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         #region Non Hyperbolic Functions
@@ -88,7 +88,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Sin((double) rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("cos")]
@@ -115,7 +115,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Cos((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("tan")]
@@ -130,16 +130,16 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                     return new RealValue(Rational.Zero, false, realValue.Form);
                 }
                 if (rational == TauFourth) {
-                    return new UndefinedValue();
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
                 }
                 if (rational == -TauFourth) {
-                    return new UndefinedValue();
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
                 }
 
                 return Value.FromDouble(Math.Tan((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("sec")]
@@ -157,7 +157,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("arcsin", "asin")]
         public static Value ArcSine(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -168,7 +168,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("arccos", "acos")]
         public static Value ArcCosine(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -179,7 +179,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction("arctan", "atan")]
         public static Value ArcTangent(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -203,7 +203,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
         
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         #endregion
@@ -223,7 +223,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Sinh((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("cosh")]
@@ -240,7 +240,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Cosh((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("tanh")]
@@ -257,7 +257,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Tanh((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("sech")]
@@ -286,7 +286,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Asinh((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("arccosh", "acosh")]
@@ -303,7 +303,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Acosh((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("arctanh", "atanh")]
@@ -320,7 +320,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return Value.FromDouble(Math.Atanh((double)rational), false, realValue.Form);
             }
 
-            return new UndefinedValue();
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         [CalculatorFunction("arcsech", "asech")]

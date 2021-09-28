@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
     public class UndefinedValue : Value {
+        public enum UndefinedType {
+            Unset,
+            Error,
+            Undefined,
+        }
+
+        public UndefinedType Type { get; }
+
         public override string ToString() {
             return "undefined";
         }
@@ -19,9 +27,13 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new UndefinedValue();
+            return new UndefinedValue(Type);
         }
 
-        public UndefinedValue() : base(false) { }
+        public UndefinedValue() : this(UndefinedType.Unset) { }
+
+        public UndefinedValue(UndefinedType type) : base(false) {
+            Type = type;
+        }
     }
 }

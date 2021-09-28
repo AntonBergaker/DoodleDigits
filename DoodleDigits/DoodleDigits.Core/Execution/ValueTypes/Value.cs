@@ -22,7 +22,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             }
 
             if (double.IsNaN(value)) {
-                return new UndefinedValue();
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
             return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
