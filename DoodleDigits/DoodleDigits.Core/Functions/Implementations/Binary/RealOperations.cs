@@ -74,6 +74,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
 
             if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
                 var result = ConvertToReal(ctrLhs, ctrRhs, context);
+
+                if (result.rhs.Value == Rational.Zero) {
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                }
+
                 return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm, false, result.lhs.Form);
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace DoodleDigits.Core.Tokenizing {
     class TokenReader {
@@ -8,12 +9,15 @@ namespace DoodleDigits.Core.Tokenizing {
         public TokenReader(Token[] tokens) {
             this.tokens = tokens;
             index = 0;
+
+            int lastIndex = tokens.Last().Position.End.Value;
+            EofToken = new Token("eof", TokenType.EndOfFile, lastIndex..lastIndex);
         }
 
         public bool ReachedEnd => index >= tokens.Length;
         public int Position => Math.Min(index, tokens.Length);
 
-        private Token EofToken => new Token("eof", TokenType.EndOfFile, tokens.Length..tokens.Length);
+        private Token EofToken;
 
         private Token SafeRead(int index) {
             if (index >= tokens.Length) {

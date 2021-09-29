@@ -260,8 +260,6 @@ namespace DoodleDigits.Core.Parsing
                 end = expression.Position.End;
             }
 
-
-
             expression.Position = token.Position.Start..end;
             return expression;
         }
