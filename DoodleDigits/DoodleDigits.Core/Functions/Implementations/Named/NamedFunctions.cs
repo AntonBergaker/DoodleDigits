@@ -15,7 +15,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return value.ConvertToReal(context.ForNode(context.Node.Arguments[index]));
         }
         
-        [CalculatorFunction(1, 2, "log")]
+        [CalculatorFunction(FunctionExpectedType.Real, 1, 2, "log")]
         public static Value Log(Value[] values, ExecutionContext<Function> context) {
             if (values[0] is not IConvertibleToReal convertibleToReal0) {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -47,7 +47,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             ), false, value.Form);
         }
 
-        [CalculatorFunction("root")]
+        [CalculatorFunction(FunctionExpectedType.Real, "root")]
         public static Value Root(Value value, Value root, ExecutionContext<Function> context) {
 
             if (value is IConvertibleToReal rValue && root is IConvertibleToReal rRoot) {
@@ -68,7 +68,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction("ln")]
+        [CalculatorFunction(FunctionExpectedType.Real, "ln")]
         public static Value Ln(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -83,7 +83,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction("gcd", "gcf")]
+        [CalculatorFunction(FunctionExpectedType.Real, "gcd", "gcf")]
         public static Value GreatestCommonDivisor(Value value0, Value value1, ExecutionContext<Function> context) {
             if (value0 is IConvertibleToReal value0Ctr && value1 is IConvertibleToReal value1Ctr) {
                 var value0Real = ConvertArgumentToReal(value0Ctr, 0, context);
@@ -98,7 +98,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction("sqrt", "square_root")]
+        [CalculatorFunction(FunctionExpectedType.Real, "sqrt", "square_root")]
         public static Value Sqrt(Value value, ExecutionContext<Function> context) {
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
@@ -113,7 +113,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction("abs", "absolute")]
+        [CalculatorFunction(FunctionExpectedType.Real | FunctionExpectedType.Vector, "abs", "absolute")]
         public static Value Abs(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue tbv) {
                 return tbv.IsPositive ? tbv : tbv.Negate();
@@ -128,7 +128,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction("sign", "sig")]
+        [CalculatorFunction(FunctionExpectedType.Real, "sign", "sig")]
         public static Value Sign(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue tbv) {
                 return tbv.IsPositive ? new RealValue(Rational.One) : new RealValue(-1);
@@ -143,7 +143,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction(1, int.MaxValue,  "max")]
+        [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue,  "max")]
         public static Value Max(Value[] values, ExecutionContext<Function> context) {
             Rational? max = null;
             RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
@@ -175,7 +175,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new RealValue(max.Value, false, form);
         }
 
-        [CalculatorFunction(1, int.MaxValue, "min")]
+        [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "min")]
         public static Value Min(Value[] values, ExecutionContext<Function> context) {
             Rational? min = null;
             RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
@@ -209,7 +209,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new RealValue(min.Value, false, form);
         }
 
-        [CalculatorFunction("floor")]
+        [CalculatorFunction(FunctionExpectedType.Real, "floor")]
         public static Value Floor(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue) {
                 return value;
@@ -223,7 +223,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new RealValue(RationalUtils.Floor(realValue.Value), false, realValue.Form);
         }
 
-        [CalculatorFunction("round")]
+        [CalculatorFunction(FunctionExpectedType.Real, "round")]
         public static Value Round(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue) {
                 return value;
@@ -237,7 +237,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new RealValue(RationalUtils.Round(realValue.Value), false, realValue.Form);
         }
 
-        [CalculatorFunction("ceil", "ceiling")]
+        [CalculatorFunction(FunctionExpectedType.Real, "ceil", "ceiling")]
         public static Value Ceil(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue) {
                 return value;
