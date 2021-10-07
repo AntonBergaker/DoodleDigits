@@ -119,6 +119,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return tbv.IsPositive ? tbv : tbv.Negate();
             }
 
+            if (value is MatrixValue) {
+                return VectorFunctions.Magnitude(value, context);
+            }
+
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 

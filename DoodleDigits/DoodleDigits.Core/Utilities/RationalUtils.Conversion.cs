@@ -44,6 +44,10 @@ namespace DoodleDigits.Core.Utilities {
         /// <param name="input">Input double</param>
         /// <returns>Output rational</returns>
         public static Rational FromDouble(double input) {
+            if (double.IsNaN(input) || double.IsInfinity(input)) {
+                throw new Exception($"Double {input} can not be expressed as a rational");
+            }
+
             long bits = BitConverter.DoubleToInt64Bits(input);
 
             int sign = (int)(bits >> 63);

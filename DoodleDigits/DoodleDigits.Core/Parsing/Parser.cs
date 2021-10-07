@@ -20,15 +20,20 @@ namespace DoodleDigits.Core.Parsing
     }
 
     public class Parser {
-        private readonly HashSet<string> functionNames;
+        private readonly Dictionary<string, FunctionData> functions;
         private readonly Tokenizer tokenizer;
         private TokenReader reader;
         private readonly List<ParseError> errors;
 
         private bool insideAbsoluteExpression;
 
-        public Parser(IEnumerable<string> functionNames) {
-            this.functionNames = functionNames.ToHashSet();
+        public Parser(IEnumerable<FunctionData> functions) { 
+            this.functions = new();
+            foreach (FunctionData function in functions) {
+                foreach (string functionName in function.Names) {
+                    this.functions.Add(functionName, function);
+                }
+            }
             tokenizer = new Tokenizer();
             reader = null!;
             errors = new List<ParseError>();
@@ -214,7 +219,8 @@ namespace DoodleDigits.Core.Parsing
         private Expression ReadLiteral(Token token) {
             return token.Type switch {
                 TokenType.AbsoluteLine => ReadAbsoluteExpression(token),
-                TokenType.ParenthesisOpen => ReadParenthesis(token),
+                TokenType.ParenthesisOpen => ReadVectorOrParenthesis(token),
+                TokenType.BracketOpen => ReadVectorOrParenthesis(token),
                 TokenType.Number => new NumberLiteral(token.Content, token.Position),
                 TokenType.Identifier => ReadIdentifier(token),
                 _ => new ErrorNode()
@@ -243,24 +249,48 @@ namespace DoodleDigits.Core.Parsing
         }
 
 
-        private Expression ReadParenthesis(Token token) {
+        private Expression ReadVectorOrParenthesis(Token token) {
             // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
             bool wasInsideAbsolute = insideAbsoluteExpression;
             insideAbsoluteExpression = false;
 
             Expression expression = ReadExpression();
 
-            insideAbsoluteExpression = wasInsideAbsolute;
 
-            // This should be a parenthesis
-            Token nextToken = reader.Read();
-            Index end = nextToken.Position.End;
-            if (nextToken.Type != TokenType.ParenthesisClose) {
-                errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
-                end = expression.Position.End;
+            // This should be a parenthesis if parenthesis, or a comma if a vector
+            Token nextToken = reader.Peek();
+            TokenType expectedEnd = token.Type == TokenType.BracketOpen ? TokenType.BracketClose : TokenType.ParenthesisClose;
+            if (nextToken.Type == expectedEnd) {
+                reader.Skip();
+                expression.Position = token.Position.Start..nextToken.Position.End;
+                insideAbsoluteExpression = wasInsideAbsolute;
+                return expression;
+            }
+            if (nextToken.Type == TokenType.Comma) {
+                List<Expression> expressions = new() { expression };
+                while (nextToken.Type == TokenType.Comma) {
+                    reader.Skip();
+                    Expression nextExpression = ReadExpression();
+                    if (nextExpression is not ErrorNode) {
+                        expressions.Add(nextExpression);
+                    }
+                    nextToken = reader.Peek();
+                }
+
+                expression = new VectorDecleration(expressions, token.Position.Start..expressions.Last().Position.End);
+
+                if (nextToken.Type == expectedEnd) {
+                    reader.Skip();
+                    expression.Position = token.Position.Start..nextToken.Position.End;
+                    insideAbsoluteExpression = wasInsideAbsolute;
+                    return expression;
+                }
             }
 
-            expression.Position = token.Position.Start..end;
+            // If neither, flag as unclosed parenthesis and return
+            errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
+            expression.Position = token.Position.Start..expression.Position.End;
+            insideAbsoluteExpression = wasInsideAbsolute;
             return expression;
         }
 
@@ -276,7 +306,7 @@ namespace DoodleDigits.Core.Parsing
                 }
             }
 
-            if (functionNames.Contains(token.Content.ToLower())) {
+            if (functions.ContainsKey(token.Content.ToLower())) {
                 return ReadFunction(token);
             }
 
@@ -284,6 +314,10 @@ namespace DoodleDigits.Core.Parsing
         }
 
         private Expression ReadFunction(Token token) {
+            bool expectsVector = false;
+            if (functions.TryGetValue(token.Content, out var functionData)) {
+                expectsVector = (functionData.ExpectedType & Functions.FunctionExpectedType.Vector) > 0;
+            }
             Token next = reader.Peek();
             Index start = token.Position.Start;
             Index end = token.Position.End;
@@ -291,7 +325,7 @@ namespace DoodleDigits.Core.Parsing
                 // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
                 bool wasInsideAbsolute = insideAbsoluteExpression;
                 insideAbsoluteExpression = false;
-
+               
                 List<Expression> parameters = new();
                 reader.Skip();
 
@@ -321,6 +355,10 @@ namespace DoodleDigits.Core.Parsing
                     }
 
                 }
+
+                if (expectsVector && functionData?.ParameterCount.End.Value == 1 && parameters.Count > 1) {
+                    return new Function(token.Content, new[] { new VectorDecleration(parameters, next.Position.Start..end) }, start..end);
+                } 
 
                 return new Function(token.Content, parameters, start..end);
             }

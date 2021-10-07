@@ -91,6 +91,21 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
         }
 
         public static Value Multiply(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            // Vector calculations
+            if (lhs is MatrixValue lhsMatrix && rhs is MatrixValue rhsMatrix) {
+                throw new NotImplementedException();
+            }
+            
+            if (lhs is MatrixValue && rhs is IConvertibleToReal ||
+                rhs is MatrixValue && lhs is IConvertibleToReal) {
+                
+                MatrixValue matrix = lhs as MatrixValue ?? (MatrixValue)rhs;
+                IConvertibleToReal ctr = lhs as IConvertibleToReal ?? (IConvertibleToReal)rhs;
+                RealValue realValue = ctr.ConvertToReal(context);
+
+                return matrix.SelectAll(x => new RealValue( x.Value * realValue.Value) );
+            }
+
             // 0 checks, 0's always result in 0s
             {
                 if (lhs is RealValue rLhs && rLhs.Value == 0) {

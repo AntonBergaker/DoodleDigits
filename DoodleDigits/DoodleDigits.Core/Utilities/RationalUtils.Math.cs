@@ -66,7 +66,11 @@ namespace DoodleDigits.Core.Utilities {
             Rational floored = Floor(divided);
 
             return (divided - floored) * divisor;
-        } 
+        }
+
+        public static Rational Sqrt(Rational total) {
+            return RationalUtils.FromDouble(Math.Sqrt(total.ToDouble()));
+        }
 
     }
 }

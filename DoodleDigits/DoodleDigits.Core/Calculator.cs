@@ -34,7 +34,7 @@ namespace DoodleDigits.Core {
         public Calculator(IEnumerable<FunctionData> functions, IEnumerable<Constant> constants) {
             var functionData = functions as FunctionData[] ?? functions.ToArray();
             executor = new Executor(functionData, constants);
-            parser = new Parser(functionData.SelectMany(x => x.Names));
+            parser = new Parser(functionData);
         }
 
         public CalculationResult Calculate(string input) {

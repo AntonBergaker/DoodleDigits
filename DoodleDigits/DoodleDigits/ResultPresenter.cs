@@ -102,7 +102,9 @@ namespace DoodleDigits {
                     if (resultValue.Value is BooleanValue booleanValue) {
                         return " → " + booleanValue.ToString();
                     }
-
+                    if (resultValue.Value is MatrixValue matrixValue) {
+                        return " = " + matrixValue.ToString();
+                    }
                     if (resultValue.Value is RealValue realValue) {
                         string formPrefix = "";
                         if (realValue.Form == RealValue.PresentedForm.Hex) {

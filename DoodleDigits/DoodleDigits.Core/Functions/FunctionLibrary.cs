@@ -9,12 +9,15 @@ namespace DoodleDigits.Core {
     public class FunctionData {
         public readonly string[] Names;
 
+        public readonly FunctionExpectedType ExpectedType;
+
         public readonly Func<Value[], ExecutionContext<Function>, Value> Function;
 
         public readonly Range ParameterCount;
 
         public FunctionData(string[] names, FunctionExpectedType type, Range parameterCount, Func<Value[], ExecutionContext<Function>, Value> function) {
             Names = names;
+            ExpectedType = type;
             this.ParameterCount = parameterCount;
             Function = function;
         }

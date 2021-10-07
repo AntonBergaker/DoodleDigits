@@ -37,6 +37,12 @@ namespace UnitTests.Execution {
             Assert.AreEqual(expected, last.Value);
         }
 
+        public static void AssertEqual(string expected, string input) {
+            Value expectedValue = CalculateValueString(expected);
+            Value actualValue = CalculateValueString(input);
+            Assert.AreEqual(expectedValue, actualValue);
+        }
+
         public static CalculationResult CalculateString(string input) {
             Calculator calculator = new(FunctionLibrary.Functions, ConstantLibrary.Constants);
 
@@ -46,8 +52,8 @@ namespace UnitTests.Execution {
         public static Value CalculateValueString(string input) {
             var result = CalculateString(input);
 
-            var first = result.Results.First();
-            if (first is not ResultValue rv) {
+            ResultValue last = result.Results.OfType<ResultValue>().Last();
+            if (last is not ResultValue rv) {
                 Assert.Fail("Input did not return a result");
                 throw new Exception();
             }

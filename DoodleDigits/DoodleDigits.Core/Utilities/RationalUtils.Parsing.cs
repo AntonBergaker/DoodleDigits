@@ -210,6 +210,7 @@ namespace DoodleDigits.Core.Utilities {
             return true;
         }
 
+
         public static string ToDecimalString(this Rational value, int maximumDecimals = 30, int @base = 10) {
             value = value.CanonicalForm;
             StringBuilder sb = new StringBuilder(maximumDecimals);

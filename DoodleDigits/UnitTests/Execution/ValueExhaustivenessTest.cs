@@ -29,6 +29,12 @@ namespace UnitTests.Execution {
             new TooBigValue(TooBigValue.Sign.Negative),
             new TooBigValue(TooBigValue.Sign.Positive),
             new UndefinedValue(),
+            new MatrixValue(new ( new MatrixValue.MatrixValueElement( new RealValue(1) ), new MatrixValue.MatrixValueElement(new RealValue(2)))),
+            new MatrixValue(new ( new MatrixValue.MatrixValueElement( new RealValue(0) ), new MatrixValue.MatrixValueElement(new RealValue(0)))),
+            new MatrixValue(new ( 
+                new MatrixValue.MatrixValueElement( new RealValue(1) ), new MatrixValue.MatrixValueElement(new RealValue(2)),
+                new MatrixValue.MatrixValueElement( new RealValue(3) ), new MatrixValue.MatrixValueElement(new RealValue(4))
+            )),
         };
 
         private ExecutionContext MakeContext() => new ExecutionContext(new Constant[0]);
@@ -64,7 +70,7 @@ namespace UnitTests.Execution {
             Value[] allValues = AllValues;
 
             foreach (var function in FunctionLibrary.Functions) {
-                int maxParameterCount = Math.Min(function.ParameterCount.End.GetOffset(int.MaxValue), 5);
+                int maxParameterCount = Math.Min(function.ParameterCount.End.GetOffset(int.MaxValue), 4);
                 for (int parameterCount = function.ParameterCount.Start.Value; parameterCount <= maxParameterCount; parameterCount++) {
                     Value[] parameters = new Value[parameterCount];
                     for (int index = 0; index < Math.Pow(valueCount, parameterCount); index++) {

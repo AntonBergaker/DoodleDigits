@@ -69,6 +69,8 @@ namespace DoodleDigits.Core.Execution {
                     return Calculate(ec);
                 case BaseCast bc:
                     return Calculate(bc);
+                case VectorDecleration vd:
+                    return Calculate(vd);
                 case ErrorNode error:
                     return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 default: throw new Exception("Expression not handled for " + expression.GetType());
@@ -232,6 +234,46 @@ namespace DoodleDigits.Core.Execution {
             }
 
             return expression;
+        }
+
+        private Value Calculate(VectorDecleration vectorDecleration) {
+            MatrixValue.MatrixDimension? InternalCalculate(VectorDecleration vectorDecleration) {
+                List<MatrixValue.IMatrixElement> elements = new();
+
+                foreach (Expression expression in vectorDecleration.Expressions) {
+                    if (expression is VectorDecleration vd) {
+                        var dimension = InternalCalculate(vd);
+                        if (dimension == null) {
+                            return null;
+                        }
+                        elements.Add(dimension);
+                    } else {
+                        Value result = Calculate(expression);
+                        if (result is MatrixValue mv) {
+                            elements.Add(mv.Dimension);
+                        }
+                        else if (result is IConvertibleToReal realConvertible) {
+                            RealValue realValue = realConvertible.ConvertToReal(context.ForNode(expression));
+                            elements.Add(new MatrixValue.MatrixValueElement(realValue));
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+
+                return new MatrixValue.MatrixDimension(elements);
+            }
+
+            MatrixValue.MatrixDimension? dimension = InternalCalculate(vectorDecleration);
+            if (dimension == null) {
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            }
+            MatrixValue val = new MatrixValue(dimension, true);
+            if (val.IsValid == false) {
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            }
+
+            return val;
         }
     }
 }
