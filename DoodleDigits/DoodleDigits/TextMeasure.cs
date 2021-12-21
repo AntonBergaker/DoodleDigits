@@ -47,7 +47,7 @@ namespace DoodleDigits {
             // Because of WPF weirdness, GetCharacterIndexFromLineIndex is busted with custom margins.
             // Instead of relying on the box itself, before we go to place our labels we figure out what character belongs to once more
             // Hence the need for this function
-            
+
             lineRanges.Clear();
 
             string text = textBox.Text;

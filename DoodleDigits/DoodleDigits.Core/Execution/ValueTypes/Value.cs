@@ -1,4 +1,5 @@
 ﻿using System;
+using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 

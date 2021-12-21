@@ -15,7 +15,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction(FunctionExpectedType.Vector, "normalize", "normalise", "normal", "norm")]
         public static Value Normalize(Value value, ExecutionContext<Function> context) {
             if (value is MatrixValue matrix) {
-                if (matrix.Dimensions == 1) {
+                if (matrix.DimensionCount == 1) {
                     Rational total = matrix.Magnitude();
                     
                     if (total == Rational.Zero) {
@@ -42,7 +42,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction(FunctionExpectedType.Vector, "magnitude")]
         public static Value Magnitude(Value value, ExecutionContext<Function> context) {
             if (value is MatrixValue matrix) {
-                if (matrix.Dimensions == 1) {
+                if (matrix.DimensionCount == 1) {
                     return new RealValue(matrix.Magnitude());
                 }
             }
@@ -53,7 +53,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction(FunctionExpectedType.Vector, "determinant", "det")]
         public static Value Determinant(Value value, ExecutionContext<Function> context) {
             if (value is MatrixValue matrix) {
-                if (matrix.Dimensions != 2 || matrix.Dimension.Length != ((MatrixValue.MatrixDimension)matrix.Dimension[0]).Length) {
+                if (matrix.DimensionCount != 2 || matrix.Dimension.Length != ((MatrixValue.MatrixDimension)matrix.Dimension[0]).Length) {
                     context.AddResult(new ResultError("determinant only valid for square 2d matricies", context.Position));
                     return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 }

@@ -251,7 +251,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero);
+                    return new RealValue(Rational.Zero, false, realValue.Form);
                 }
 
                 return Value.FromDouble(Math.Tanh((double)rational), false, realValue.Form);

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
     public class MatrixValue : Value {
@@ -13,7 +14,6 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public class MatrixDimension : IMatrixElement, IEnumerable<IMatrixElement> {
             private readonly IMatrixElement[] elements;
-            public readonly bool HoldsValues;
             public readonly int Length;
 
             public IMatrixElement this[int index] => elements[index];
@@ -101,7 +101,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public MatrixElement this[int index] => new MatrixElement(Dimension[index]);
 
-        public int Dimensions { get; private set; }
+        public int DimensionCount { get; private set; }
 
         public bool IsValid { get; }
 
@@ -156,7 +156,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
                 return true;
             }
 
-            Dimensions = dimensionSize.Count;
+            DimensionCount = dimensionSize.Count;
 
             return ValidateRecursive(Dimension, 0);
         }
@@ -178,7 +178,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return new MatrixValue(SelectDimension(Dimension));
         }
 
-        public bool IsVector => Dimensions == 1;
+        public bool IsVector => DimensionCount == 1;
 
         public Rational Magnitude() {
             if (IsVector == false) {
@@ -196,6 +196,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return RationalUtils.Sqrt(total);
         }
 
+
+        public static Value Multiply(MatrixValue lhsMatrix, MatrixValue rhsMatrix, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+
         public override Value Clone(bool? triviallyAchieved = null) {
             return new MatrixValue(Dimension);
         }
@@ -209,12 +214,12 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override int GetHashCode() {
-            throw new NotImplementedException();
+            return Dimension.GetHashCode();
         }
 
         public override string ToString() {
             string openSymbol, closeSymbol;
-            if (Dimensions == 1) {
+            if (DimensionCount == 1) {
                 openSymbol = "(";
                 closeSymbol = ")";
             } else {

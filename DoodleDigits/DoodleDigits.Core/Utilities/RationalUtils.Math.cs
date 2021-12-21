@@ -68,8 +68,33 @@ namespace DoodleDigits.Core.Utilities {
             return (divided - floored) * divisor;
         }
 
-        public static Rational Sqrt(Rational total) {
-            return RationalUtils.FromDouble(Math.Sqrt(total.ToDouble()));
+        public static Rational Sqrt(Rational value) {
+            if (value == Rational.One) {
+                return Rational.One;
+            }
+            if (value == Rational.Zero) {
+                return Rational.Zero;
+            }
+
+            Rational start = Rational.Zero;
+            Rational end = value;
+            Rational mid = Rational.Zero;
+            Rational epsil = new Rational(1, 1000000000000);
+
+            while (start <= end) {
+                mid = ((start + end) / 2).CanonicalForm;
+
+                if (Rational.Abs(mid * mid - value) <= epsil) {
+                    break;
+                } 
+                if (mid * mid < value) {
+                    start = mid;
+                } else {
+                    end = mid;
+                }
+            }
+
+            return mid;
         }
 
     }
