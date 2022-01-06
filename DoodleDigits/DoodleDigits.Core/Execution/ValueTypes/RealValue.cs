@@ -87,6 +87,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return newValue;
         }
 
+        public RealValue Round(ExecutionContext context) {
+            return Round(context, context.Position);
+        }
 
         public RealValue Round(ExecutionContext context, Range position) {
             if (HasDecimal == false) {
