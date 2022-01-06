@@ -13,3 +13,5 @@ Compress-Archive -Path .\DoodleDigits\DoodleDigits\bin\publish\runtime -Destinat
 Compress-Archive -Path .\DoodleDigits\DoodleDigits\bin\publish\standalone -DestinationPath $PathStandalone -CompressionLevel Optimal -Force
 
 iscc .\Installer\Installer.iss /DVERSION=$Version /O"./dist"
+
+PAUSE
