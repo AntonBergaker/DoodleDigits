@@ -84,7 +84,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction(2, int.MaxValue, "gcd", "gcf")]
+        [CalculatorFunction(FunctionExpectedType.Real, 2, int.MaxValue, "gcd", "gcf")]
         public static Value GreatestCommonDivisor(Value[] values, ExecutionContext<Function> context) {
             int startIndex = 0;
             RealValue? realValue = null;
