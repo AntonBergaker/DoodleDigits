@@ -71,7 +71,7 @@ namespace DoodleDigits {
         /// Returns true if loaded from file, false if populated from defaults
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> LoadOrPopulateDefaults() {
+        public bool LoadOrPopulateDefaults() {
             if (File.Exists(FilePath) == false) {
                 object? lightValue = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme", "unknown");
                 if (lightValue is int @int) {
@@ -85,7 +85,7 @@ namespace DoodleDigits {
                 return false;
             }
 
-            string serializedData = await File.ReadAllTextAsync(FilePath);
+            string serializedData = File.ReadAllText(FilePath);
             data = JsonSerializer.Deserialize<SettingsData>(serializedData) ?? data;
             return true;
         }

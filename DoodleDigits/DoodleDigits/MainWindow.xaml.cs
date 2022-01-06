@@ -35,12 +35,12 @@ namespace DoodleDigits {
 
         public MainWindow() {
             settings = new SettingsViewModel(new Settings());
-            settings.Load().Wait();
+            settings.Load();
             PresentationProperties = new(this, settings);
             InitializeComponent();
 
             try {
-                var state = SerializedState.Load().Result;
+                var state = SerializedState.Load();
                 if (state != null) {
                     blockSaving++;
                     this.Width = state.WindowDimensions.X;

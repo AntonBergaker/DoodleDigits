@@ -27,12 +27,12 @@ namespace DoodleDigits {
         [JsonIgnore]
         public static string SavePath => Path.Join(DirectoryPath, "state.json");
 
-        public static async Task<SerializedState?> Load() {
+        public static SerializedState? Load() {
             if (File.Exists(SavePath) == false) {
                 return null;
             }
 
-            string stateContent = await File.ReadAllTextAsync(SavePath);
+            string stateContent = File.ReadAllText(SavePath);
             return JsonSerializer.Deserialize<SerializedState>(stateContent);
 
         }

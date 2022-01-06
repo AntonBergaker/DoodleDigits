@@ -41,8 +41,8 @@ namespace DoodleDigits {
             await settings.Save();
         }
 
-        public async Task<bool> Load() {
-            return await settings.LoadOrPopulateDefaults();
+        public bool Load() {
+            return settings.LoadOrPopulateDefaults();
         }
     }
 }
