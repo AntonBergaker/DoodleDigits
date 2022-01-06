@@ -71,7 +71,7 @@ end;
 function InitializeSetup: Boolean;
 begin
   // add the dependencies you need
-  Dependency_AddDotNet50Desktop;
+  Dependency_AddDotNet60Desktop;
   // ...
   Result := True;
 end;
