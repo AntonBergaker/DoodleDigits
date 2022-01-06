@@ -35,7 +35,7 @@ namespace DoodleDigits {
 
         public MainWindow() {
             settings = new SettingsViewModel(new Settings());
-            settings.Load().Wait();
+            settings.Load();
             PresentationProperties = new(this, settings);
             InitializeComponent();
 
