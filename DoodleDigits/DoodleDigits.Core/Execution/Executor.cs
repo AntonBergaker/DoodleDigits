@@ -82,13 +82,21 @@ namespace DoodleDigits.Core.Execution {
                 int minParameters = functionData.ParameterCount.Start.Value;
                 int maxParameters = functionData.ParameterCount.End.GetOffset(int.MaxValue);
 
+
 ;                if (function.Arguments.Length < minParameters ||
                     function.Arguments.Length > maxParameters) {
 
-                    results.Add(new ResultError(minParameters == maxParameters ? 
-                        $"Function expects {minParameters} parameters" : 
-                        $"Function expects between {minParameters} and {maxParameters} parameters", 
-                        function.Position));
+                    string errorMessage;
+                    if (minParameters == maxParameters) {
+                        errorMessage = $"Function needs {minParameters} parameters";
+                    } else if (maxParameters == int.MaxValue) {
+                        errorMessage = $"Function needs at least {minParameters} parameters";
+                    }
+                    else {
+                        errorMessage = $"Function expects between {minParameters} and {maxParameters} parameters";
+                    }
+
+                    results.Add(new ResultError(errorMessage, function.Position));
                     return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 }
 

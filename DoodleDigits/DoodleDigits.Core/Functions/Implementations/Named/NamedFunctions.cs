@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
@@ -83,19 +84,38 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        [CalculatorFunction("gcd", "gcf")]
-        public static Value GreatestCommonDivisor(Value value0, Value value1, ExecutionContext<Function> context) {
-            if (value0 is IConvertibleToReal value0Ctr && value1 is IConvertibleToReal value1Ctr) {
-                var value0Real = ConvertArgumentToReal(value0Ctr, 0, context);
-                var value1Real = ConvertArgumentToReal(value1Ctr, 0, context);
-                value0Real = value0Real.Round(context, context.Node.Arguments[0].Position);
-                value1Real = value1Real.Round(context, context.Node.Arguments[1].Position);
+        [CalculatorFunction(2, int.MaxValue, "gcd", "gcf")]
+        public static Value GreatestCommonDivisor(Value[] values, ExecutionContext<Function> context) {
+            int startIndex = 0;
+            RealValue? realValue = null;
 
-                return new RealValue(BigInteger.GreatestCommonDivisor(value0Real.Value.Numerator, value1Real.Value.Numerator), false, value0Real.Form);
+            // Find the first convertible value
+            while (startIndex < values.Length) {
+                if (values[startIndex] is IConvertibleToReal valueCtr) {
+                    var childContext = context.ForNode(context.Node.Arguments[startIndex]);
+                    realValue = valueCtr.ConvertToReal(context).Round(childContext);
+                    break;
+                }
+
+                startIndex++;
+            }
+
+            if (realValue == null) {
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            }
+
+            for (int i = startIndex+1; i < values.Length; i++) {
+                if (values[i] is IConvertibleToReal valueCtr) {
+                    var childContext = context.ForNode(context.Node.Arguments[startIndex]);
+                    var newRealValue = valueCtr.ConvertToReal(childContext).Round(childContext);
+
+                    realValue = new RealValue(BigInteger.GreatestCommonDivisor(realValue.Value.Numerator, newRealValue.Value.Numerator), false,
+                        realValue.Form);
+                }
 
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return realValue;
         }
 
         [CalculatorFunction("sqrt", "square_root")]
