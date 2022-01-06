@@ -10,10 +10,7 @@ namespace DoodleDigits.Core.Tokenizing {
             this.tokens = tokens;
             index = 0;
 
-            int lastIndex = 0;
-            if (tokens.Length > 0) {
-                lastIndex = tokens.Last().Position.End.Value;
-            }
+            int lastIndex = tokens.LastOrDefault()?.Position.End.Value ?? 0;
             EofToken = new Token("eof", TokenType.EndOfFile, lastIndex..lastIndex);
         }
 
