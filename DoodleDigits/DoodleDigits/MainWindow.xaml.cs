@@ -59,48 +59,52 @@ namespace DoodleDigits {
         }
 
         private DateTime lastSaveTime = DateTime.Now;
-        private bool startedSave = false;
+        private volatile Task? currentSaveTask;
+        private SerializedState? currentState;
 
         private void AutoSave() {
-            if (startedSave) {
+            Dispatcher.Invoke(() => {
+                currentState = new(
+                    this.InputTextBox.Text,
+                    this.InputTextBox.CaretIndex,
+                    new(this.Width, this.Height)
+                );
+            });
+
+            if (currentSaveTask != null) {
                 return;
             }
 
-            Task InvokeSave() {
-                return Dispatcher.Invoke(async () => {
-                    startedSave = true;
-                    lastSaveTime = DateTime.Now;
-                    await SaveState();
-                    startedSave = false;
-                });
+
+            async Task InvokeSave() {
+                lastSaveTime = DateTime.Now;
+                await SaveState();
+                currentSaveTask = null;
             }
 
             TimeSpan diff = lastSaveTime + new TimeSpan(0, 0, 5) - DateTime.Now;
 
             if (diff < new TimeSpan(0)) {
-                _ = InvokeSave();
+                currentSaveTask = InvokeSave();
             }
             else {
-                startedSave = true;
-                Task.Delay(diff).ContinueWith(o => InvokeSave());
+                currentSaveTask = Task.Delay(diff).ContinueWith(async _ => await InvokeSave());
             }
         }
 
+        
         private async Task SaveState() {
             if (initialized == false || blockSaving > 0) {
                 return;
             }
 
             try {
-                var state = new SerializedState(
-                    this.InputTextBox.Text,
-                    this.InputTextBox.CaretIndex,
-                    new() { X = this.Width, Y = this.Height }
-                );
-
+                if (currentState == null) {
+                    return;
+                }
                 CancellationTokenSource source = new();
                 source.CancelAfter(5000);
-                await state.Save(source.Token);
+                await currentState.Save(source.Token);
                 failedSaves = 0;
             }
             catch (Exception ex) {
@@ -142,8 +146,8 @@ namespace DoodleDigits {
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            if (startedSave) {
-                SaveState().Wait();
+            if (currentSaveTask != null) {
+                currentSaveTask.Wait();
             }
         }
 

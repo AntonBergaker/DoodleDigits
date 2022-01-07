@@ -50,5 +50,10 @@ namespace DoodleDigits {
     class SerializedPoint {
         public double X { get; set; }
         public double Y { get; set; }
+
+        public SerializedPoint(double x, double y) {
+            X = x;
+            Y = y;
+        }
     }
 }
