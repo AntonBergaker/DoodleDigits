@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DoodleDigits {
@@ -37,12 +38,12 @@ namespace DoodleDigits {
 
         }
 
-        public async Task Save() {
+        public async Task Save(CancellationToken cancellationToken) {
             if (!Directory.Exists(DirectoryPath)) {
                 Directory.CreateDirectory(DirectoryPath);
             }
 
-            await File.WriteAllTextAsync(SavePath, JsonSerializer.Serialize(this));
+            await File.WriteAllTextAsync(SavePath, JsonSerializer.Serialize(this), cancellationToken);
         }
     }
 

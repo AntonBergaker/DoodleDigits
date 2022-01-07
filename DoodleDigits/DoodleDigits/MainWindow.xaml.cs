@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,7 +98,9 @@ namespace DoodleDigits {
                     new() { X = this.Width, Y = this.Height }
                 );
 
-                await state.Save();
+                CancellationTokenSource source = new();
+                source.CancelAfter(5000);
+                await state.Save(source.Token);
                 failedSaves = 0;
             }
             catch (Exception ex) {
