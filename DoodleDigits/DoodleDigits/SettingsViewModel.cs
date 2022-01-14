@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DoodleDigits {
@@ -38,7 +39,7 @@ namespace DoodleDigits {
         }
 
         public async Task Save() {
-            await settings.Save();
+            await settings.Save(new CancellationTokenSource(5000).Token);
         }
 
         public bool Load() {

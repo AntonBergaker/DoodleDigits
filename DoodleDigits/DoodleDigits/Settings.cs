@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 
@@ -54,7 +55,7 @@ namespace DoodleDigits {
         private static string DirectoryPath => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Doodle Digits");
         public static string FilePath => Path.Join(DirectoryPath, "settings.json");
 
-        public async Task Save() {
+        public async Task Save(CancellationToken cancellationToken) {
             if (UnsavedChanges == false) {
                 return;
             }
@@ -64,7 +65,7 @@ namespace DoodleDigits {
             }
 
             string serializedData = JsonSerializer.Serialize(data);
-            await File.WriteAllTextAsync(FilePath, serializedData);
+            await File.WriteAllTextAsync(FilePath, serializedData, cancellationToken);
         }
 
         /// <summary>
