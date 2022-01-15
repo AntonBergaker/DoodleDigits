@@ -73,6 +73,10 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 value = convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
             }
 
+            if (value is TooBigValue tbv && tbv.IsPositive) {
+                return tbv;
+            }
+
             if (value is RealValue real) {
                 if (real.HasDecimal == false) {
                     return IntegerFactorial(real);

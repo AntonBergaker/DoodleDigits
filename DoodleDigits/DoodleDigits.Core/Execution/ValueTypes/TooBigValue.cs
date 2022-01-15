@@ -1,8 +1,9 @@
 ﻿using System;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
-    public class TooBigValue : Value, IConvertibleToBool {
+    public partial class TooBigValue : Value, IConvertibleToBool {
         public enum Sign {
             Positive,
             PositiveInfinity,

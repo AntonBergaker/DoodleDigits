@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Text;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Functions.Implementations.Binary;
+using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
-    public class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
+    public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
         public readonly Rational Value;
 
         public enum PresentedForm {

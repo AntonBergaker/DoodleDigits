@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
@@ -28,6 +29,16 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
             return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
         }
+
+        public virtual Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool castAttempt, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+
+        public virtual Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool castAttempt, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+
+
 
         public abstract bool Equals(Value? other);
 

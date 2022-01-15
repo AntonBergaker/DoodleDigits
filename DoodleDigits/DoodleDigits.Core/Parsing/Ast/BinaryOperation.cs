@@ -6,11 +6,21 @@ using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core.Parsing.Ast
-{
+namespace DoodleDigits.Core.Parsing.Ast {
+    public static class BinaryOperationExtensions {
+        public static BinaryOperation.OperationSide Flip(this BinaryOperation.OperationSide side) {
+            return side == BinaryOperation.OperationSide.Left ? BinaryOperation.OperationSide.Right : BinaryOperation.OperationSide.Left;
+        }
+    }
+
     public class BinaryOperation : Expression {
         public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context);
         
+        public enum OperationSide {
+            Left,
+            Right
+        }
+
         public enum OperationType {
             Add,
             Subtract,

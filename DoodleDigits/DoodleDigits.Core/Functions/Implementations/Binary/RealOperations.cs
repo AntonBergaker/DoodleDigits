@@ -16,47 +16,50 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             );
         }
 
-        public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue) {
+        delegate Value? ImplementationFunction(Value other, BinaryOperation.OperationSide side,
+            bool castAttempt, ExecutionContext<BinaryOperation> context);
+
+
+        private static Value ExecuteBinaryImplementaion(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, ImplementationFunction lhsMethod, ImplementationFunction rhsMethod) {
+            Value? result;
+            
+            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, false, context);
+            if (result != null) {
+                return result;
+            }
+            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, false, context);
+            if (result != null) {
+                return result;
+            }
+
+            // Try both sides again, but now allow casting
+            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, true, context);
+            if (result != null) {
+                return result;
+            }
+            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, true, context);
+            if (result != null) {
+                return result;
+            }
+
+
+            if (lhs is UndefinedValue) {
                 return lhs;
             }
 
-            if (rhs is TooBigValue) {
+            if (rhs is UndefinedValue) {
                 return rhs;
             }
 
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-                return new RealValue((result.lhs.Value + result.rhs.Value).CanonicalForm, false, result.lhs.Form);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue) {
-                return lhs;
-            }
+        public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) => 
+            ExecuteBinaryImplementaion(lhs, rhs, context, lhs.TryAdd, rhs.TryAdd);
 
-            if (rhs is TooBigValue tbvRhs) {
-                return tbvRhs.Negate();
-            }
+        public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryImplementaion(lhs, rhs, context, lhs.TrySubtract, rhs.TrySubtract);
 
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-                return new RealValue((result.lhs.Value - result.rhs.Value).CanonicalForm, false, result.lhs.Form);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-        }
 
 
         public static Value Divide(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
