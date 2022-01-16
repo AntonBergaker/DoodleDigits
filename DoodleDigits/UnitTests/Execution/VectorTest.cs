@@ -105,12 +105,61 @@ namespace UnitTests.Execution {
         [Test]
         public void TestMultiplication() {
             ExecutionTestUtils.AssertEqual(
+                11,
+                "[1, 2] * [3, 4]"
+            );
+
+            ExecutionTestUtils.AssertEqual(
+                "[5, 8]",
+                "[1, 2] * [[1,2],  [2,3]]"
+            );
+
+            ExecutionTestUtils.AssertEqual(
                 "[[19, 22], [43, 50]]",
                 "[[1, 2], [3, 4]] * [[5, 6], [7, 8]]"
             );
+
+
         }
 
-       [Test]
+        [Test]
+        public void TestScalar() {
+            ExecutionTestUtils.AssertEqual(
+                "[2, 4]",
+                "[1, 2] * 2"
+            );
+
+            ExecutionTestUtils.AssertEqual(
+                "[2, 4]",
+                "2 * [1, 2]"
+            );
+
+            ExecutionTestUtils.AssertEqual(
+                "[1, 2]",
+                "[2, 4] / 2"
+            );
+        }
+
+        [Test]
+        public void TestAddition() {
+            ExecutionTestUtils.AssertEqual(
+                "[12, 24]",
+                "[6, 11] + [6, 13]"
+            );
+
+            ExecutionTestUtils.AssertEqual(
+                "[6, 8, 10, 12]",
+                "[1, 2, 3, 4] + [5, 6, 7, 8]"
+            );
+
+            ExecutionTestUtils.AssertEqual(
+                "[[6, 8], [10, 12]]",
+                "[[1, 2], [3, 4]] + [[5, 6], [7, 8]]"
+            );
+        }
+
+
+        [Test]
        public void TestFunctions() {
 
             ExecutionTestUtils.AssertEqual(1, "magnitude (1, 0)");

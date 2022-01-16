@@ -30,15 +30,27 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
         }
 
-        public virtual Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool castAttempt, ExecutionContext<BinaryOperation> context) {
+        public virtual Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
             return null;
         }
 
-        public virtual Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool castAttempt, ExecutionContext<BinaryOperation> context) {
+        public virtual Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+        public virtual Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
             return null;
         }
 
+        public virtual Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
 
+        public virtual Value? TryModulus(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+        public virtual Value? TryPower(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
 
         public abstract bool Equals(Value? other);
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace UnitTests.Parsing {
     class VectorTest {
         [Test]
-        public void TestVectorDecleration() {
+        public void TestVectorDeclaration() {
 
             ParsingTestUtils.AssertEqual(
                 new VectorDecleration(

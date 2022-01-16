@@ -121,7 +121,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                     return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
                 }
 
-                return BinaryOperations.Power(realValue, new RealValue(RationalUtils.Half));
+                return new RealValue(RationalUtils.Sqrt(realValue.Value), false, realValue.Form);
             }
 
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);

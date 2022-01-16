@@ -266,6 +266,8 @@ namespace DoodleDigits.Core.Parsing
                 insideAbsoluteExpression = wasInsideAbsolute;
                 return expression;
             }
+
+            // If vectorlike
             if (nextToken.Type == TokenType.Comma) {
                 List<Expression> expressions = new() { expression };
                 while (nextToken.Type == TokenType.Comma) {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
-    public class MatrixValue : Value {
+    public partial class MatrixValue : Value {
         public interface IMatrixElement { }
 
         public class MatrixDimension : IMatrixElement, IEnumerable<IMatrixElement> {
@@ -78,7 +78,22 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
                         return new MatrixElement(md[index]);
                     }
 
+                    if (index == 0) {
+                        return this;
+                    }
+
                     throw new InvalidOperationException("Invalid attempt to reach depth of matrix. Check matrix dimensions.");
+                }
+            }
+
+            public int Length { 
+                get {
+                    if (element is MatrixDimension md) {
+                        return md.Length;
+                    }
+
+                    // Inside a value the width is the 1
+                    return 1;
                 }
             }
 
@@ -197,10 +212,6 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
 
-        public static Value Multiply(MatrixValue lhsMatrix, MatrixValue rhsMatrix, ExecutionContext<BinaryOperation> context) {
-            return null;
-        }
-
         public override Value Clone(bool? triviallyAchieved = null) {
             return new MatrixValue(Dimension);
         }
@@ -250,6 +261,24 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             RecurseBuild(Dimension);
 
             return sb.ToString();
+        }
+
+        private static bool SameDimensions(MatrixValue matrix0, MatrixValue matrix1) {
+            MatrixDimension? dimension0 = matrix0.Dimension;
+            MatrixDimension? dimension1 = matrix1.Dimension;
+            while (true) {
+                if (dimension0.Length != dimension1.Length) {
+                    return false;
+                }
+
+                dimension0 = dimension0[0] as MatrixDimension;
+                dimension1 = dimension1[0] as MatrixDimension;
+
+                if (dimension0 != null && dimension1 != null) {
+                    continue;
+                }
+                return dimension0 == null && dimension1 == null;
+            }
         }
     }
 }

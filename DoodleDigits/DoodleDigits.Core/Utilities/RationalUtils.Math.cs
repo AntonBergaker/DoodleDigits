@@ -76,25 +76,71 @@ namespace DoodleDigits.Core.Utilities {
                 return Rational.Zero;
             }
 
-            Rational start = Rational.Zero;
-            Rational end = value;
-            Rational mid = Rational.Zero;
-            Rational epsil = new Rational(1, 1000000000000);
+            // Look for integer roots using binary search
+            if (value.FractionPart == 0) {
+                BigInteger bigIntValue = value.CanonicalForm.Numerator;
+                BigInteger max = 1;
+                while (true) {
+                    BigInteger result = max * max;
+                    if (result >= bigIntValue) {
+                        break;
+                    }
 
-            while (start <= end) {
-                mid = ((start + end) / 2).CanonicalForm;
+                    max <<= 1;
+                }
 
-                if (Rational.Abs(mid * mid - value) <= epsil) {
-                    break;
-                } 
-                if (mid * mid < value) {
-                    start = mid;
-                } else {
-                    end = mid;
+                BigInteger min = max >> 1;
+
+                while (min <= max) {
+                    BigInteger mid = (min + max) >> 1;
+                    BigInteger result = mid * mid;
+                    if (result == bigIntValue) {
+                        return mid;
+                    } 
+                    if (bigIntValue < result) {
+                        max = mid - 1;
+                    } else {
+                        min = mid + 1;
+                    }
                 }
             }
 
-            return mid;
+            // For small numbers, use doubles implementation because honestly the below solution is just wonky
+            if (value < 1000) {
+                return (Rational)Math.Sqrt((double)value);
+            }
+
+            // Binary search using rationals
+            {
+                Rational start = Rational.Zero;
+                Rational end = value;
+                Rational mid = Rational.Zero;
+                Rational epsil = value / 100_000;
+
+                int iterations = 0;
+
+                while (start <= end) {
+                    if (iterations++ > 10_000) {
+                        break;
+                    }
+                    mid = ((start + end) / 2).CanonicalForm;
+
+                    Rational result = mid * mid;
+
+                    if (Rational.Abs(result - value) <= epsil) {
+                        break;
+                    }
+
+                    if (result < value) {
+                        start = mid;
+                    }
+                    else {
+                        end = mid;
+                    }
+                }
+
+                return mid;
+            }
         }
 
     }
