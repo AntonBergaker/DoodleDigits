@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
     public interface IConvertibleToReal {
-
-        public RealValue ConvertToReal();
-
         public RealValue ConvertToReal(ExecutionContext context);
     }
 }

@@ -28,7 +28,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             {
                 // Undefined values
                 if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                    return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                    return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
                 }
             }
 
@@ -56,7 +56,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 }
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
 
@@ -88,7 +88,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return new BooleanValue(comparisonFunction(realLhs.Value, realRhs.Value) );
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value LessThan(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {

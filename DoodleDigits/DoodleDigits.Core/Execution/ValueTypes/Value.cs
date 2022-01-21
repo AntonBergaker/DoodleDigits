@@ -10,24 +10,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public bool TriviallyAchieved { get; }
 
-        protected Value(bool triviallyAchieved) {
+        internal AstNode? SourceAstNode;
+
+        protected Value(bool triviallyAchieved, AstNode? sourceAstNode) {
             TriviallyAchieved = triviallyAchieved;
-        }
-
-        public static Value FromDouble(double value, bool triviallyAchieved, RealValue.PresentedForm form, bool resultOfInfinity = false) {
-            if (double.IsPositiveInfinity(value)) {
-                return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.PositiveInfinity : TooBigValue.Sign.Positive);
-            }
-
-            if (double.IsNegativeInfinity(value)) {
-                return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.NegativeInfinity : TooBigValue.Sign.Negative);
-            }
-
-            if (double.IsNaN(value)) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
-            }
-
-            return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
+            SourceAstNode = sourceAstNode;
         }
 
         public virtual Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
@@ -62,7 +49,6 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public abstract override int GetHashCode();
-
         public abstract Value Clone(bool? triviallyAchieved = null);
     }
 }

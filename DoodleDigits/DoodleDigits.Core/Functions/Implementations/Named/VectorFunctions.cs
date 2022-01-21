@@ -16,7 +16,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         public static Value Normalize(Value value, ExecutionContext<Function> context) {
             if (value is MatrixValue matrix) {
                 if (matrix.DimensionCount == 1) {
-                    Rational total = matrix.Magnitude();
+                    Rational total = matrix.Magnitude(context);
                     
                     if (total == Rational.Zero) {
                         return new MatrixValue(new MatrixValue.MatrixDimension(
@@ -36,18 +36,18 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 }
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Vector, "magnitude")]
         public static Value Magnitude(Value value, ExecutionContext<Function> context) {
             if (value is MatrixValue matrix) {
                 if (matrix.DimensionCount == 1) {
-                    return new RealValue(matrix.Magnitude());
+                    return new RealValue(matrix.Magnitude(context));
                 }
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Vector, "determinant", "det")]
@@ -55,14 +55,21 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             if (value is MatrixValue matrix) {
                 if (matrix.DimensionCount != 2 || matrix.Dimension.Length != ((MatrixValue.MatrixDimension)matrix.Dimension[0]).Length) {
                     context.AddResult(new ResultError("determinant only valid for square 2d matricies", context.Position));
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
                 }
 
                 int size = matrix.Dimension.Length;
                 Rational[,] startMatrix = new Rational[size, size];
                 for (int x = 0; x < size; x++) {
                     for (int y = 0; y < size; y++) {
-                        startMatrix[y, x] = matrix[y][x].Value.Value;
+                        if (matrix[y][x].Value is RealValue realValue) {
+                            startMatrix[y, x] = realValue.Value;
+                        }
+                        else {
+                            AstNode errorNode = matrix[y][x].Value.SourceAstNode ?? context.Node;
+                            context.AddResult(new ResultError("Non real value inside matrix", errorNode.Position));
+                            return new UndefinedValue(UndefinedValue.UndefinedType.Error, errorNode);
+                        }
                     }
                 }
 
@@ -91,7 +98,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return new RealValue(RecursiveDeterminant(startMatrix));
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
     }
 }

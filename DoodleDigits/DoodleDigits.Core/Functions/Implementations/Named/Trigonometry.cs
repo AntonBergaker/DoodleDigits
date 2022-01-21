@@ -31,11 +31,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             if (result is IConvertibleToReal convertibleToReal) {
                 RealValue realResult = convertibleToReal.ConvertToReal(context);
                 if (realResult.Value.IsZero == false) {
-                    return new RealValue(1 / realResult.Value, false, realResult.Form);
+                    return new RealValue(1 / realResult.Value, false, realResult.Form, context.Node);
                 }
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         /// <summary>
@@ -49,13 +49,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             if (value is IConvertibleToReal convertibleToReal) {
                 RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
                 if (realValue.Value.IsZero == false) {
-                    RealValue real = new RealValue(1 / realValue.Value, false, realValue.Form);
+                    RealValue real = new RealValue(1 / realValue.Value, false, realValue.Form, context.Node);
 
                     return trigArcFunction(real, context);
                 }
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         #region Non Hyperbolic Functions
@@ -70,25 +70,25 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
                 if (rational == TauFourth) {
-                    return new RealValue(Rational.One, false, realValue.Form);
+                    return new RealValue(Rational.One, false, realValue.Form, context.Node);
                 }
 
                 if (rational == TauHalf) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
                 if (rational == TauThreeFourths) {
-                    return new RealValue(-Rational.One, false, realValue.Form);
+                    return new RealValue(-Rational.One, false, realValue.Form, context.Node);
                 }
 
-                return Value.FromDouble(Math.Sin((double) rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Sin((double) rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "cos")]
@@ -100,22 +100,22 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.One, false, realValue.Form);
+                    return new RealValue(Rational.One, false, realValue.Form, context.Node);
                 }
                 if (rational == TauFourth) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
                 if (rational == TauHalf) {
-                    return new RealValue(-Rational.One, false, realValue.Form);
+                    return new RealValue(-Rational.One, false, realValue.Form, context.Node);
                 }
                 if (rational == TauThreeFourths) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
-                return Value.FromDouble(Math.Cos((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Cos((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "tan")]
@@ -127,19 +127,19 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
                 if (rational == TauFourth) {
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
                 }
                 if (rational == -TauFourth) {
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
                 }
 
-                return Value.FromDouble(Math.Tan((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Tan((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "sec")]
@@ -157,34 +157,34 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction(FunctionExpectedType.Real, "arcsin", "asin")]
         public static Value ArcSine(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 
-            return Value.FromDouble(Math.Asin((double)realValue.Value), false, realValue.Form);
+            return RealValue.FromDouble(Math.Asin((double)realValue.Value), false, realValue.Form, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "arccos", "acos")]
         public static Value ArcCosine(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 
-            return Value.FromDouble(Math.Acos((double)realValue.Value), false, realValue.Form);
+            return RealValue.FromDouble(Math.Acos((double)realValue.Value), false, realValue.Form, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "arctan", "atan")]
         public static Value ArcTangent(Value value, ExecutionContext<Function> context) {
             if (value is not IConvertibleToReal convertibleToReal) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
 
-            return Value.FromDouble(Math.Atan((double)realValue.Value), false, realValue.Form);
+            return RealValue.FromDouble(Math.Atan((double)realValue.Value), false, realValue.Form, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "arcsec", "asec")]
@@ -199,11 +199,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             Value result = ArcTangent(value, context);
             if (result is IConvertibleToReal resultReal) {
                 RealValue realValue = resultReal.ConvertToReal(context);
-                return new RealValue(TauFourth - realValue.Value, false, realValue.Form);
+                return new RealValue(TauFourth - realValue.Value, false, realValue.Form, context.Node);
             }
         
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         #endregion
@@ -220,10 +220,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                     return new RealValue(Rational.Zero);
                 }
 
-                return Value.FromDouble(Math.Sinh((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Sinh((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "cosh")]
@@ -237,10 +237,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                     return new RealValue(Rational.One);
                 }
 
-                return Value.FromDouble(Math.Cosh((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Cosh((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "tanh")]
@@ -251,13 +251,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
-                return Value.FromDouble(Math.Tanh((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Tanh((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "sech")]
@@ -280,13 +280,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
-                return Value.FromDouble(Math.Asinh((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Asinh((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "arccosh", "acosh")]
@@ -297,13 +297,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.One) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
-                return Value.FromDouble(Math.Acosh((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Acosh((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "arctanh", "atanh")]
@@ -314,13 +314,13 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
 
                 // Hardcoded to avoid double-unperfectness
                 if (rational == Rational.Zero) {
-                    return new RealValue(Rational.Zero, false, realValue.Form);
+                    return new RealValue(Rational.Zero, false, realValue.Form, context.Node);
                 }
 
-                return Value.FromDouble(Math.Atanh((double)rational), false, realValue.Form);
+                return RealValue.FromDouble(Math.Atanh((double)rational), false, realValue.Form, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         [CalculatorFunction(FunctionExpectedType.Real, "arcsech", "asech")]

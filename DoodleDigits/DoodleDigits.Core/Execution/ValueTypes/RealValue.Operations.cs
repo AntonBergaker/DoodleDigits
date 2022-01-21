@@ -9,7 +9,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes;
 public partial class RealValue {
     public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, out var otherRealValue)) {
-            return new RealValue((this.Value + otherRealValue.Value).CanonicalForm, false, Form);
+            return new RealValue((this.Value + otherRealValue.Value).CanonicalForm, false, Form, context.Node);
         }
 
         return null;
@@ -21,7 +21,7 @@ public partial class RealValue {
                 this.Value - otherRealValue.Value : 
                 otherRealValue.Value - this.Value;
 
-            return new RealValue(value.CanonicalForm, false, Form);
+            return new RealValue(value.CanonicalForm, false, Form, context.Node);
         }
 
         return null;
@@ -29,7 +29,7 @@ public partial class RealValue {
 
     public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, out var otherRealValue)) {
-            return new RealValue((this.Value * otherRealValue.Value).CanonicalForm, false, Form);
+            return new RealValue((this.Value * otherRealValue.Value).CanonicalForm, false, Form, context.Node);
         }
 
         return null;
@@ -40,10 +40,10 @@ public partial class RealValue {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherRealValue, side);
 
             if (rhs.Value == Rational.Zero) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
             }
 
-            return new RealValue((lhs.Value / rhs.Value).CanonicalForm, false, Form);
+            return new RealValue((lhs.Value / rhs.Value).CanonicalForm, false, Form, context.Node);
         }
 
         return null;
@@ -54,10 +54,10 @@ public partial class RealValue {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherRealValue, side);
 
             if (rhs.Value == Rational.Zero) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
             }
 
-            return new RealValue(lhs.Value.Modulus(rhs.Value), false, Form);
+            return new RealValue(lhs.Value.Modulus(rhs.Value), false, Form, context.Node);
         }
 
         return null;
@@ -68,7 +68,7 @@ public partial class RealValue {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherRealValue, side);
 
             if (lhs.Value.IsZero && rhs.Value < Rational.Zero) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
             }
 
             if (rhs.Value.IsZero) {
@@ -86,7 +86,7 @@ public partial class RealValue {
                 }
             }
 
-            return FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()), false, lhs.Form);
+            return FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()), false, lhs.Form, context.Node);
         }
 
         return null;

@@ -47,9 +47,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public class MatrixValueElement : IMatrixElement {
-            public readonly RealValue Value;
+            public readonly Value Value;
 
-            public MatrixValueElement(RealValue value) {
+            public MatrixValueElement(Value value) {
                 Value = value;
             }
 
@@ -99,7 +99,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
             public static implicit operator Value(MatrixElement matrixElement) => matrixElement.Value;
 
-            public RealValue Value {
+            public Value Value {
                 get {
                     if (element is MatrixValueElement mve) {
                         return mve.Value;
@@ -122,9 +122,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public readonly MatrixDimension Dimension;
 
-        public MatrixValue(MatrixDimension dimension) : this(dimension, false) { }
+        public MatrixValue(MatrixDimension dimension) : this(dimension, false, null) { }
 
-        public MatrixValue(MatrixDimension dimension, bool triviallyAchieved) : base(triviallyAchieved) {
+        public MatrixValue(MatrixDimension dimension, bool triviallyAchieved, AstNode? sourceAstNode) : base(triviallyAchieved, sourceAstNode) {
             this.Dimension = dimension;
             IsValid = Validate();
         }
@@ -176,26 +176,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return ValidateRecursive(Dimension, 0);
         }
 
-        public MatrixValue SelectAll(Func<RealValue, RealValue> func) {
-            
-            MatrixDimension SelectDimension(MatrixDimension dimension) {
-                List<IMatrixElement> elements = new();
-                foreach (IMatrixElement element in dimension) {
-                    if (element is MatrixDimension dim) {
-                        elements.Add(SelectDimension(dim));
-                    } else if (element is MatrixValueElement elem) {
-                        elements.Add(new MatrixValueElement(func(elem.Value)));
-                    }
-                }
-                return new MatrixDimension(elements);
-            }
-
-            return new MatrixValue(SelectDimension(Dimension));
-        }
-
         public bool IsVector => DimensionCount == 1;
 
-        public Rational Magnitude() {
+        public Rational Magnitude(ExecutionContext context) {
             if (IsVector == false) {
                 throw new InvalidOperationException("Matrix is not a vector");
             }
@@ -203,7 +186,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             Rational total = 0;
             foreach (MatrixValueElement element in Dimension) {
                 if (element.Value is IConvertibleToReal ctr) {
-                    Rational val = ctr.ConvertToReal().Value;
+                    Rational val = ctr.ConvertToReal(context).Value;
                     total += val*val;
                 }
             }

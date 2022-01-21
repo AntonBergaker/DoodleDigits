@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
     public interface IConvertibleToBool {
-        public BooleanValue ConvertToBool();
-
         public BooleanValue ConvertToBool(ExecutionContext context);
     }
 }

@@ -58,7 +58,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return lhs;
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         private static Value ExecuteBinaryRealImplementation(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, 

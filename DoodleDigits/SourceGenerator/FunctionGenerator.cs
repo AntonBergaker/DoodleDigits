@@ -121,7 +121,7 @@ namespace SourceGenerator {
                         if (attributeParameter.Expression is LiteralExpressionSyntax literal) {
                             SyntaxKind kind = literal.Kind();
                             if (kind == SyntaxKind.NumericLiteralExpression || kind == SyntaxKind.NumericLiteralToken) {
-                                int val = (int) literal.Token.Value;
+                                int val = (int) literal.Token.Value!;
                                 if (i == 1) {
                                     argumentCount = (val, val);
                                 }
@@ -130,7 +130,7 @@ namespace SourceGenerator {
                                 }
                             }
                             else if (literal.IsKind(SyntaxKind.StringLiteralExpression)) {
-                                names.Add( (string)literal.Token.Value );
+                                names.Add( (string)literal.Token.Value! );
                             }
                         }
                         else if (attributeParameter.Expression is MemberAccessExpressionSyntax access) {

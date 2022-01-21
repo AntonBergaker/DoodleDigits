@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
     public class UndefinedValue : Value {
@@ -27,12 +28,12 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new UndefinedValue(Type);
+            return new UndefinedValue(Type, this.SourceAstNode);
         }
 
-        public UndefinedValue() : this(UndefinedType.Unset) { }
+        public UndefinedValue() : this(UndefinedType.Unset, null) { }
 
-        public UndefinedValue(UndefinedType type) : base(false) {
+        public UndefinedValue(UndefinedType type, AstNode? sourceAstNode) : base(false, sourceAstNode) {
             Type = type;
         }
     }
