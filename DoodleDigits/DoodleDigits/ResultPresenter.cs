@@ -24,7 +24,7 @@ namespace DoodleDigits {
         private readonly Dictionary<int, List<TempResult>> resultsPerLine = new();
 
 
-        private record TempResult(Range Position, string Content, Result Result);
+        private record TempResult(string Content, Result Result);
 
         public List<ResultViewModel> Results { get; set; } = new();
 
@@ -42,7 +42,7 @@ namespace DoodleDigits {
                     resultsPerLine[line] = list = new List<TempResult>();
                 }
 
-                list.Add(new TempResult(result.Position, text, result));
+                list.Add(new TempResult(text, result));
             }
 
             List<ResultViewModel> resultViewModels = new();

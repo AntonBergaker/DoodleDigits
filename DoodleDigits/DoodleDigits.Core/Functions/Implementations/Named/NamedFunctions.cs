@@ -126,7 +126,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         }
 
         [CalculatorFunction(FunctionExpectedType.Real | FunctionExpectedType.Vector, "abs", "absolute")]
-        public static Value Abs(Value value, ExecutionContext<Function> context) {
+        public static Value Absolute(Value value, ExecutionContext<Function> context) {
             if (value is TooBigValue tbv) {
                 return tbv.IsPositive ? tbv : tbv.Negate();
             }

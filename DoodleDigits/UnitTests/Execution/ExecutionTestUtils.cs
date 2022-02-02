@@ -52,14 +52,14 @@ namespace UnitTests.Execution {
         public static Value CalculateValueString(string input) {
             var result = CalculateString(input);
 
-            ResultValue last = result.Results.OfType<ResultValue>().Last();
+            ResultValue last = result.Results.OfType<ResultValue>().LastOrDefault();
             if (last is not ResultValue rv) {
-                Assert.Fail("Input did not return a result");
+                Assert.Fail($"Input {input} did not return a result");
                 throw new Exception();
             }
 
             if (rv.Value is UndefinedValue) {
-                Assert.Fail("Input resulted in an undefined value");
+                Assert.Fail($"Input {input} resulted in an undefined value");
                 throw new Exception();
             }
 

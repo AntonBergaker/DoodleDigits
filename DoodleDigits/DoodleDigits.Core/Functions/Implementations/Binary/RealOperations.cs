@@ -95,5 +95,12 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryPower, rhs.TryPower, x => x.TryPower);
 
 
+        public static Value Cross(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is MatrixValue lhsMatrix && rhs is MatrixValue rhsMatrix) {
+                return MatrixValue.Cross(lhsMatrix, rhsMatrix, context);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+        }
     }
 }

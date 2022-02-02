@@ -142,13 +142,13 @@ namespace DoodleDigits.Core.Parsing
 
         private Expression ReadBinaryShifting() => GenericReadBinary(new[] { TokenType.ShiftLeft, TokenType.ShiftRight }, ReadBinaryAddSubtract);
         private Expression ReadBinaryAddSubtract() => GenericReadBinary(new[] { TokenType.Add, TokenType.Subtract }, ReadMultiplyDivide);
-        private Expression ReadMultiplyDivide() => GenericReadBinary(new[] { TokenType.Multiply, TokenType.Divide, TokenType.Modulus }, ReadImplicitMultiplication);
+        private Expression ReadMultiplyDivide() => GenericReadBinary(new[] { TokenType.Multiply, TokenType.Divide, TokenType.Modulus, TokenType.Cross }, ReadImplicitMultiplication);
 
         private Expression ReadImplicitMultiplication() {
             Expression lhs = ReadPower();
 
             Token peek = reader.Peek(false);
-            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number ||
+            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number or TokenType.BracketOpen ||
                    (peek.Type == TokenType.AbsoluteLine && insideAbsoluteExpression == false)) {
                 Expression rhs = ReadPower();
                 if (rhs is ErrorNode) {

@@ -83,5 +83,37 @@ namespace UnitTests.Parsing {
             );
 
         }
+
+        [Test]
+        public void TestVectorImplicitMultiplication() {
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new VectorDecleration(
+                        new NumberLiteral("5"),
+                        new NumberLiteral("5")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new VectorDecleration(
+                        new NumberLiteral("1"),
+                        new NumberLiteral("2")
+                    )
+                ), "(5, 5) (1, 2)"
+            );
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new VectorDecleration(
+                        new NumberLiteral("7"),
+                        new NumberLiteral("8")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new VectorDecleration(
+                        new NumberLiteral("1"),
+                        new NumberLiteral("2")
+                    )
+                ), "[7, 8] [1, 2]"
+            );
+        }
     }
 }

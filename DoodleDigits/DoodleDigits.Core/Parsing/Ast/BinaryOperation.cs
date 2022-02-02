@@ -36,6 +36,7 @@ namespace DoodleDigits.Core.Parsing.Ast {
             BitwiseAnd,
             BitwiseOr,
             BitwiseXor,
+            Cross,
         }
 
         static BinaryOperation() {
@@ -55,6 +56,7 @@ namespace DoodleDigits.Core.Parsing.Ast {
                         (TokenType.BitwiseOr, OperationType.BitwiseOr, BinaryOperations.BitwiseOr),
                         (TokenType.BitwiseXor, OperationType.BitwiseXor, BinaryOperations.Xor),
                         (TokenType.BitwiseAnd, OperationType.BitwiseAnd, BinaryOperations.BitwiseAnd),
+                        (TokenType.Cross, OperationType.Cross, BinaryOperations.Cross),
                     };
 
             TypeDictionary = new TwoWayDictionary<TokenType, OperationType>();

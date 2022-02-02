@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Functions.Implementations.Binary;
+using MathNet.Numerics.LinearAlgebra.Complex;
 
 namespace DoodleDigits.Core.Functions.Implementations.Named {
     static class VectorFunctions {
@@ -17,10 +19,11 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             if (value is MatrixValue matrix) {
                 if (matrix.DimensionCount == 1) {
                     Rational total = matrix.Magnitude(context);
-                    
+
                     if (total == Rational.Zero) {
                         return new MatrixValue(new MatrixValue.MatrixDimension(
-                            Enumerable.Range(0, matrix.Dimension.Length).Select(_ => new MatrixValue.MatrixValueElement(new RealValue(0)))
+                            Enumerable.Range(0, matrix.Dimension.Length).Select(_ =>
+                                new MatrixValue.MatrixValueElement(new RealValue(0)))
                         ));
                     }
 
@@ -53,8 +56,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
         [CalculatorFunction(FunctionExpectedType.Vector, "determinant", "det")]
         public static Value Determinant(Value value, ExecutionContext<Function> context) {
             if (value is MatrixValue matrix) {
-                if (matrix.DimensionCount != 2 || matrix.Dimension.Length != ((MatrixValue.MatrixDimension)matrix.Dimension[0]).Length) {
-                    context.AddResult(new ResultError("determinant only valid for square 2d matricies", context.Position));
+                if (matrix.DimensionCount != 2 ||
+                    matrix.Dimension.Length != ((MatrixValue.MatrixDimension)matrix.Dimension[0]).Length) {
+                    context.AddResult(new ResultError("determinant only valid for square 2d matricies",
+                        context.Position));
                     return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
                 }
 
@@ -76,18 +81,21 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 Rational RecursiveDeterminant(Rational[,] rationalMatrix) {
                     int size = rationalMatrix.GetLength(0);
                     if (size == 2) {
-                        return 
+                        return
                             rationalMatrix[0, 0] * rationalMatrix[1, 1] -
                             rationalMatrix[0, 1] * rationalMatrix[1, 0];
                     }
 
                     Rational determinant = 0;
-                    for (int i=0;i<size;i++) {
-                        Rational newValue = rationalMatrix[0, i] * RecursiveDeterminant(Utils.RemoveRowAndColumnFromArray(rationalMatrix, 0, i));
+                    for (int i = 0; i < size; i++) {
+                        Rational newValue = rationalMatrix[0, i] *
+                                            RecursiveDeterminant(
+                                                Utils.RemoveRowAndColumnFromArray(rationalMatrix, 0, i));
 
                         if (i % 2 == 0) {
                             determinant += newValue;
-                        } else {
+                        }
+                        else {
                             determinant -= newValue;
                         }
                     }
@@ -98,6 +106,38 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
                 return new RealValue(RecursiveDeterminant(startMatrix));
             }
 
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+        }
+
+        [CalculatorFunction(FunctionExpectedType.Vector, "proj", "project")]
+        public static Value Projection(Value value, Value @base, ExecutionContext<Function> context) {
+            if (value is MatrixValue matrixValue && @base is MatrixValue matrixBase) {
+                var binaryContext = context.ForNode(new BinaryOperation(
+                    matrixValue.SourceAstNode as Expression ?? new ErrorNode(),
+                    BinaryOperation.OperationType.Cross, 
+                    @base.SourceAstNode as Expression ?? new ErrorNode(),
+                    context.Node.Position));
+
+                Value crossResult = BinaryOperations.Multiply(matrixValue, matrixBase, binaryContext);
+
+                if (matrixBase.IsVector == false) {
+                    context.AddResult(new ResultError("Base is not a 1d vector", context.Position));
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+                }
+
+                Rational normResult = 0;
+                foreach (MatrixValue.MatrixValueElement element in matrixBase.Dimension) {
+                    if (element.Value is IConvertibleToReal ctr) {
+                        Rational val = ctr.ConvertToReal(context).Value;
+                        normResult += val * val;
+                    }
+                }
+
+                Value quotient = BinaryOperations.Divide(crossResult, new RealValue(normResult), binaryContext);
+                return BinaryOperations.Multiply(quotient, @base, binaryContext);
+            }
+
+            context.AddResult(new ResultError("Projection can only be performed on vectors", context.Position));
             return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
     }
