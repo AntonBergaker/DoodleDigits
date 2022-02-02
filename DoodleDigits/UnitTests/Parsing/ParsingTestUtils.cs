@@ -21,7 +21,7 @@ namespace UnitTests.Parsing {
         }
 
         public static AstNode ParseToAst(string input) {
-            Parser parser = new Parser(FunctionLibrary.Functions.SelectMany(x => x.Names));
+            Parser parser = new Parser(FunctionLibrary.Functions);
             return parser.Parse(input).Root;
         }
     }

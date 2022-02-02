@@ -25,7 +25,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return real;
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
         }
 
         public static Value UnaryNegate(Value value, ExecutionContext<UnaryOperation> context) {
@@ -41,7 +41,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return real.Clone(value: -real.Value);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value UnaryNot(Value value, ExecutionContext<UnaryOperation> context) {
@@ -53,10 +53,10 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 return new BooleanValue(!@bool.Value);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
-        private static Value IntegerFactorial(RealValue value) {
+        private static Value IntegerFactorial(RealValue value, ExecutionContext<UnaryOperation> context) {
             Rational val = 1;
             if (value.Value > 10000) {
                 return new TooBigValue(TooBigValue.Sign.Positive);
@@ -65,7 +65,7 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 val *= i;
             }
 
-            return new RealValue(val, false, value.Form);
+            return new RealValue(val, false, value.Form, context.Node);
         }
 
         public static Value UnaryFactorial(Value value, ExecutionContext<UnaryOperation> context) {
@@ -73,15 +73,19 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 value = convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
             }
 
-            if (value is RealValue real) {
-                if (real.HasDecimal == false) {
-                    return IntegerFactorial(real);
-                }
-
-                return Value.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form);
+            if (value is TooBigValue tbv && tbv.IsPositive) {
+                return tbv;
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            if (value is RealValue real) {
+                if (real.HasDecimal == false) {
+                    return IntegerFactorial(real, context);
+                }
+
+                return RealValue.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form, context.Node);
+            }
+
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
     }
 }

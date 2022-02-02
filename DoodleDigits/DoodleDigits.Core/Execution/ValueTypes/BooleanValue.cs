@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Parsing.Ast;
 using Rationals;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
@@ -15,9 +16,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public readonly PresentationForm Form;
 
-        public BooleanValue(bool value) : this(value, false, PresentationForm.Unset) { }
+        public BooleanValue(bool value) : this(value, false, null, PresentationForm.Unset) { }
 
-        public BooleanValue(bool value, bool triviallyAchieved, PresentationForm presentationForm) : base(triviallyAchieved) {
+        public BooleanValue(bool value, bool triviallyAchieved, AstNode? sourceAstNode, PresentationForm presentationForm) : base(triviallyAchieved, sourceAstNode) {
             Value = value;
             Form = presentationForm;
         }
@@ -26,18 +27,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return Value ? "true" : "false";
         }
 
-        public RealValue ConvertToReal() {
-            return new RealValue(Value ? Rational.One : Rational.Zero);
-        }
-
         public RealValue ConvertToReal(ExecutionContext context) {
-            RealValue newValue = ConvertToReal();
-            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, context.Position));
+            RealValue newValue = new RealValue(Value ? Rational.One : Rational.Zero);
+            Range position = this.SourceAstNode?.Position ?? context.Position;
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
             return newValue;
-        }
-
-        public BooleanValue ConvertToBool() {
-            return this;
         }
 
         public BooleanValue ConvertToBool(ExecutionContext context) {
@@ -52,16 +46,20 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return bOther.Value == Value;
         }
 
+        public override Value Clone(bool? triviallyAchieved = null) {
+            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved, this.SourceAstNode, PresentationForm.Unset);
+        }
+
+        public Value Clone(bool? triviallyAchieved = null, AstNode? sourceAstNode = null, PresentationForm? form = null) {
+            return new BooleanValue(Value, 
+                triviallyAchieved ?? this.TriviallyAchieved,
+                sourceAstNode ?? this.SourceAstNode, 
+                form ?? this.Form
+            );
+        }
+
         public override int GetHashCode() {
             return Value.GetHashCode();
-        }
-
-        public override Value Clone(bool? triviallyAchieved = null) {
-            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved, PresentationForm.Unset);
-        }
-
-        public Value Clone(bool? triviallyAchieved = null, PresentationForm? form = null) {
-            return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved, form ?? this.Form);
         }
     }
 }

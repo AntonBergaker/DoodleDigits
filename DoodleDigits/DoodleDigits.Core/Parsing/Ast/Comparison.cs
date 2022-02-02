@@ -79,7 +79,7 @@ namespace DoodleDigits.Core.Parsing.Ast {
             internal List<Expression> Expressions { get; }
             internal List<ComparisonType> Signs { get; }
 
-            // Only to make the thingy possible
+            // Only to make the interface implemented so we can use cool add syntax
             public IEnumerator<Expression> GetEnumerator() {
                 throw new NotImplementedException();
             }

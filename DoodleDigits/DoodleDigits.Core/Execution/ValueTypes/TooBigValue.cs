@@ -1,8 +1,9 @@
 ﻿using System;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.ValueTypes {
-    public class TooBigValue : Value, IConvertibleToBool {
+    public partial class TooBigValue : Value, IConvertibleToBool {
         public enum Sign {
             Positive,
             PositiveInfinity,
@@ -12,11 +13,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public readonly Sign ValueSign;
 
-        public TooBigValue(Sign sign, bool triviallyAchieved) : base(triviallyAchieved) {
+        public TooBigValue(Sign sign, bool triviallyAchieved, AstNode? sourceAstNode) : base(triviallyAchieved, sourceAstNode) {
             ValueSign = sign;
         }
 
-        public TooBigValue(Sign sign) : this(sign, false) { }
+        public TooBigValue(Sign sign) : this(sign, false, null) { }
 
         public override string ToString() {
             return "Very big";
@@ -35,7 +36,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new TooBigValue(this.ValueSign, triviallyAchieved ?? TriviallyAchieved);
+            return new TooBigValue(this.ValueSign, triviallyAchieved ?? TriviallyAchieved, this.SourceAstNode);
         }
 
         public bool IsPositive => ValueSign is Sign.Positive or Sign.PositiveInfinity;
@@ -50,12 +51,8 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             });
         }
 
-        public BooleanValue ConvertToBool() {
-            return new BooleanValue(IsPositive);
-        }
-
         public BooleanValue ConvertToBool(ExecutionContext context) {
-            BooleanValue newValue = ConvertToBool();
+            BooleanValue newValue = new BooleanValue(IsPositive);
             context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, context.Position));
             return newValue;
         }

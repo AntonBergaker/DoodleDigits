@@ -27,10 +27,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
             if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {

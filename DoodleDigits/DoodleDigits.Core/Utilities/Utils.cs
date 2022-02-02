@@ -33,5 +33,25 @@ namespace DoodleDigits.Core.Utilities {
         public static Range Join(IEnumerable<Range> ranges) {
             return Join(ranges.ToArray());
         }
+
+        public static T[,] RemoveRowAndColumnFromArray<T>(T[,] array, int row, int column) {
+            T[,] result = new T[array.GetLength(0) - 1, array.GetLength(1) - 1];
+
+            for (int i = 0, j = 0; i < array.GetLength(0); i++) {
+                if (i == row)
+                    continue;
+
+                for (int k = 0, u = 0; k < array.GetLength(1); k++) {
+                    if (k == column)
+                        continue;
+
+                    result[j, u] = array[i, k];
+                    u++;
+                }
+                j++;
+            }
+
+            return result;
+        }
     }
 }

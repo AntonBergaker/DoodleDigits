@@ -6,6 +6,7 @@ using DoodleDigits.Core.Utilities;
 using Rationals;
 
 namespace DoodleDigits.Core.Functions.Implementations.Binary {
+
     public static partial class BinaryOperations {
         private static (RealValue lhs, RealValue rhs) ConvertToReal(IConvertibleToReal lhs, IConvertibleToReal rhs,
             ExecutionContext<BinaryOperation> context) {
@@ -15,192 +16,91 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             );
         }
 
-        public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue) {
-                return lhs;
+        delegate Value? ImplementationFunction(Value other, BinaryOperation.OperationSide side,
+            bool castAttempt, ExecutionContext<BinaryOperation> context);
+
+
+        private static Value ExecuteBinaryImplementation(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<Value, Value, Value?>? fallback = null) {
+            Value? result;
+            
+            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, false, context);
+            if (result != null) {
+                return result;
+            }
+            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, false, context);
+            if (result != null) {
+                return result;
             }
 
-            if (rhs is TooBigValue) {
+            // Try both sides again, but now allow casting
+            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, true, context);
+            if (result != null) {
+                return result;
+            }
+            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, true, context);
+            if (result != null) {
+                return result;
+            }
+
+            if (fallback != null) {
+                result = fallback(lhs, rhs);
+                if (result != null) {
+                    return result;
+                }
+            }
+
+            // Ignore the operation if either side is undefined
+            if (lhs is UndefinedValue && rhs is not UndefinedValue) {
                 return rhs;
             }
 
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-                return new RealValue((result.lhs.Value + result.rhs.Value).CanonicalForm, false, result.lhs.Form);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-        }
-
-        public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue) {
+            if (rhs is UndefinedValue) {
                 return lhs;
             }
 
-            if (rhs is TooBigValue tbvRhs) {
-                return tbvRhs.Negate();
-            }
-
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-                return new RealValue((result.lhs.Value - result.rhs.Value).CanonicalForm, false, result.lhs.Form);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
+        private static Value ExecuteBinaryRealImplementation(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, 
+            ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<RealValue, ImplementationFunction> getRealFunc) =>
+            ExecuteBinaryImplementation(lhs, rhs, context, lhsMethod, rhsMethod, (lhs, rhs) => {
+                if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
+                    RealValue lhsReal = lhsCtr.ConvertToReal(context.ForNode(context.Node.Lhs));
+                    RealValue rhsReal = rhsCtr.ConvertToReal(context.ForNode(context.Node.Rhs));
 
-        public static Value Divide(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
-                int sign = (tbLhs.IsPositive ? 1 : -1) * (tbRhs.IsPositive ? 1 : -1);
-                return sign == 1 ? tbLhs : tbLhs.Negate();
-            }
-
-            if (lhs is TooBigValue) {
-                return lhs;
-            }
-
-            if (rhs is TooBigValue) {
-                return new RealValue(0);
-            }
-
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-
-                if (result.rhs.Value == Rational.Zero) {
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
+                    ImplementationFunction realFunc = getRealFunc(lhsReal);
+                    return realFunc(rhsReal, BinaryOperation.OperationSide.Left, true, context);
                 }
+                return null;
+            });
 
-                return new RealValue((result.lhs.Value / result.rhs.Value).CanonicalForm, false, result.lhs.Form);
+
+        public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryAdd, rhs.TryAdd, x => x.TryAdd);
+
+        public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TrySubtract, rhs.TrySubtract, x => x.TrySubtract);
+
+        public static Value Divide(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryDivide, rhs.TryDivide, x => x.TryDivide);
+
+        public static Value Multiply(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryMultiply, rhs.TryMultiply, x => x.TryMultiply);
+
+        public static Value Modulus(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryModulus, rhs.TryModulus, x => x.TryModulus);
+
+
+        public static Value Power(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryPower, rhs.TryPower, x => x.TryPower);
+
+
+        public static Value Cross(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+            if (lhs is MatrixValue lhsMatrix && rhs is MatrixValue rhsMatrix) {
+                return MatrixValue.Cross(lhsMatrix, rhsMatrix, context);
             }
 
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
-
-        public static Value Multiply(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            // 0 checks, 0's always result in 0s
-            {
-                if (lhs is RealValue rLhs && rLhs.Value == 0) {
-                    return rLhs;
-                }
-
-                if (rhs is RealValue rRhs && rRhs.Value == 0) {
-                    return rRhs;
-                }
-            }
-
-            if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
-                int sign = (tbLhs.IsPositive ? 1 : -1) * (tbRhs.IsPositive ? 1 : -1);
-                return sign == 1 ? tbLhs : tbLhs.Negate();
-            }
-
-            if (lhs is TooBigValue) {
-                return lhs;
-            }
-
-            if (rhs is TooBigValue) {
-                return rhs;
-            }
-
-
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-                return new RealValue((result.lhs.Value * result.rhs.Value).CanonicalForm, false, result.lhs.Form);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-        }
-
-
-        public static Value Modulus(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-            }
-
-            if (rhs is TooBigValue) {
-                return lhs;
-            }
-
-
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-
-                if (result.rhs.Value == Rational.Zero) {
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
-                }
-
-                return new RealValue(result.lhs.Value.Modulus(result.rhs.Value).CanonicalForm, false, result.lhs.Form);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-
-        }
-
-
-        public static Value Power(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
-            if (lhs is TooBigValue) {
-                return lhs;
-            }
-
-            if (rhs is TooBigValue) {
-                return rhs;
-            }
-
-
-            if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                var result = ConvertToReal(ctrLhs, ctrRhs, context);
-                return Power(result.lhs, result.rhs);
-            }
-
-            if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
-            }
-
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-        }
-
-        public static Value Power(RealValue lhs, RealValue rhs) {
-            if (lhs.Value.IsZero && rhs.Value < Rational.Zero) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
-            }
-
-            if (lhs.Value.IsZero) {
-                return new RealValue(Rational.Zero);
-            }
-            if (rhs.Value.IsZero) {
-                return new RealValue(Rational.One);
-            }
-
-            if (rhs.HasDecimal == false) {
-                // Only calculate if the value isn't too complex as the math would take years
-                if (Rational.Abs(lhs.Value.GetComplexity()* rhs.Value) < 20000) {
-                    return new RealValue(Rational.Pow(lhs.Value, (int)rhs.Value).CanonicalForm);
-                }
-            }
-
-            return Value.FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()), false, lhs.Form);
-        }
-
-
     }
 }

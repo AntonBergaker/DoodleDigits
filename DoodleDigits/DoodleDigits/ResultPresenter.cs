@@ -24,7 +24,7 @@ namespace DoodleDigits {
         private readonly Dictionary<int, List<TempResult>> resultsPerLine = new();
 
 
-        private record TempResult(Range Position, string Content, Result Result);
+        private record TempResult(string Content, Result Result);
 
         public List<ResultViewModel> Results { get; set; } = new();
 
@@ -37,12 +37,12 @@ namespace DoodleDigits {
                 }
 
                 int line = measure.GetLineForIndex(result.Position.End.Value);
-                
+
                 if (resultsPerLine.TryGetValue(line, out var list) == false) {
                     resultsPerLine[line] = list = new List<TempResult>();
                 }
 
-                list.Add(new TempResult(result.Position, text, result));
+                list.Add(new TempResult(text, result));
             }
 
             List<ResultViewModel> resultViewModels = new();
@@ -81,39 +81,7 @@ namespace DoodleDigits {
         private string? GetResultString(Result result) {
             switch (result) {
                 case ResultValue resultValue:
-                    if (resultValue.Value is TooBigValue tooBig) {
-                        return tooBig.ValueSign switch {
-                            TooBigValue.Sign.Positive => " → A huge number",
-                            TooBigValue.Sign.PositiveInfinity => " = ∞",
-                            TooBigValue.Sign.Negative => " → A huge negative number",
-                            TooBigValue.Sign.NegativeInfinity => " = -∞",
-                            _ => throw new ArgumentOutOfRangeException()
-                        };
-                    }
-
-                    if (resultValue.Value.TriviallyAchieved) {
-                        return null;
-                    }
-
-                    if (resultValue.Value is UndefinedValue undefinedValue) {
-                        return undefinedValue.Type == UndefinedValue.UndefinedType.Undefined ? " = undefined" : null;
-                    }
-
-                    if (resultValue.Value is BooleanValue booleanValue) {
-                        return " → " + booleanValue.ToString();
-                    }
-
-                    if (resultValue.Value is RealValue realValue) {
-                        string formPrefix = "";
-                        if (realValue.Form == RealValue.PresentedForm.Hex) {
-                            formPrefix = "0x";
-                        } else if (realValue.Form == RealValue.PresentedForm.Binary) {
-                            formPrefix = "0b";
-                        }
-                        return " = " + formPrefix + realValue.ToString(25, 30, "ᴇ");
-                    }
-
-                    break;
+                    return GetValueString(resultValue.Value, true);
                 case ResultError resultError:
                     return resultError.Error;
                 case ResultConversion resultConversion:
@@ -121,6 +89,86 @@ namespace DoodleDigits {
             }
 
             return null;
+        }
+
+        private string? GetValueString(Value value, bool includeEqualSign) {
+            string equalSign = " = ";
+            string leadsToSign = " → ";
+            if (includeEqualSign == false) {
+                equalSign = "";
+                leadsToSign = "";
+            }
+
+            if (value is TooBigValue tooBig) {
+                return tooBig.ValueSign switch {
+                    TooBigValue.Sign.Positive => leadsToSign + "A huge number",
+                    TooBigValue.Sign.PositiveInfinity => equalSign + "∞",
+                    TooBigValue.Sign.Negative => leadsToSign + "A huge negative number",
+                    TooBigValue.Sign.NegativeInfinity => equalSign + "-∞",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+
+            if (value.TriviallyAchieved) {
+                return null;
+            }
+
+            if (value is UndefinedValue undefinedValue) {
+                return undefinedValue.Type == UndefinedValue.UndefinedType.Undefined ? equalSign + "undefined" : null;
+            }
+
+            if (value is BooleanValue booleanValue) {
+                return leadsToSign + booleanValue.ToString();
+            }
+            if (value is MatrixValue matrixValue) {
+                return equalSign + GetMatrixString(matrixValue);
+            }
+            if (value is RealValue realValue) {
+                string formPrefix = "";
+                if (realValue.Form == RealValue.PresentedForm.Hex) {
+                    formPrefix = "0x";
+                } else if (realValue.Form == RealValue.PresentedForm.Binary) {
+                    formPrefix = "0b";
+                }
+                return equalSign + formPrefix + realValue.ToString(25, 30, "ᴇ");
+            }
+
+            return null;
+        }
+
+        private string GetMatrixString(MatrixValue matrix) {
+            string openSymbol, closeSymbol;
+            if (matrix.DimensionCount == 1) {
+                openSymbol = "(";
+                closeSymbol = ")";
+            } else {
+                openSymbol = "[";
+                closeSymbol = "]";
+            }
+
+            StringBuilder sb = new();
+
+            void RecurseBuild(MatrixValue.MatrixDimension dimension) {
+                sb.Append(openSymbol);
+
+                bool first = true;
+                foreach (MatrixValue.IMatrixElement element in dimension) {
+                    if (first == false) {
+                        sb.Append(", ");
+                    }
+                    first = false;
+                    if (element is MatrixValue.MatrixDimension md) {
+                        RecurseBuild(md);
+                    } else if (element is MatrixValue.MatrixValueElement mve) {
+                        sb.Append(GetValueString(mve.Value, false) ?? "unknown");
+                    }
+                }
+
+                sb.Append(closeSymbol);
+            }
+            RecurseBuild(matrix.Dimension);
+
+            return sb.ToString();
         }
     }
 }

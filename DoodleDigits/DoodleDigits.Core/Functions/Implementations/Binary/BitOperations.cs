@@ -21,49 +21,49 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
 
             if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
                 var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context);
-                lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
-                rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
+                lhsReal = lhsReal.Round(context.ForNode(context.Node.Rhs));
+                rhsReal = rhsReal.Round(context.ForNode(context.Node.Lhs));
 
-                return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator, false, lhsReal.Form);
+                return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator, false, lhsReal.Form, context.Node);
             }
             
             if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value BitwiseOr(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
                 var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context);
-                lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
-                rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
+                lhsReal = lhsReal.Round(context.ForNode(context.Node.Rhs));
+                rhsReal = rhsReal.Round(context.ForNode(context.Node.Lhs));
 
-                return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator, false, lhsReal.Form);
+                return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator, false, lhsReal.Form, context.Node);
             }
 
             if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value BitwiseAnd(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
             if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
                 var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context);
-                lhsReal = lhsReal.Round(context, context.Node.Lhs.Position);
-                rhsReal = rhsReal.Round(context, context.Node.Rhs.Position);
+                lhsReal = lhsReal.Round(context.ForNode(context.Node.Rhs));
+                rhsReal = rhsReal.Round(context.ForNode(context.Node.Lhs));
 
-                return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator, false, lhsReal.Form);
+                return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator, false, lhsReal.Form, context.Node);
             }
 
             if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value ShiftLeft(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -74,46 +74,46 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             {
                 if (rhs is TooBigValue tbvRhs && lhs is RealValue realLhs) {
                     if (realLhs.Value.IsZero) {
-                        return new RealValue(Rational.Zero, false, realLhs.Form);
+                        return new RealValue(Rational.Zero, false, realLhs.Form, context.Node);
                     }
 
                     return tbvRhs.IsPositive
                         ? new TooBigValue(TooBigValue.Sign.Positive)
-                        : new RealValue(Rational.Zero, false, realLhs.Form);
+                        : new RealValue(Rational.Zero, false, realLhs.Form, context.Node);
                     ;
                 }
             }
             {
                 if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                    var (realLhs, realRhs) = ConvertToReal(ctrLhs, ctrRhs, context);
-                    realLhs = realLhs.Round(context, context.Node.Lhs.Position);
-                    realRhs = realRhs.Round(context, context.Node.Rhs.Position);
+                    var (lhsReal, rhsReal) = ConvertToReal(ctrLhs, ctrRhs, context);
+                    lhsReal = lhsReal.Round(context.ForNode(context.Node.Rhs));
+                    rhsReal = rhsReal.Round(context.ForNode(context.Node.Lhs));
 
-                    if (realLhs.Value.IsZero) {
-                        return new RealValue(Rational.Zero, false, realLhs.Form);
+                    if (lhsReal.Value.IsZero) {
+                        return new RealValue(Rational.Zero, false, lhsReal.Form, context.Node);
                     }
 
-                    if (Rational.Abs(realRhs.Value) > 10000) {
+                    if (Rational.Abs(rhsReal.Value) > 10000) {
                         return new TooBigValue(TooBigValue.Sign.Positive);
                     }
 
-                    if (realRhs.Value < 0) {
+                    if (rhsReal.Value < 0) {
                         return new RealValue(
                             RationalUtils.Floor(new Rational(
-                                realLhs.Value.Numerator,
-                                realRhs.Value.Denominator * BigInteger.Pow(2, -(int)realRhs.Value))
-                            ), false, realLhs.Form
+                                lhsReal.Value.Numerator,
+                                rhsReal.Value.Denominator * BigInteger.Pow(2, -(int)rhsReal.Value))
+                            ), false, lhsReal.Form, context.Node
                         );
                     }
-                    return new RealValue(RationalUtils.Floor(realLhs.Value * Rational.Pow(2, (int)realRhs.Value)), false, realLhs.Form);
+                    return new RealValue(RationalUtils.Floor(lhsReal.Value * Rational.Pow(2, (int)rhsReal.Value)), false, lhsReal.Form, context.Node);
                 }
             }
 
             if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
         public static Value ShiftRight(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
@@ -126,10 +126,10 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
             if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
+                return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
         }
 
     }

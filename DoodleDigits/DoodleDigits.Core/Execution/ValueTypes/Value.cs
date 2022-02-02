@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
@@ -8,24 +10,33 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public bool TriviallyAchieved { get; }
 
-        protected Value(bool triviallyAchieved) {
+        internal AstNode? SourceAstNode;
+
+        protected Value(bool triviallyAchieved, AstNode? sourceAstNode) {
             TriviallyAchieved = triviallyAchieved;
+            SourceAstNode = sourceAstNode;
         }
 
-        public static Value FromDouble(double value, bool triviallyAchieved, RealValue.PresentedForm form, bool resultOfInfinity = false) {
-            if (double.IsPositiveInfinity(value)) {
-                return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.PositiveInfinity : TooBigValue.Sign.Positive);
-            }
+        public virtual Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
 
-            if (double.IsNegativeInfinity(value)) {
-                return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.NegativeInfinity : TooBigValue.Sign.Negative);
-            }
+        public virtual Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+        public virtual Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
 
-            if (double.IsNaN(value)) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
-            }
+        public virtual Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
 
-            return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
+        public virtual Value? TryModulus(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
+        }
+        public virtual Value? TryPower(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+            return null;
         }
 
         public abstract bool Equals(Value? other);
@@ -38,7 +49,6 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public abstract override int GetHashCode();
-
         public abstract Value Clone(bool? triviallyAchieved = null);
     }
 }

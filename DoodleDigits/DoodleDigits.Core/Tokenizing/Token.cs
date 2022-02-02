@@ -39,6 +39,9 @@ namespace DoodleDigits.Core {
         AbsoluteLine,
         As,
         In,
+        BracketOpen,
+        BracketClose,
+        Cross
     }
 
     public class Token : IEquatable<Token> {
@@ -72,6 +75,8 @@ namespace DoodleDigits.Core {
                 ("!", TokenType.Exclamation),
                 ("<<", TokenType.ShiftLeft),
                 (">>", TokenType.ShiftRight),
+                ("[", TokenType.BracketOpen),
+                ("]", TokenType.BracketClose),
             };
 
             SymbolTokens = tokens.ToDictionary(x => x.token, x => x.type);
@@ -88,6 +93,7 @@ namespace DoodleDigits.Core {
                 ("bitand", TokenType.BitwiseAnd),
                 ("in", TokenType.In),
                 ("as", TokenType.As),
+                ("cross", TokenType.Cross),
             }).ToArray();
 
             stringToToken = tokens.ToDictionary(x => x.token, x => x.type);
