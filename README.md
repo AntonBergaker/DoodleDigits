@@ -12,6 +12,7 @@ This approach lets you easily go back and change things in your equation and is 
 * A large library of math functions
 * Bitwise operations (keywords are `bxor`, `bor` and `band` to not clash with some other math notations)
 * Hex and binary numbers (`0xE32C2C`, `0b10`)
+* Vectors and matrices (`x = (1, 2)`, `det [[3, 4], [5, 6]]`) 
 
 ## Download and Install
 Downloads and installation instructions can be found on the [releases](https://github.com/AntonBergaker/DoodleDigits/releases) page.
