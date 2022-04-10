@@ -264,7 +264,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Named {
             }
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, 0, context);
-            return new RealValue(RationalUtils.Round(realValue.Value), false, realValue.Form, context.Node);
+            return new RealValue(RationalUtils.Ceil(realValue.Value), false, realValue.Form, context.Node);
         }
     }
 }
