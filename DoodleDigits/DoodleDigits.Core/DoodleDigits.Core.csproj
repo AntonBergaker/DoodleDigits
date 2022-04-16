@@ -1,19 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	
+	
+	<PropertyGroup>
+		<PackageId>DoodleDigits.Core</PackageId>
+		<Version>1.2.0</Version>
+		<Authors>Anton Bergåker</Authors>
+		<Title>Doodle Digits Core</Title>
+		<Description>
+			Math library powering Doodle Digits. Takes a string input and returns a number of results.
+		</Description>
+		<PackageIcon>images\Icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/AntonBergaker/DoodleDigits</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/AntonBergaker/DoodleDigits</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	</PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\Icon.png" Pack="true" Visible="false" PackagePath="images\Icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
     <PackageReference Include="Rationals" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj"
-                      ReferenceOutputAssembly="false"
-                      OutputItemType="Analyzer" />
+    <ProjectReference Include="..\SourceGenerator\SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
 
