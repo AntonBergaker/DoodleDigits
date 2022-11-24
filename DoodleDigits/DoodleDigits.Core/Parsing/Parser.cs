@@ -134,6 +134,11 @@ namespace DoodleDigits.Core.Parsing
                     nextToken = reader.Peek();
                 }
 
+                // If there's only a single argument, return as it is
+                if (builder.ExpressionCount <= 1) {
+                    return lhs;
+                }
+
                 return builder.Build();
             }
 

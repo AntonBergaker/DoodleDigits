@@ -76,6 +76,8 @@ namespace DoodleDigits.Core.Parsing.Ast {
                 return new Comparison(this);
             }
 
+            public int ExpressionCount => Expressions.Count;
+
             internal List<Expression> Expressions { get; }
             internal List<ComparisonType> Signs { get; }
 

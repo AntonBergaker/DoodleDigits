@@ -141,7 +141,12 @@ namespace DoodleDigits.Core {
             return false;
         }
         private bool IsIdentifierCharacter(int index, out int length) {
-            if (char.IsDigit(input[index])) {
+            char c = input[index];
+            if (char.IsDigit(c)) {
+                length = 1;
+                return true;
+            }
+            if (c == '\'') {
                 length = 1;
                 return true;
             }

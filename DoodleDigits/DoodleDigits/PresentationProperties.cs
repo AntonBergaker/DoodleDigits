@@ -33,6 +33,7 @@ namespace DoodleDigits {
 
             DarkMode = settings.DarkMode;
             ZoomTicks = settings.ZoomTicks;
+            ForceOnTop= settings.ForceOnTop;
 
             settings.PropertyChanged += (s, e) => {
                 switch (e.PropertyName) {
@@ -41,6 +42,9 @@ namespace DoodleDigits {
                         break;
                     case nameof(settings.ZoomTicks):
                         ZoomTicks = settings.ZoomTicks;
+                        break;
+                    case nameof(settings.ForceOnTop):
+                        ForceOnTop = settings.ForceOnTop;
                         break;
                 }
             };
@@ -86,6 +90,15 @@ namespace DoodleDigits {
                     theme = "Light.Blue";
                 }
                 ThemeManager.Current.ChangeTheme(window, theme);
+                OnPropertyChanged();
+            }
+        }
+
+        private bool forceOnTopField;
+        public bool ForceOnTop {
+            get => forceOnTopField;
+            private set {
+                forceOnTopField = value;
                 OnPropertyChanged();
             }
         }
