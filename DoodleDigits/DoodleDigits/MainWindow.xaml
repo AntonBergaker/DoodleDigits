@@ -13,6 +13,7 @@
                  TitleBarHeight="27"
                  ShowIconOnTitleBar="True"
                  ResizeMode="CanResize"
+                 Topmost="{Binding PresentationProperties.ForceOnTop}"
                  DataContext="{Binding RelativeSource={RelativeSource Self}}" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
     <mah:MetroWindow.TitleTemplate>
         <DataTemplate>
@@ -96,12 +97,18 @@
                             Header="Zoom Out"
                             Click="ZoomOut" 
                         />
-                            <Separator/>
-                            <MenuItem
+                        <Separator/>
+                        <MenuItem
                             Header="Enable Dark Mode"
                             IsCheckable="false"
                             IsChecked="{Binding PresentationProperties.DarkMode, Mode=OneWay}"
                             Click="ToggleDarkMode"
+                        />
+                        <MenuItem
+                            Header="Force on Top"
+                            IsCheckable="false"
+                            IsChecked="{Binding PresentationProperties.ForceOnTop, Mode=OneWay}"
+                            Click="ToggleForceOnTop"
                         />
                         </ContextMenu>
                     </TextBox.ContextMenu>

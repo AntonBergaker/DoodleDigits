@@ -27,6 +27,7 @@ namespace DoodleDigits {
         private int failedSaves = 0;
 
         private readonly SettingsViewModel settings;
+        private CancellationTokenSource? delayCancelTokenSource;
 
         private void SetCaretIndex(int index) {
             this.InputTextBox.CaretIndex = index;
@@ -71,6 +72,10 @@ namespace DoodleDigits {
                 );
             });
 
+            if (blockSaving > 0 || initialized == false) {
+                return;
+            }
+
             if (currentSaveTask != null) {
                 return;
             }
@@ -85,10 +90,12 @@ namespace DoodleDigits {
             TimeSpan diff = lastSaveTime + new TimeSpan(0, 0, 5) - DateTime.Now;
 
             if (diff < new TimeSpan(0)) {
+                delayCancelTokenSource = null;
                 currentSaveTask = InvokeSave();
             }
             else {
-                currentSaveTask = Task.Delay(diff).ContinueWith(async _ => await InvokeSave());
+                delayCancelTokenSource = new CancellationTokenSource();
+                currentSaveTask = Task.Delay(diff, delayCancelTokenSource.Token).ContinueWith(async _ => await InvokeSave());
             }
         }
 
@@ -103,7 +110,7 @@ namespace DoodleDigits {
                     return;
                 }
                 CancellationTokenSource source = new();
-                source.CancelAfter(5000);
+                source.CancelAfter(1000 + failedSaves*2000);
                 await currentState.Save(source.Token);
                 failedSaves = 0;
             }
@@ -147,6 +154,7 @@ namespace DoodleDigits {
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             if (currentSaveTask != null) {
+                delayCancelTokenSource?.Cancel();
                 currentSaveTask.Wait();
             }
         }
@@ -156,6 +164,13 @@ namespace DoodleDigits {
 
         private async void ToggleDarkMode(object sender, RoutedEventArgs e) {
             settings.DarkMode = !settings.DarkMode;
+            if (settings.UnsavedChanges) {
+                await settings.Save();
+            }
+        }
+
+        private async void ToggleForceOnTop(object sender, RoutedEventArgs e) {
+            settings.ForceOnTop = !settings.ForceOnTop;
             if (settings.UnsavedChanges) {
                 await settings.Save();
             }

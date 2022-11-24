@@ -38,6 +38,14 @@ namespace DoodleDigits {
             }
         }
 
+        public bool ForceOnTop {
+            get => settings.ForceOnTop;
+            set {
+                settings.ForceOnTop = value;
+                OnPropertyChanged();
+            }
+        }
+
         public async Task Save() {
             await settings.Save(new CancellationTokenSource(5000).Token);
         }

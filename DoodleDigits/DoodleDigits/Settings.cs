@@ -18,6 +18,9 @@ namespace DoodleDigits {
             [JsonPropertyName("zoom")]
             public int ZoomTicks { get; set; }
 
+            [JsonPropertyName("force_on_top")]
+            public bool ForceOnTop { get; set; }
+
         }
 
         private SettingsData data;
@@ -44,6 +47,17 @@ namespace DoodleDigits {
                     UnsavedChanges = true;
                 }
                 data.ZoomTicks = value;
+            }
+        }
+
+
+        public bool ForceOnTop { 
+            get => data.ForceOnTop;
+            set {
+                if (data.ForceOnTop != value) {
+                    UnsavedChanges = true;
+                }
+                data.ForceOnTop = value;
             }
         }
 
