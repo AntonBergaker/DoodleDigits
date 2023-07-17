@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "PatrickHand";
+    src: 
+        local("PatrickHandE"), 
+        url("./img/PatrickHand-RegularE.ttf") format("truetype");
+}
+
+.result {
+    font-size: 20px;
+    position: absolute;
+    color: #2EA0FF;
+    font-family: "PatrickHand", Arial, sans-serif;
+    white-space: nowrap;
+}

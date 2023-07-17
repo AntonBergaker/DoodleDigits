@@ -1,0 +1,44 @@
+.input-container {
+    display: grid;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.input-magic, .input {
+    /* Identical styling required!! */
+    margin: 0.5rem;
+    padding: 0;
+
+    /* Place on top of each other */
+    grid-area: 1 / 1 / 2 / 2;
+
+    font-weight: 300;
+    font-family: Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+    font-size: 20px;
+    line-height: 40.8px;
+}
+
+.input {
+    display: inherit;
+    caret-color: black;
+    color: transparent;
+    resize: none;
+    overflow: hidden;
+    background: transparent;
+    border: none;
+}
+.input-magic {
+    user-select: none;
+    white-space: nowrap;
+}
+
+.input,
+.input:focus,
+.input:active:focus,
+.input.active:focus,
+.input.focus,
+.input:active.focus,
+.input.active.focus {
+  outline: none !important;
+}

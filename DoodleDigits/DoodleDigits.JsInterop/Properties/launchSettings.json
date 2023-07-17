@@ -1,0 +1,13 @@
+{
+    "profiles": {
+      "DoodleDigitsWeb": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        },
+        "applicationUrl": "https://localhost:7002;http://localhost:5157",
+        "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/debug?browser={browserInspectUri}"
+      }
+    }
+}
