@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { mainApi } from "./ipc/main-api"
-import { OnRendererApi, rendererIpc } from "./ipc/renderer-ipc"
+import { RendererIpc, rendererIpc } from "./ipc/renderer-ipc"
 
 const ipcApi: { [key: string]: (arg: any) => void } = {}
 
@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld(
 
 declare global {
     interface Window {
-        electronApi: OnRendererApi
+        electronApi: RendererIpc
         developmentMode: boolean
     }
 }

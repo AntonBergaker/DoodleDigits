@@ -17,7 +17,7 @@ export async function calculate(input: string): Promise<CalculatorResult> {
         // If the script hasn't loaded yet, give it time
         let tries = 0
         while (!anyWindow.dotnetLmao) {
-            if (tries > 20) {
+            if (tries > 100) {
                 throw Error("Failed to find dotnet inside the window class.")
             }
             await new Promise((r) => setTimeout(r, 100))

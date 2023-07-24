@@ -1,12 +1,11 @@
 import { SaveSettingsData } from "../saving/saving"
 
-function api<T>(data: T) {
-    console.log("heh")
-}
-
+/* eslint-disable @typescript-eslint/no-empty-function */
 export const rendererApi = {
     updateSettings: (data: SaveSettingsData) => {},
+    sizeChanged: (data: { x: number; y: number }) => {},
 }
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 export type RendererApi = typeof rendererApi
 export type RendererApiKey = keyof RendererApi

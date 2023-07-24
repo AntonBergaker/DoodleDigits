@@ -3,6 +3,8 @@ import { PageMeasurer, Position } from "../calculator/page-measure"
 import "./result-view.css"
 import {
     CalculatorResult,
+    MatrixDimension,
+    MatrixValue,
     Result,
     Value,
 } from "../calculator/calculator-result"
@@ -15,13 +17,13 @@ export type ResultsViewProps = {
 export function ResultView(props: ResultsViewProps) {
     const resultsPerLine: Map<number, string[]> = new Map()
     for (const result of props.result.results) {
-        var text = getResultText(result)
+        const text = getResultText(result)
 
         if (text == null) {
             continue
         }
 
-        var line = props.pageMeasurer.getCharacterLine(
+        const line = props.pageMeasurer.getCharacterLine(
             getRange(result.range)[1]
         )
 
@@ -113,8 +115,31 @@ function getValueText(value: Value, includeEqualSign: boolean): string | null {
         return null
     }
     if (value.type == "matrix") {
-        return "hmm"
+        return getMatrixText(value);
     }
 
     return null
+}
+
+function getMatrixText(matrix: MatrixValue): string {
+    const dimensions = getMatrixDimensionCount(matrix);
+    
+    const [start, end] = dimensions == 1 ? "()" : "[]";
+    return getMatrixDimensionText(matrix.matrix, start, end);
+}
+function getMatrixDimensionText(matrixDimension: MatrixDimension | Value, start: string, end: string) : string {
+    if (Array.isArray(matrixDimension)) {
+        return `${start}${matrixDimension.map(x => getMatrixDimensionText(x, start, end)).join(", ")}${end}`
+    } else {
+        return getValueText(matrixDimension, false);
+    }
+}
+function getMatrixDimensionCount(matrix: MatrixValue): number {
+    let dimensions = 0
+    let currentDimension: Value | MatrixDimension = matrix.matrix
+    while (Array.isArray(currentDimension)) {
+        dimensions++;
+        currentDimension = currentDimension[0];
+    }
+    return dimensions;
 }

@@ -1,24 +1,15 @@
-import { IpcRendererEvent, ipcRenderer } from "electron"
+import { IpcRendererEvent, ipcMain, ipcRenderer } from "electron"
 import {
     rendererApi,
     RendererApi,
     RendererApiFunctionParameters,
 } from "./renderer-api"
+import { MainApi, MainApiFunctionParameters, mainApi } from "./main-api"
 
 type Handler = (event: IpcRendererEvent, data: any) => void
-const rendererIpc: { [key: string]: (handler: Handler) => void } = {}
+const rendererEventIpc: { [key: string]: (handler: Handler) => void } = {}
 
-for (const key in rendererApi) {
-    rendererIpc[`on${capitlizeFirst(key)}`] = function (handler: Handler) {
-        ipcRenderer.on(key, handler)
-    }
-}
-
-function capitlizeFirst(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1)
-}
-
-export type OnRendererApi = {
+type RendererEventIpc = {
     [TKey in keyof RendererApi as `on${Capitalize<TKey>}`]: (
         handler: (
             event: IpcRendererEvent,
@@ -26,5 +17,35 @@ export type OnRendererApi = {
         ) => void
     ) => void
 }
+
+for (const key in rendererApi) {
+    rendererEventIpc[`on${capitalizeFirst(key)}`] = function (
+        handler: Handler
+    ) {
+        ipcRenderer.on(key, handler)
+    }
+}
+
+function capitalizeFirst(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+const rendererCallIpc: { [key: string]: (data: any) => void } = {}
+for (const key in mainApi) {
+    rendererCallIpc[key] = function (data: any) {
+        ipcRenderer.send(key, data)
+    }
+}
+
+type RendererCallIpc = {
+    [TKey in keyof MainApi]: (data: MainApiFunctionParameters<TKey>) => void
+}
+
+export type RendererIpc = RendererEventIpc & RendererCallIpc
+
+const rendererIpc: RendererIpc = {
+    ...rendererEventIpc,
+    ...rendererCallIpc,
+} as any
 
 export { rendererIpc }

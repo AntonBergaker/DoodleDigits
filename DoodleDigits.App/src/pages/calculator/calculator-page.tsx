@@ -10,6 +10,7 @@ import { SaveStateData, SaveSettingsData } from "../../saving/saving"
 type CalculatorPageSettings = {
     state: SaveStateData
     settings: SaveSettingsData
+    onInput?: (string: string) => void
 }
 
 export function CalculatorPage(props: CalculatorPageSettings) {
@@ -24,6 +25,9 @@ export function CalculatorPage(props: CalculatorPageSettings) {
     async function onInput(input: string) {
         const result = await calculate(input)
         setResult(result)
+        if (props.onInput) {
+            props.onInput(input);
+        }
     }
 
     const ref = useRef<HTMLDivElement>()

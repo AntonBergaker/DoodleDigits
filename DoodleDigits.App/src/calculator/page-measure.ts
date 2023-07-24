@@ -33,8 +33,8 @@ export class PageMeasurer {
         this.lines.length = 0
 
         let start = 0
-        while (true) {
-            let end = newValue.indexOf("\n", start + 1)
+        while (start < newValue.length) {
+            const end = newValue.indexOf("\n", start + 1)
             if (end == -1) {
                 this.lines.push({ start, end: newValue.length })
                 break

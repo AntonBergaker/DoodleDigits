@@ -4,6 +4,9 @@
     "es6": true,
     "node": true
   },
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off"
+  },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",

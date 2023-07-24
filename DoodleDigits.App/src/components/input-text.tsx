@@ -10,15 +10,9 @@ export const InputText = React.forwardRef<HTMLDivElement, InputTextProps>(
     (props, ref) => {
         const [text, setText] = useState(props.defaultText ?? "")
 
-        async function onInput(target: unknown) {
-            if (
-                typeof target == "object" &&
-                "value" in target &&
-                typeof target.value == "string"
-            ) {
-                setText(target.value)
-                props.onInput(target.value)
-            }
+        async function onInput(target: any) {
+            setText(target.value)
+            props.onInput(target.value)
         }
 
         return (

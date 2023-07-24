@@ -1,5 +1,6 @@
 import { promises as fs } from "fs"
 import { getDefaultSettings, getDefaultState } from "./saving-defaults"
+import { nativeTheme } from "electron"
 
 export type SaveStateData = {
     content: string
@@ -49,9 +50,7 @@ export async function loadSettingsOrDefault(): Promise<SaveSettingsData> {
     const settingsJson = await loadFile("settings.json")
     let settings: SaveSettingsData
     if (settingsJson == null) {
-        settings = getDefaultSettings(
-            () => Electron.nativeTheme.shouldUseDarkColors
-        )
+        settings = getDefaultSettings(() => nativeTheme.shouldUseDarkColors)
     } else {
         settings = JSON.parse(settingsJson)
     }

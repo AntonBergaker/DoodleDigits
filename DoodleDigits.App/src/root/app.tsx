@@ -3,17 +3,18 @@ import { createRoot } from "react-dom/client"
 import { CalculatorPage } from "../pages/calculator/calculator-page"
 import { getDefaultSettings, getDefaultState } from "../saving/saving-defaults"
 import { SaveStateData, SaveSettingsData } from "../saving/saving"
+import { StateSavingScheduler } from "../saving/state-saving-scheduler"
+
+const [state, settings] = readStateAndSettings()
+let themeLink: HTMLLinkElement | undefined = undefined
+
+applySettings(settings)
 
 function render() {
     const root = createRoot(document.getElementById("document-root"))
-    const [state, settings] = readStateAndSettings()
-
-    applySettings(settings)
-
-    root.render(<CalculatorPage settings={settings} state={state} />)
+    root.render(<CalculatorPage settings={settings} state={state} onInput={onCalculatorInput} />)
 }
 
-let themeLink: HTMLLinkElement | undefined = undefined
 
 function applySettings(settings: SaveSettingsData) {
     // Insert dark mode css theme
@@ -39,6 +40,19 @@ render()
 window.electronApi.onUpdateSettings((event, settings) =>
     applySettings(settings)
 )
+
+const stateScheduler = new StateSavingScheduler(state);
+
+function onCalculatorInput(input: string) {
+    state.content = input;
+    stateScheduler.scheduleSave();
+}
+
+window.electronApi.onSizeChanged( (event, data) => {
+    state.window_dimensions.x = data.x
+    state.window_dimensions.y = data.y
+    stateScheduler.scheduleSave()
+} )
 
 function readStateAndSettings(): [SaveStateData, SaveSettingsData] {
     const urlParams = new URLSearchParams(window.location.search)

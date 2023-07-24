@@ -1,12 +1,15 @@
-import { app, BrowserWindow } from "electron"
+import { app, BrowserWindow, ipcMain } from "electron"
 import {
     directory,
     loadSettingsOrDefault,
     loadStateOrDefault,
+    saveSettings,
     SaveSettingsData,
+    saveState,
     SaveStateData,
 } from "./saving/saving"
 import contextMenu from "electron-context-menu"
+import { onIpc, sendIpc } from "./ipc/main-ipc"
 
 process.env.DEV_MODE = process.argv.includes("--dev") ? "true" : "false"
 
@@ -44,7 +47,8 @@ contextMenu({
                     savedSettings.theme = "dark"
                 }
                 item.checked = savedSettings.theme == "dark"
-                window.webContents.send("updateSettings", savedSettings)
+                sendIpc(window, "updateSettings", savedSettings)
+                saveSettings(savedSettings)
             },
         },
     ],
@@ -68,11 +72,20 @@ const createWindow = async () => {
         icon: "./root/icon.ico",
     })
 
+    mainWindow.on("resize", () => {
+        const [x, y] = mainWindow.getSize()
+        sendIpc(mainWindow, "sizeChanged", { x, y })
+    })
+
     const query = `?state=${btoa(JSON.stringify(savedState))}&settings=${btoa(
         JSON.stringify(savedSettings)
     )}`
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY + query)
 }
+
+onIpc("saveState", (event, state) => {
+    saveState(state)
+})
 
 app.setPath("userData", directory + "/electron")
 
