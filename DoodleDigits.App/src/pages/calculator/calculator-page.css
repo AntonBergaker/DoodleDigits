@@ -1,0 +1,23 @@
+.container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+
+    background-position: 0px 4px;
+    background-image: url("../../components/img/grid.png");
+    background-repeat: repeat;
+    background-size: 204px;
+    background-attachment: local;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
