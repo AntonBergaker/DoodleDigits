@@ -1,25 +1,30 @@
-import { contextBridge, ipcRenderer } from "electron";
-import { mainApi } from "./ipc/main-api";
-import { rendererIpc } from "./ipc/renderer-ipc";
+import { contextBridge, ipcRenderer } from "electron"
+import { mainApi } from "./ipc/main-api"
+import { OnRendererApi, rendererIpc } from "./ipc/renderer-ipc"
 
-const ipcApi: { [key: string]: (arg: any) => void } = {};
+const ipcApi: { [key: string]: (arg: any) => void } = {}
 
 for (const pair of Object.entries(mainApi)) {
     ipcApi[pair[0]] = (arg: any) => {
-        ipcRenderer.send(pair[0], arg);
+        ipcRenderer.send(pair[0], arg)
     }
 }
 
 const exposedApi = {
     ...ipcApi,
-    ...rendererIpc
+    ...rendererIpc,
 }
+
+contextBridge.exposeInMainWorld("electronApi", exposedApi)
+
+contextBridge.exposeInMainWorld(
+    "developmentMode",
+    process.env.DEV_MODE == "true"
+)
 
 declare global {
     interface Window {
-        electronApi: any
+        electronApi: OnRendererApi
+        developmentMode: boolean
     }
 }
-window.electronApi = window.electronApi || {};
-
-contextBridge.exposeInMainWorld('electronApi', exposedApi);

@@ -12,8 +12,8 @@
     /* Place on top of each other */
     grid-area: 1 / 1 / 2 / 2;
 
-    font-weight: 300;
-    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-family: 'Segoe UI', Helvetica, sans-serif;
     white-space: nowrap;
     font-size: 20px;
     line-height: 40.8px;

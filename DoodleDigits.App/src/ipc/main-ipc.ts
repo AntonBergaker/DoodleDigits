@@ -1,3 +1,2 @@
-import { ipcMain } from "electron";
-import { MainApiKey, mainApi } from "./main-api";
-
+import { ipcMain } from "electron"
+import { MainApiKey, mainApi } from "./main-api"

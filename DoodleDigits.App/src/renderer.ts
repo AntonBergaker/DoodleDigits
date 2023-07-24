@@ -26,7 +26,5 @@
  * ```
  */
 
-import './root/index.css';
-
 // Add this to the end of the existing file
-import './root/app';
+import "./root/app"

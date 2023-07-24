@@ -1,0 +1,8 @@
+.container {
+    background-image: url("./grid_dark.png");
+    color: #eeeeee;
+}
+
+.input {
+    caret-color: #eeeeee;
+}
