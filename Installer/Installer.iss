@@ -3,9 +3,6 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define Dependency_NoExampleSetup
-#include "InnoDependencyInstaller/CodeDependencies.iss"
-
 #define MyAppName "Doodle Digits"
 #define MyAppExeName "DoodleDigits.exe"
 
@@ -37,8 +34,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; \
     GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\DoodleDigits\DoodleDigits\bin\publish\runtime\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
-Source: ".\InnoDependencyInstaller\src\netcorecheck_x64.exe"; Flags: dontcopy noencryption
+Source: "..\DoodleDigits.App\out\Doodle Digits-win32-x64\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
 Name: "{group}\Doodle Digits"; Filename: "{app}\{#MyAppExeName}"
@@ -46,12 +42,3 @@ Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
-
-[Code]
-function InitializeSetup: Boolean;
-begin
-  // add the dependencies you need
-  Dependency_AddDotNet60Desktop;
-  // ...
-  Result := True;
-end;

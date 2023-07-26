@@ -13,6 +13,8 @@ const config: ForgeConfig = {
     packagerConfig: {
         asar: true,
         icon: "./src/root/icon",
+        executableName: "DoodleDigits",
+        name: "Doodle Digits",
     },
     rebuildConfig: {},
     makers: [
