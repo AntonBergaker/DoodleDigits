@@ -23,14 +23,14 @@ namespace DoodleDigits.Core {
     public static class ConstantLibrary {
 
         public static Constant[] Constants = {
-            new("true", new BooleanValue(true)),
-            new("false", new BooleanValue(false)),
+            new("true", new BooleanValue(true, triviallyAchieved: true, null, BooleanValue.PresentationForm.Unset)),
+            new("false", new BooleanValue(false, triviallyAchieved: true, null, BooleanValue.PresentationForm.Unset)),
             new("pi", new RealValue(RationalUtils.Pi)),
             new("π", new RealValue(RationalUtils.Pi)),
             new("tau", new RealValue(RationalUtils.Tau)),
             new("e", new RealValue(RationalUtils.EulersNumber)),
             new("infinity", new TooBigValue(TooBigValue.Sign.PositiveInfinity)),
-            new("∞", new TooBigValue(TooBigValue.Sign.PositiveInfinity)),
+            new("∞", new TooBigValue(TooBigValue.Sign.PositiveInfinity, triviallyAchieved: true, null)),
         };
 
 

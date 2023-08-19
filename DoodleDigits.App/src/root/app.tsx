@@ -4,6 +4,7 @@ import { CalculatorPage } from "../pages/calculator/calculator-page"
 import { getDefaultSettings, getDefaultState } from "../saving/saving-defaults"
 import { SaveStateData, SaveSettingsData } from "../saving/saving"
 import { StateSavingScheduler } from "../saving/state-saving-scheduler"
+import { mockElectronApi } from "../web/mock-electron"
 
 const [state, settings] = readStateAndSettings()
 let themeLink: HTMLLinkElement | undefined = undefined
@@ -36,6 +37,10 @@ function applySettings(settings: SaveSettingsData) {
 }
 
 render()
+
+if (!window.electronApi) {
+    mockElectronApi();
+}
 
 window.electronApi.onUpdateSettings((event, settings) =>
     applySettings(settings)

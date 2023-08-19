@@ -1,11 +1,15 @@
 {
-  "mainAssemblyName": "DoodleDigitsJsInterop.dll",
+  "mainAssemblyName": "DoodleDigitsJs.Interop.dll",
   "assemblyRootFolder": "managed",
   "debugLevel": 0,
   "assets": [
     {
       "behavior": "assembly",
       "name": "DoodleDigits.Core.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "DoodleDigitsJs.Interop.dll"
     },
     {
       "behavior": "assembly",

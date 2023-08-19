@@ -14,12 +14,12 @@
 
     font-weight: 400;
     font-family: 'Segoe UI', Helvetica, sans-serif;
-    white-space: nowrap;
     font-size: 20px;
     line-height: 40.8px;
 }
 
 .input {
+    white-space: pre-wrap;
     display: inherit;
     caret-color: black;
     color: transparent;

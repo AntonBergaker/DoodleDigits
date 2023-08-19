@@ -66,7 +66,7 @@ public static class ResultJsonConverter {
     private static JsonObject BooleanValueToJson(BooleanValue bv) {
         return new JsonObject {
             { "type", "boolean" },
-            { "bool", bv.Value },
+            { "value", bv.Value },
         };
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoodleDigits.Core.Execution.Results;
 using NUnit.Framework;
 
 namespace UnitTests.Execution {
@@ -16,5 +17,19 @@ namespace UnitTests.Execution {
 
         }
 
+        [Test]
+        public void TestTriviallyAchievedAssignment() {
+            {
+                var result = ExecutionTestUtils.CalculateString("x = true").Results.LastOrDefault() as ResultValue;
+                Assert.IsNotNull(result);
+                Assert.IsTrue(result.Value.TriviallyAchieved);
+            }
+
+            {
+                var result = ExecutionTestUtils.CalculateString("x = 5").Results.LastOrDefault() as ResultValue;
+                Assert.IsNotNull(result);
+                Assert.IsTrue(result.Value.TriviallyAchieved);
+            }
+        }
     }
 }

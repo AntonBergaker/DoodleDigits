@@ -164,7 +164,8 @@ namespace DoodleDigits.Core.Execution {
                         return null;
                     }
                 }
-                return Calculate(expression);
+                var a = Calculate(expression);
+                return a;
             }
 
             Value?[] calculatedResults = comparison.Expressions.Select(x => CalculateExpression(x)).ToArray();

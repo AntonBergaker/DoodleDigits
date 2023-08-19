@@ -21,6 +21,8 @@ export const InputText = React.forwardRef<HTMLDivElement, InputTextProps>(
                 <textarea
                     onInput={(a) => onInput(a.target)}
                     className="input"
+                    autoCapitalize="off"
+                    spellCheck="false"
                     defaultValue={props.defaultText}></textarea>
             </div>
         )
