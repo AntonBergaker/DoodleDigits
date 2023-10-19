@@ -36,34 +36,21 @@ public static partial class NamedFunctions {
             values = resultValues;
         }
 
-        Rational? max = null;
-        RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
+        Value max = values[0];
+        Expression maxNode = node.Arguments[0];
 
-        for (var index = 0; index < values.Length; index++) {
-            Value value = values[index];
-            if (value is TooBigValue { IsPositive: true }) {
-                return value;
-            }
+        for (int index = 1; index < values.Length; index++) {
+            Value? value = values[index];
 
-            if (value is not IConvertibleToReal convertibleToReal) {
-                continue;
-            }
-
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, forceIndex ?? index);
-            if (max == null) {
-                form = realValue.Form;
-                max = realValue.Value;
-                continue;
-            }
-            if (realValue.Value > max) {
-                max = realValue.Value;
+            var childNode = node.Arguments[forceIndex ?? index];
+            var result = BinaryOperations.LessThan(max, value, context, new BinaryNodes(node, maxNode, childNode));
+            if (result is BooleanValue { Value: true }) {
+                max = value;
+                maxNode = childNode;
             }
         }
 
-        if (max == null) {
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-        }
-        return new RealValue(max.Value, false, form);
+        return max;
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "min")]
@@ -74,36 +61,21 @@ public static partial class NamedFunctions {
             values = resultValues;
         }
 
-        Rational? min = null;
-        RealValue.PresentedForm form = RealValue.PresentedForm.Unset;
+        Value min = values[0];
+        Expression minNode = node.Arguments[0];
 
-        for (var index = 0; index < values.Length; index++) {
-            Value value = values[index];
-            if (value is TooBigValue { IsPositive: false }) {
-                return value;
+        for (int index = 1; index < values.Length; index++) {
+            Value? value = values[index];
+
+            var childNode = node.Arguments[forceIndex ?? index];
+            var result = BinaryOperations.GreaterThan(min, value, context, new BinaryNodes(node, minNode, childNode));
+            if (result is BooleanValue { Value: true}) {
+                min = value;
+                minNode = childNode;
             }
-
-            if (value is not IConvertibleToReal convertibleToReal) {
-                continue;
-            }
-
-            RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, forceIndex ?? index);
-            if (min == null) {
-                min = realValue.Value;
-                form = realValue.Form;
-                continue;
-            }
-
-            if (realValue.Value < min) {
-                min = realValue.Value;
-            }
-
         }
 
-        if (min == null) {
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-        }
-        return new RealValue(min.Value, false, form);
+        return min;
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "sum")]
@@ -114,9 +86,9 @@ public static partial class NamedFunctions {
             values = resultValues;
         }
 
-        Value sum = new RealValue(0, false, RealValue.PresentedForm.Unset);
+        Value sum = values[0];
 
-        for (int index = 0; index < values.Length; index++) {
+        for (int index = 1; index < values.Length; index++) {
             Value? value = values[index];
 
             sum = BinaryOperations.Add(sum, value, context, new BinaryNodes(node, node, node.Arguments[forceIndex ?? index]));

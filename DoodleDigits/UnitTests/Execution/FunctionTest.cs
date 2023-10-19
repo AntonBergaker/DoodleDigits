@@ -36,6 +36,16 @@ namespace UnitTests.Execution {
         }
 
         [Test]
+        public void TestMax() {
+            ExecutionTestUtils.AssertEqual(3, "max(1, 2, 3)");
+        }
+
+        [Test]
+        public void TestMin() {
+            ExecutionTestUtils.AssertEqual(1, "min(1, 2, 3, infinity)");
+        }
+
+        [Test]
         public void TestSum() {
             ExecutionTestUtils.AssertEqual(6, "sum(1, 2, 3)");
             ExecutionTestUtils.AssertEqual(1, "sum(1)");
