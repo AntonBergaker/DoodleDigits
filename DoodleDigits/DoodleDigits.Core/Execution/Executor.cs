@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
@@ -72,7 +73,7 @@ namespace DoodleDigits.Core.Execution {
                 case VectorDecleration vd:
                     return Calculate(vd);
                 case ErrorNode error:
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Error, error);
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 default: throw new Exception("Expression not handled for " + expression.GetType());
             }
 
@@ -99,14 +100,14 @@ namespace DoodleDigits.Core.Execution {
                     }
 
                     results.Add(new ResultError(errorMessage, function.Position));
-                    return new UndefinedValue(UndefinedValue.UndefinedType.Error, function);
+                    return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                 }
 
-                return functionData.Function(function.Arguments.Select(x => Calculate(x)).ToArray(), context.ForNode(function));
+                return functionData.Function(function.Arguments.Select(x => Calculate(x)).ToArray(), context, function);
             }
 
             results.Add(new ResultError($"Unknown function: {function.Identifier}", function.Position));
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, function);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private Value Calculate(Identifier identifier) {
@@ -119,7 +120,7 @@ namespace DoodleDigits.Core.Execution {
             }
 
             results.Add(new ResultError("Unknown identifier", identifier.Position));
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, identifier);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private Value Calculate(NumberLiteral numberLiteral) {
@@ -140,10 +141,10 @@ namespace DoodleDigits.Core.Execution {
             }
 
             if (RationalUtils.TryParse(number, out Rational result, 200, @base)) {
-                return new RealValue(result, true, form, numberLiteral);
+                return new RealValue(result, true, form);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, numberLiteral);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         private Value Calculate(UnaryOperation unaryOperation) {
@@ -152,7 +153,7 @@ namespace DoodleDigits.Core.Execution {
 
             UnaryOperation.OperationFunction func = UnaryOperation.GetFunctionFromType(unaryOperation.Operation);
             
-            return func(value, context.ForNode(unaryOperation));
+            return func(value, context, unaryOperation);
         }
 
         private Value Calculate(Comparison comparison) {
@@ -198,11 +199,11 @@ namespace DoodleDigits.Core.Execution {
                     Value rhs = calculatedResults[i + 1] ?? Calculate(comparison.Expressions[i + 1]);
 
                     Comparison.BinaryEqualsFunction func = Comparison.GetOperationFromType(type);
-                    var equalsContext = context.ForNode(comparison);
-                    Value result = func(lhs, rhs, i, equalsContext);
+                    Value result = func(lhs, rhs, context, 
+                        new BinaryNodes(comparison, comparison.Expressions[i], comparison.Expressions[i+1]));
                     
                     if (result is not BooleanValue booleanValue) {
-                        return new UndefinedValue(UndefinedValue.UndefinedType.Error, comparison);
+                        return new UndefinedValue(UndefinedValue.UndefinedType.Error);
                     }
 
                     if (booleanValue.Value == false) {
@@ -220,7 +221,7 @@ namespace DoodleDigits.Core.Execution {
 
             BinaryOperation.OperationFunction func = BinaryOperation.GetOperationFromType(bo.Operation);
 
-            return func(lhs, rhs, context.ForNode(bo));
+            return func(lhs, rhs, context, new BinaryNodes(bo));
         }
 
         private Value Calculate(BaseCast baseCast) {
@@ -272,11 +273,11 @@ namespace DoodleDigits.Core.Execution {
 
             MatrixValue.MatrixDimension? dimension = InternalCalculate(vectorDeclaration);
             if (dimension == null) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error, vectorDeclaration);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
-            MatrixValue val = new MatrixValue(dimension, true, vectorDeclaration);
+            MatrixValue val = new MatrixValue(dimension, true);
             if (val.IsValid == false) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error, vectorDeclaration);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             return val;

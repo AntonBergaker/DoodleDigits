@@ -34,5 +34,32 @@ namespace UnitTests.Execution {
             ExecutionTestUtils.AssertEqual(15, "max(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)");
             ExecutionTestUtils.AssertEqual(1, "min(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)");
         }
+
+        [Test]
+        public void TestMax() {
+            ExecutionTestUtils.AssertEqual(3, "max(1, 2, 3)");
+        }
+
+        [Test]
+        public void TestMin() {
+            ExecutionTestUtils.AssertEqual(1, "min(1, 2, 3, infinity)");
+        }
+
+        [Test]
+        public void TestSum() {
+            ExecutionTestUtils.AssertEqual(6, "sum(1, 2, 3)");
+            ExecutionTestUtils.AssertEqual(1, "sum(1)");
+            ExecutionTestUtils.AssertEqual(7, "sum( [1, 2, 4])");
+        }
+
+        [Test]
+        public void TestMedian() {
+            ExecutionTestUtils.AssertEqual(2, "median(1, 2, 3)");
+            ExecutionTestUtils.AssertEqual(2, "median(1, 2, 4)");
+            ExecutionTestUtils.AssertEqual(2, "median(1205, 1, 2)");
+
+            ExecutionTestUtils.AssertEqual(2, "median(1, 3)");
+            ExecutionTestUtils.AssertEqual(2, "median(-123, 1, 3, 5)");
+        }
     }
 }

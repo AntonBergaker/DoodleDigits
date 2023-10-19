@@ -9,35 +9,35 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
 
     public static partial class BinaryOperations {
         private static (RealValue lhs, RealValue rhs) ConvertToReal(IConvertibleToReal lhs, IConvertibleToReal rhs,
-            ExecutionContext<BinaryOperation> context) {
+            ExecutionContext context, BinaryNodes nodes) {
             return (
-                lhs.ConvertToReal(context.ForNode(context.Node.Lhs)),
-                rhs.ConvertToReal(context.ForNode(context.Node.Rhs))
+                lhs.ConvertToReal(context, nodes.Lhs),
+                rhs.ConvertToReal(context, nodes.Rhs)
             );
         }
 
         delegate Value? ImplementationFunction(Value other, BinaryOperation.OperationSide side,
-            bool castAttempt, ExecutionContext<BinaryOperation> context);
+            bool castAttempt, ExecutionContext context, BinaryNodes nodes);
 
 
-        private static Value ExecuteBinaryImplementation(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<Value, Value, Value?>? fallback = null) {
+        private static Value ExecuteBinaryImplementation(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<Value, Value, Value?>? fallback = null) {
             Value? result;
             
-            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, false, context);
+            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, false, context, nodes);
             if (result != null) {
                 return result;
             }
-            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, false, context);
+            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, false, context, nodes);
             if (result != null) {
                 return result;
             }
 
             // Try both sides again, but now allow casting
-            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, true, context);
+            result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, true, context, nodes);
             if (result != null) {
                 return result;
             }
-            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, true, context);
+            result = rhsMethod(lhs, BinaryOperation.OperationSide.Right, true, context, nodes);
             if (result != null) {
                 return result;
             }
@@ -58,49 +58,49 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
                 return lhs;
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        private static Value ExecuteBinaryRealImplementation(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context, 
+        private static Value ExecuteBinaryRealImplementation(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, 
             ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<RealValue, ImplementationFunction> getRealFunc) =>
-            ExecuteBinaryImplementation(lhs, rhs, context, lhsMethod, rhsMethod, (lhs, rhs) => {
+            ExecuteBinaryImplementation(lhs, rhs, context, nodes, lhsMethod, rhsMethod, (lhs, rhs) => {
                 if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
-                    RealValue lhsReal = lhsCtr.ConvertToReal(context.ForNode(context.Node.Lhs));
-                    RealValue rhsReal = rhsCtr.ConvertToReal(context.ForNode(context.Node.Rhs));
+                    RealValue lhsReal = lhsCtr.ConvertToReal(context, nodes.Lhs);
+                    RealValue rhsReal = rhsCtr.ConvertToReal(context, nodes.Rhs);
 
                     ImplementationFunction realFunc = getRealFunc(lhsReal);
-                    return realFunc(rhsReal, BinaryOperation.OperationSide.Left, true, context);
+                    return realFunc(rhsReal, BinaryOperation.OperationSide.Left, true, context, nodes);
                 }
                 return null;
             });
 
 
-        public static Value Add(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
-            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryAdd, rhs.TryAdd, x => x.TryAdd);
+        public static Value Add(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryAdd, rhs.TryAdd, x => x.TryAdd);
 
-        public static Value Subtract(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
-            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TrySubtract, rhs.TrySubtract, x => x.TrySubtract);
+        public static Value Subtract(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TrySubtract, rhs.TrySubtract, x => x.TrySubtract);
 
-        public static Value Divide(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
-            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryDivide, rhs.TryDivide, x => x.TryDivide);
+        public static Value Divide(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryDivide, rhs.TryDivide, x => x.TryDivide);
 
-        public static Value Multiply(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
-            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryMultiply, rhs.TryMultiply, x => x.TryMultiply);
+        public static Value Multiply(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryMultiply, rhs.TryMultiply, x => x.TryMultiply);
 
-        public static Value Modulus(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
-            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryModulus, rhs.TryModulus, x => x.TryModulus);
-
-
-        public static Value Power(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) =>
-            ExecuteBinaryRealImplementation(lhs, rhs, context, lhs.TryPower, rhs.TryPower, x => x.TryPower);
+        public static Value Modulus(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryModulus, rhs.TryModulus, x => x.TryModulus);
 
 
-        public static Value Cross(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context) {
+        public static Value Power(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+            ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryPower, rhs.TryPower, x => x.TryPower);
+
+
+        public static Value Cross(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
             if (lhs is MatrixValue lhsMatrix && rhs is MatrixValue rhsMatrix) {
-                return MatrixValue.Cross(lhsMatrix, rhsMatrix, context);
+                return MatrixValue.Cross(lhsMatrix, rhsMatrix, context, nodes);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
     }
 }

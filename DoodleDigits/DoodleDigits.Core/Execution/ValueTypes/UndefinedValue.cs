@@ -28,12 +28,12 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new UndefinedValue(Type, this.SourceAstNode);
+            return new UndefinedValue(Type);
         }
 
-        public UndefinedValue() : this(UndefinedType.Unset, null) { }
+        public UndefinedValue() : this(UndefinedType.Unset) { }
 
-        public UndefinedValue(UndefinedType type, AstNode? sourceAstNode) : base(false, sourceAstNode) {
+        public UndefinedValue(UndefinedType type) : base(false) {
             Type = type;
         }
     }

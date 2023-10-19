@@ -12,51 +12,51 @@ using Rationals;
 namespace DoodleDigits.Core.Functions.Implementations {
     public static class UnaryOperations {
 
-        public static Value UnaryPlus(Value value, ExecutionContext<UnaryOperation> context) {
+        public static Value UnaryPlus(Value value, ExecutionContext context, UnaryOperation node) {
             if (value is TooBigValue) {
                 return value;
             }
 
             if (value is IConvertibleToReal convertibleToReal) {
-                return convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
+                return convertibleToReal.ConvertToReal(context, node.Value);
             }
 
             if (value is RealValue real) {
                 return real;
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
         }
 
-        public static Value UnaryNegate(Value value, ExecutionContext<UnaryOperation> context) {
+        public static Value UnaryNegate(Value value, ExecutionContext context, UnaryOperation node) {
             if (value is TooBigValue tooBigValue) {
                 return tooBigValue.Negate();
             }
 
             if (value is IConvertibleToReal convertibleToReal) {
-                value = convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
+                value = convertibleToReal.ConvertToReal(context, node.Value);
             }
 
             if (value is RealValue real) {
                 return real.Clone(value: -real.Value);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        public static Value UnaryNot(Value value, ExecutionContext<UnaryOperation> context) {
+        public static Value UnaryNot(Value value, ExecutionContext context, UnaryOperation node) {
             if (value is IConvertibleToBool convertibleToBool) {
-                value = convertibleToBool.ConvertToBool(context.ForNode(context.Node.Value));
+                value = convertibleToBool.ConvertToBool(context, node.Value);
             }
 
             if (value is BooleanValue @bool) {
                 return new BooleanValue(!@bool.Value);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        private static Value IntegerFactorial(RealValue value, ExecutionContext<UnaryOperation> context) {
+        private static Value IntegerFactorial(RealValue value, ExecutionContext context, UnaryOperation node) {
             Rational val = 1;
             if (value.Value > 10000) {
                 return new TooBigValue(TooBigValue.Sign.Positive);
@@ -65,12 +65,12 @@ namespace DoodleDigits.Core.Functions.Implementations {
                 val *= i;
             }
 
-            return new RealValue(val, false, value.Form, context.Node);
+            return new RealValue(val, false, value.Form);
         }
 
-        public static Value UnaryFactorial(Value value, ExecutionContext<UnaryOperation> context) {
+        public static Value UnaryFactorial(Value value, ExecutionContext context, UnaryOperation node) {
             if (value is IConvertibleToReal convertibleToReal) {
-                value = convertibleToReal.ConvertToReal(context.ForNode(context.Node.Value));
+                value = convertibleToReal.ConvertToReal(context, node.Value);
             }
 
             if (value is TooBigValue tbv && tbv.IsPositive) {
@@ -79,13 +79,13 @@ namespace DoodleDigits.Core.Functions.Implementations {
 
             if (value is RealValue real) {
                 if (real.HasDecimal == false) {
-                    return IntegerFactorial(real, context);
+                    return IntegerFactorial(real, context, node);
                 }
 
-                return RealValue.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form, context.Node);
+                return RealValue.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form);
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace DoodleDigits.Core.Parsing.Ast
 {
     public class UnaryOperation : Expression {
 
-        public delegate Value OperationFunction(Value value, ExecutionContext<UnaryOperation> context);
+        public delegate Value OperationFunction(Value value, ExecutionContext context, UnaryOperation node);
 
         public enum OperationType {
             Add,

@@ -5,6 +5,7 @@
     padding: 0;
 }
 .input-magic, .input {
+    white-space: pre;
     /* Identical styling required!! */
     margin: 0.5rem;
     padding: 0;
@@ -19,7 +20,6 @@
 }
 
 .input {
-    white-space: pre-wrap;
     display: inherit;
     caret-color: black;
     color: transparent;
@@ -30,7 +30,6 @@
 }
 .input-magic {
     user-select: none;
-    white-space: nowrap;
 }
 
 .input,

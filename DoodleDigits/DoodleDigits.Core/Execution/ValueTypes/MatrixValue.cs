@@ -122,9 +122,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public readonly MatrixDimension Dimension;
 
-        public MatrixValue(MatrixDimension dimension) : this(dimension, false, null) { }
+        public MatrixValue(MatrixDimension dimension) : this(dimension, false) { }
 
-        public MatrixValue(MatrixDimension dimension, bool triviallyAchieved, AstNode? sourceAstNode) : base(triviallyAchieved, sourceAstNode) {
+        public MatrixValue(MatrixDimension dimension, bool triviallyAchieved) : base(triviallyAchieved) {
             this.Dimension = dimension;
             IsValid = Validate();
         }
@@ -178,7 +178,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public bool IsVector => DimensionCount == 1;
 
-        public Rational Magnitude(ExecutionContext context) {
+        public Rational Magnitude(ExecutionContext context, Expression node) {
             if (IsVector == false) {
                 throw new InvalidOperationException("Matrix is not a vector");
             }
@@ -186,7 +186,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             Rational total = 0;
             foreach (MatrixValueElement element in Dimension) {
                 if (element.Value is IConvertibleToReal ctr) {
-                    Rational val = ctr.ConvertToReal(context).Value;
+                    Rational val = ctr.ConvertToReal(context, node).Value;
                     total += val*val;
                 }
             }

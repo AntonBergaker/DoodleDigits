@@ -20,10 +20,10 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public PresentedForm Form { get; }
 
-        public RealValue(Rational value) : this(value, false, PresentedForm.Unset, null) {
+        public RealValue(Rational value) : this(value, false, PresentedForm.Unset) {
         }
 
-        public RealValue(Rational value, bool triviallyAchieved, PresentedForm form, AstNode? sourceAstNode) : base(triviallyAchieved, sourceAstNode) {
+        public RealValue(Rational value, bool triviallyAchieved, PresentedForm form) : base(triviallyAchieved) {
             Value = value;
             Form = form;
         }
@@ -63,7 +63,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             return Value.GetHashCode();
         }
 
-        public static Value FromDouble(double value, bool triviallyAchieved, RealValue.PresentedForm form, AstNode? sourceAstNode, bool resultOfInfinity = false) {
+        public static Value FromDouble(double value, bool triviallyAchieved, RealValue.PresentedForm form, bool resultOfInfinity = false) {
             if (double.IsPositiveInfinity(value)) {
                 return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.PositiveInfinity : TooBigValue.Sign.Positive);
             }
@@ -73,50 +73,46 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             }
 
             if (double.IsNaN(value)) {
-                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined, sourceAstNode);
+                return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form, sourceAstNode);
+            return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new RealValue(Value, triviallyAchieved ?? this.TriviallyAchieved, Form, this.SourceAstNode);
+            return new RealValue(Value, triviallyAchieved ?? this.TriviallyAchieved, Form);
         }
 
         public RealValue Clone(Rational? value = null, bool? triviallyAchieved = null, AstNode? sourceAstNode = null, PresentedForm? form = null) {
             value ??= this.Value;
             triviallyAchieved ??= this.TriviallyAchieved;
             form ??= this.Form;
-            sourceAstNode ??= this.SourceAstNode;
-
-            if (triviallyAchieved == this.TriviallyAchieved && form == this.Form && this.Value == value && this.SourceAstNode == sourceAstNode) {
+            if (triviallyAchieved == this.TriviallyAchieved && form == this.Form && this.Value == value) {
                 return this;
             }
 
-            return new RealValue(value.Value, triviallyAchieved.Value, form.Value, sourceAstNode);
+            return new RealValue(value.Value, triviallyAchieved.Value, form.Value);
         }
 
-        public BooleanValue ConvertToBool(ExecutionContext context) {
+        public BooleanValue ConvertToBool(ExecutionContext context, Expression node) {
             BooleanValue newValue = new BooleanValue(Value > new Rational(1, 2));
-            Range position = this.SourceAstNode?.Position ?? context.Position;
-            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, position));
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, node.Position));
             return newValue;
         }
 
-        public RealValue Round(ExecutionContext context) {
+        public RealValue Round(ExecutionContext context, Expression node) {
             if (HasDecimal == false) {
                 return this;
             }
 
             RealValue rounded = new RealValue(RationalUtils.Round(Value));
-            Range position = this.SourceAstNode?.Position ?? context.Position;
-            context.AddResult(new ResultConversion(this, rounded, ResultConversion.ConversionType.Rounding, position));
+            context.AddResult(new ResultConversion(this, rounded, ResultConversion.ConversionType.Rounding, node.Position));
             return rounded;
         }
 
         public bool HasDecimal => Value.FractionPart != 0;
 
-        public RealValue ConvertToReal(ExecutionContext context) {
+        public RealValue ConvertToReal(ExecutionContext context, Expression node) {
             return this;
         }
     }
