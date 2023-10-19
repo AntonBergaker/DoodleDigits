@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DoodleDigits.Core;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;
 using Rationals;
@@ -44,7 +45,7 @@ namespace UnitTests.Execution {
             ExecutionContext context = MakeContext();
             foreach (Value value in AllValues) {
                 foreach (var op in UnaryOperation.AllFunctions) {
-                    op(value, context.ForNode(new UnaryOperation(UnaryOperation.OperationType.Add, new ErrorNode())));
+                    op(value, context, new UnaryOperation(UnaryOperation.OperationType.Add, new ErrorNode()));
                 }
             }
 
@@ -57,7 +58,7 @@ namespace UnitTests.Execution {
                 foreach (Value lhs in AllValues) {
                     foreach (Value rhs in AllValues) {
                         op(lhs, rhs,
-                            context.ForNode(new BinaryOperation(new ErrorNode(), BinaryOperation.OperationType.Add, new ErrorNode())));
+                            context, new BinaryNodes(new ErrorNode(), new ErrorNode(), new ErrorNode()));
                     }
                 }
             }
@@ -78,7 +79,7 @@ namespace UnitTests.Execution {
                             parameters[i] = allValues[index / (int)Math.Pow(valueCount, i) % valueCount];
                         }
 
-                        function.Function(parameters, context.ForNode(new Function(function.Names[0], Enumerable.Repeat(new ErrorNode(), parameterCount) )));
+                        function.Function(parameters, context, new Function(function.Names[0], Enumerable.Repeat(new ErrorNode(), parameterCount) ));
                     }
                 }
             }

@@ -13,11 +13,11 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
 
         public readonly Sign ValueSign;
 
-        public TooBigValue(Sign sign, bool triviallyAchieved, AstNode? sourceAstNode) : base(triviallyAchieved, sourceAstNode) {
+        public TooBigValue(Sign sign, bool triviallyAchieved) : base(triviallyAchieved) {
             ValueSign = sign;
         }
 
-        public TooBigValue(Sign sign) : this(sign, false, null) { }
+        public TooBigValue(Sign sign) : this(sign, false) { }
 
         public override string ToString() {
             return "Very big";
@@ -36,7 +36,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
         }
 
         public override Value Clone(bool? triviallyAchieved = null) {
-            return new TooBigValue(this.ValueSign, triviallyAchieved ?? TriviallyAchieved, this.SourceAstNode);
+            return new TooBigValue(this.ValueSign, triviallyAchieved ?? TriviallyAchieved);
         }
 
         public bool IsPositive => ValueSign is Sign.Positive or Sign.PositiveInfinity;
@@ -51,9 +51,9 @@ namespace DoodleDigits.Core.Execution.ValueTypes {
             });
         }
 
-        public BooleanValue ConvertToBool(ExecutionContext context) {
+        public BooleanValue ConvertToBool(ExecutionContext context, Expression node) {
             BooleanValue newValue = new BooleanValue(IsPositive);
-            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, context.Position));
+            context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, node.Position));
             return newValue;
         }
 

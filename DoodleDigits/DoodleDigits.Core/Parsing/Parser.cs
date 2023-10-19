@@ -147,15 +147,54 @@ namespace DoodleDigits.Core.Parsing
 
         private Expression ReadBinaryShifting() => GenericReadBinary(new[] { TokenType.ShiftLeft, TokenType.ShiftRight }, ReadBinaryAddSubtract);
         private Expression ReadBinaryAddSubtract() => GenericReadBinary(new[] { TokenType.Add, TokenType.Subtract }, ReadMultiplyDivide);
-        private Expression ReadMultiplyDivide() => GenericReadBinary(new[] { TokenType.Multiply, TokenType.Divide, TokenType.Modulus, TokenType.Cross }, ReadImplicitMultiplication);
 
-        private Expression ReadImplicitMultiplication() {
-            Expression lhs = ReadPower();
+        private bool CanBeImplicitlyMultiplied(TokenType type) {
+            return type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number or TokenType.BracketOpen ||
+                   (type == TokenType.AbsoluteLine && insideAbsoluteExpression == false);
+        }
+
+        private Expression ReadMultiplyDivide() {
+            Func<Expression> next = ReadPower;
+            Expression lhs = next();
 
             Token peek = reader.Peek(false);
-            while (peek.Type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number or TokenType.BracketOpen ||
-                   (peek.Type == TokenType.AbsoluteLine && insideAbsoluteExpression == false)) {
-                Expression rhs = ReadPower();
+            while (true) {
+                BinaryOperation.OperationType? type = null;
+                // Implicit multiplication
+                if (CanBeImplicitlyMultiplied(peek.Type)) {
+                    type = BinaryOperation.OperationType.Multiply;
+                }
+                // Explicit multiplication or division
+                if (peek.Type is TokenType.Multiply or TokenType.Divide or TokenType.Modulus or TokenType.Cross) {
+                    reader.Skip(false);
+                    type = BinaryOperation.GetTypeFromToken(peek.Type);
+                }
+
+                if (type != null) {
+                    Expression rhs = next();
+                    if (rhs is ErrorNode) {
+                        break;
+                    }
+                    lhs = new BinaryOperation(lhs, type.Value, rhs,
+                        Utils.Join(lhs.Position, rhs.Position));
+                    peek = reader.Peek(false);
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+
+            return lhs;
+        }
+
+        private Expression ReadOnlyImplicitMultiplication() {
+            Func<Expression> next = ReadPower;
+            Expression lhs = next();
+
+            Token peek = reader.Peek(false);
+            while (CanBeImplicitlyMultiplied(peek.Type)) {
+                Expression rhs = next();
                 if (rhs is ErrorNode) {
                     break;
                 }
@@ -166,7 +205,7 @@ namespace DoodleDigits.Core.Parsing
 
             return lhs;
         }
-        
+       
         private Expression ReadPower() => GenericReadBinary(TokenType.Power, ReadPreUnary);
 
         private Expression GenericReadBinary(TokenType operation, Func<Expression> next) {
@@ -370,7 +409,7 @@ namespace DoodleDigits.Core.Parsing
                 return new Function(token.Content, parameters, start..end);
             }
 
-            Expression expression = ReadImplicitMultiplication();
+            Expression expression = ReadOnlyImplicitMultiplication();
             end = expression.Position.End;
             return new Function(token.Content, new[] { expression }, start..end);
         }
@@ -393,7 +432,7 @@ namespace DoodleDigits.Core.Parsing
                 }
 
                 Expression @base = ReadLiteral(hotSwappedToken);
-                Expression argument = ReadImplicitMultiplication();
+                Expression argument = ReadOnlyImplicitMultiplication();
 
                 function = new Function(functionName, new[] {argument, @base}, Utils.Join(token.Position, argument.Position));
                 return true;

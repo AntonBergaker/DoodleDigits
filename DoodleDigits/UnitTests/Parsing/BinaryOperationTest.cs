@@ -272,5 +272,33 @@ namespace UnitTests.Parsing {
                 ), "5 bxor 1"
             );
         }
+
+        [Test]
+        public void TestImplicitMultiplicationPriority() {
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("1"),
+                        BinaryOperation.OperationType.Divide,
+                        new NumberLiteral("2")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new Identifier("x")
+                ), "1/2x"
+            );
+
+            ParsingTestUtils.AssertEqual(
+                new BinaryOperation(
+                    new BinaryOperation(
+                        new NumberLiteral("5"),
+                        BinaryOperation.OperationType.Divide,
+                        new NumberLiteral("2")
+                    ),
+                    BinaryOperation.OperationType.Multiply,
+                    new NumberLiteral("1")
+                ), "5/2(1)"
+            );
+        }
+
     }
 }

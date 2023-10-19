@@ -28,24 +28,24 @@ public partial class MatrixValue {
         return new MatrixDimension(outerValues);
     }
 
-    private static MatrixDimension PerformOnAllElements(MatrixDimension matrix, Value other, BinaryOperation.OperationSide side, ExecutionContext<BinaryOperation> context, BinaryOperation.OperationFunction operation) {
+    private static MatrixDimension PerformOnAllElements(MatrixDimension matrix, Value other, BinaryOperation.OperationSide side, ExecutionContext context, BinaryNodes nodes, BinaryOperation.OperationFunction operation) {
 
         List<IMatrixElement> elements = new();
         foreach (IMatrixElement element in matrix) {
             if (element is MatrixDimension dim) {
-                elements.Add(PerformOnAllElements(dim, other, side, context, operation));
+                elements.Add(PerformOnAllElements(dim, other, side, context, nodes, operation));
             } else if (element is MatrixValueElement elem) {
                 var value = side == BinaryOperation.OperationSide.Left ? 
-                    operation(elem.Value, other, context) : 
-                    operation(other, elem.Value, context);
+                    operation(elem.Value, other, context, nodes) : 
+                    operation(other, elem.Value, context, nodes);
                 elements.Add(new MatrixValueElement(value));
             }
         }
         return new MatrixDimension(elements);
     }
 
-    private Value? BinaryOperationPerElement(Value other, BinaryOperation.OperationSide side,
-        ExecutionContext<BinaryOperation> context, BinaryOperation.OperationFunction function) {
+    private Value? BinaryOperationPerElement(Value other, BinaryOperation.OperationSide side, ExecutionContext context,
+        BinaryNodes nodes, BinaryOperation.OperationFunction function) {
 
 
         MatrixDimension PerformPerElementOperation(MatrixDimension lhs, MatrixDimension rhs) {
@@ -58,7 +58,7 @@ public partial class MatrixValue {
                     elements.Add(PerformPerElementOperation(lhsDim, rhsDim));
                 } else if (lhsElement is MatrixValueElement lhsElem && rhsElement is MatrixValueElement rhsElem) {
                     elements.Add(new MatrixValueElement(
-                        function(lhsElem.Value, rhsElem.Value, context)
+                        function(lhsElem.Value, rhsElem.Value, context, nodes)
                     ));
                 } else {
                     throw new Exception("Vectors were not in a proper state");
@@ -71,37 +71,37 @@ public partial class MatrixValue {
         if (other is MatrixValue otherMatrix) {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherMatrix, side);
             if (MatrixValue.SameDimensions(lhs, rhs) == false) {
-                context.AddResult(new ResultError("Dimensions not same size", context.Position));
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+                context.AddResult(new ResultError("Dimensions not same size", nodes.Operation.Position));
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
-            return new MatrixValue(PerformPerElementOperation(lhs.Dimension, rhs.Dimension), false, context.Node);
+            return new MatrixValue(PerformPerElementOperation(lhs.Dimension, rhs.Dimension), false);
         }
 
         return null;
     }
 
-    public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) =>
-        BinaryOperationPerElement(other, side, context, BinaryOperations.Add);
+    public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) =>
+        BinaryOperationPerElement(other, side, context, nodes, BinaryOperations.Add);
 
-    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) =>
-        BinaryOperationPerElement(other, side, context, BinaryOperations.Subtract);
+    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) =>
+        BinaryOperationPerElement(other, side, context, nodes, BinaryOperations.Subtract);
 
-    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
         if (other is MatrixValue otherMatrixValue) {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherMatrixValue, side);
-            return MultiplyMatrices(lhs, rhs, context);
+            return MultiplyMatrices(lhs, rhs, context, nodes);
         }
 
-        if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, out var realOther)) {
+        if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var realOther)) {
             // Scalar matrix multiplication
-            return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, BinaryOperations.Multiply), false, context.Node);
+            return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Multiply), false);
         }
 
         return null;
     }
 
-    private static Value MultiplyMatrices(MatrixValue lhs, MatrixValue rhs, ExecutionContext<BinaryOperation> context) {
+    private static Value MultiplyMatrices(MatrixValue lhs, MatrixValue rhs, ExecutionContext context, BinaryNodes nodes) {
 
 
         if (lhs.DimensionCount <= 2 && rhs.DimensionCount <= 2) {
@@ -111,12 +111,12 @@ public partial class MatrixValue {
 
                 lhs = new MatrixValue(
                     new MatrixDimension(new [] {new MatrixDimension((IEnumerable<IMatrixElement>)lhs.Dimension)}),
-                    lhs.TriviallyAchieved, lhs.SourceAstNode);
+                    lhs.TriviallyAchieved);
             }
             
             if (lhs[0].Length != rhs.Dimension.Length) {
-                context.AddResult(new ResultError($"Matrices dimension sizes do not match, {lhs[0].Length} != {rhs.Dimension.Length}", context.Position));
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+                context.AddResult(new ResultError($"Matrices dimension sizes do not match, {lhs[0].Length} != {rhs.Dimension.Length}", nodes.Operation.Position));
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
             int commonDimension = rhs.Dimension.Length;
@@ -124,11 +124,11 @@ public partial class MatrixValue {
             Value[,] newMatrix = new Value[lhs.Dimension.Length, rhs[0].Length];
             for (int y = 0; y < newMatrix.GetLength(0); y++) {
                 for (int x = 0; x < newMatrix.GetLength(1); x++) {
-                    Value sum = BinaryOperations.Multiply(lhs[y][0], rhs[0][x], context);
+                    Value sum = BinaryOperations.Multiply(lhs[y][0], rhs[0][x], context, nodes);
 
                     for (int i = 1; i < commonDimension; i++) {
-                        Value element = BinaryOperations.Multiply(lhs[y][i], rhs[i][x], context);
-                        sum = BinaryOperations.Add(sum, element, context);
+                        Value element = BinaryOperations.Multiply(lhs[y][i], rhs[i][x], context, nodes);
+                        sum = BinaryOperations.Add(sum, element, context, nodes);
                     }
 
                     newMatrix[y, x] = sum;
@@ -145,7 +145,7 @@ public partial class MatrixValue {
                 for (int i = 0; i < newMatrix.GetLength(1); i++) {
                     values.Add(new(newMatrix[0, i]));
                 }
-                return new MatrixValue(new MatrixDimension(values), false, context.Node);
+                return new MatrixValue(new MatrixDimension(values), false);
             }
 
             if (newMatrix.GetLength(1) == 1) {
@@ -153,41 +153,41 @@ public partial class MatrixValue {
                 for (int i = 0; i < newMatrix.GetLength(0); i++) {
                     values.Add(new(newMatrix[i, 0]));
                 }
-                return new MatrixValue(new MatrixDimension(values), false, context.Node);
+                return new MatrixValue(new MatrixDimension(values), false);
             }
 
-            return new MatrixValue(DimensionFromArray(newMatrix), false, context.Node);
+            return new MatrixValue(DimensionFromArray(newMatrix), false);
         }
 
         return null!;
     }
 
-    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext<BinaryOperation> context) {
+    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
         if (side == BinaryOperation.OperationSide.Left) {
-            if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, out var otherReal)) {
-                return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, BinaryOperations.Divide), false, context.Node);
+            if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherReal)) {
+                return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Divide), false);
             }
         }
 
         return null;
     }
 
-    public static Value Cross(MatrixValue lhsMatrix, MatrixValue rhsMatrix, ExecutionContext<BinaryOperation> context) {
+    public static Value Cross(MatrixValue lhsMatrix, MatrixValue rhsMatrix, ExecutionContext context, BinaryNodes nodes) {
         if (lhsMatrix.DimensionCount != 1) {
-            context.AddResult(new ResultError("Matrix must be a vector", lhsMatrix.SourceAstNode?.Position ?? context.Node.Position));
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, lhsMatrix.SourceAstNode);
+            context.AddResult(new ResultError("Matrix must be a vector", nodes.Lhs.Position));
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
         if (rhsMatrix.DimensionCount != 1) {
-            context.AddResult(new ResultError("Matrix must be a vector", rhsMatrix.SourceAstNode?.Position ?? context.Node.Position));
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, rhsMatrix.SourceAstNode);
+            context.AddResult(new ResultError("Matrix must be a vector", nodes.Rhs.Position));
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
         // Runs a0*a1 - b0*b1
         MatrixValueElement DifferenceOfProducts(Value a0, Value a1, Value b0, Value b1) {
             return new MatrixValueElement(BinaryOperations.Subtract(
-                BinaryOperations.Multiply(a0, a1, context),
-                BinaryOperations.Multiply(b0, b1, context),
-                context));
+                BinaryOperations.Multiply(a0, a1, context, nodes),
+                BinaryOperations.Multiply(b0, b1, context, nodes),
+                context, nodes));
         }
 
         if (lhsMatrix.Dimension.Length == 3 && rhsMatrix.Dimension.Length == 3) {
@@ -198,7 +198,7 @@ public partial class MatrixValue {
             ));
         }
 
-        context.AddResult(new ResultError("Cross product is only defined for 3 element vectors", context.Node.Position));
-        return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+        context.AddResult(new ResultError("Cross product is only defined for 3 element vectors", nodes.Operation.Position));
+        return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 }

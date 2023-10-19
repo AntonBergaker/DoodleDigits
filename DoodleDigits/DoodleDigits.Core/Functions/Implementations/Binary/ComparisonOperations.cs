@@ -6,7 +6,7 @@ using Rationals;
 
 namespace DoodleDigits.Core.Functions.Implementations.Binary {
     public static partial class BinaryOperations {
-        public static Value Equals(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {
+        public static Value Equals(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
             {
                 // Boolean
                 if (lhs is BooleanValue bLhs && rhs is BooleanValue bRhs) {
@@ -28,7 +28,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             {
                 // Undefined values
                 if (lhs is UndefinedValue || rhs is UndefinedValue) {
-                    return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type, context.Node);
+                    return new UndefinedValue((lhs as UndefinedValue)?.Type ?? (rhs as UndefinedValue)!.Type);
                 }
             }
 
@@ -42,26 +42,26 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             {
                 // Fallback real
                 if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                    RealValue realLhs = ctrLhs.ConvertToReal(context.ForNode(context.Node.Expressions[index]));
-                    RealValue realRhs = ctrRhs.ConvertToReal(context.ForNode(context.Node.Expressions[index+1]));
+                    RealValue realLhs = ctrLhs.ConvertToReal(context, nodes.Lhs);
+                    RealValue realRhs = ctrRhs.ConvertToReal(context, nodes.Rhs);
                     return new BooleanValue(realLhs.Value.Equals(realRhs.Value));
                 }
             }
 
             { // Fallback bool
                 if (lhs is IConvertibleToBool ctbLhs && rhs is IConvertibleToBool ctbRhs) {
-                    BooleanValue boolLhs = ctbLhs.ConvertToBool(context.ForNode(context.Node.Expressions[index]));
-                    BooleanValue boolRhs = ctbRhs.ConvertToBool(context.ForNode(context.Node.Expressions[index+1]));
+                    BooleanValue boolLhs = ctbLhs.ConvertToBool(context, nodes.Lhs);
+                    BooleanValue boolRhs = ctbRhs.ConvertToBool(context, nodes.Rhs);
                     return new BooleanValue(boolLhs.Value == boolRhs.Value);
                 }
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
 
-        public static Value NotEquals(Value value0, Value value1, int index, ExecutionContext<Comparison> context) {
-            Value equalsValue = Equals(value0, value1, index, context);
+        public static Value NotEquals(Value value0, Value value1, ExecutionContext context, BinaryNodes nodes) {
+            Value equalsValue = Equals(value0, value1, context, nodes);
             if (equalsValue is BooleanValue @bool) {
                 return new BooleanValue(!@bool.Value);
             }
@@ -69,7 +69,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             return equalsValue;
         }
 
-        private static Value CompareBinaryReals(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context, Func<Rational, Rational, bool> comparisonFunction) {
+        private static Value CompareBinaryReals(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, Func<Rational, Rational, bool> comparisonFunction) {
             if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
                 return new BooleanValue(comparisonFunction(tbLhs.GetSimplifiedSize(), tbRhs.GetSimplifiedSize()));
             }
@@ -83,28 +83,28 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary {
             }
 
             if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
-                RealValue realLhs = ctrLhs.ConvertToReal(context.ForNode(context.Node.Expressions[index]));
-                RealValue realRhs = ctrRhs.ConvertToReal(context.ForNode(context.Node.Expressions[index + 1]));
+                RealValue realLhs = ctrLhs.ConvertToReal(context, nodes.Lhs);
+                RealValue realRhs = ctrRhs.ConvertToReal(context, nodes.Rhs);
                 return new BooleanValue(comparisonFunction(realLhs.Value, realRhs.Value) );
             }
 
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error, context.Node);
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        public static Value LessThan(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {
-            return CompareBinaryReals(lhs, rhs, index, context, (lhs, rhs) => lhs < rhs);
+        public static Value LessThan(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+            return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs < rhs);
         }
 
-        public static Value LessOrEqualTo(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {
-            return CompareBinaryReals(lhs, rhs, index, context, (lhs, rhs) => lhs <= rhs);
+        public static Value LessOrEqualTo(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+            return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs <= rhs);
         }
 
-        public static Value GreaterThan(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {
-            return CompareBinaryReals(lhs, rhs, index, context, (lhs, rhs) => lhs > rhs);
+        public static Value GreaterThan(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+            return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs > rhs);
         }
 
-        public static Value GreaterOrEqualTo(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context) {
-            return CompareBinaryReals(lhs, rhs, index, context, (lhs, rhs) => lhs >= rhs);
+        public static Value GreaterOrEqualTo(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+            return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs >= rhs);
         }
     }
 }

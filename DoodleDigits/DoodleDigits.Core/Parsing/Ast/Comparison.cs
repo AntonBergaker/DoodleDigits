@@ -20,7 +20,7 @@ namespace DoodleDigits.Core.Parsing.Ast {
             LessThan,
         }
 
-        public delegate Value BinaryEqualsFunction(Value lhs, Value rhs, int index, ExecutionContext<Comparison> context);
+        public delegate Value BinaryEqualsFunction(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes);
 
         static Comparison() {
             var ops =

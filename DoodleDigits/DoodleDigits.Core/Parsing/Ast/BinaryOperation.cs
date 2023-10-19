@@ -14,7 +14,7 @@ namespace DoodleDigits.Core.Parsing.Ast {
     }
 
     public class BinaryOperation : Expression {
-        public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext<BinaryOperation> context);
+        public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes);
         
         public enum OperationSide {
             Left,

@@ -8,7 +8,7 @@
 	
 	<PropertyGroup>
 		<PackageId>DoodleDigits.Core</PackageId>
-		<Version>1.2.0</Version>
+		<Version>1.3.0</Version>
 		<Authors>Anton Bergåker</Authors>
 		<Title>Doodle Digits Core</Title>
 		<Description>
