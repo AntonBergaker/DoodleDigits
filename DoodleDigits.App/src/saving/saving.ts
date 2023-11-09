@@ -14,7 +14,7 @@ export type SaveStateData = {
 export type SaveSettingsData = {
     theme: string
     zoom: number
-    force_on_top: boolean
+    always_on_top: boolean
 }
 
 export const directory =
@@ -75,6 +75,10 @@ function fixLegacySettings(settings: SaveSettingsData) {
     if (typeof untypedSettings.dark_mode == "boolean") {
         settings.theme = untypedSettings.dark_mode ? "dark" : "default"
         delete untypedSettings.dark_mode
+    }
+    if ("force_on_top" in untypedSettings) {
+        settings.always_on_top = untypedSettings.force_on_top
+        delete untypedSettings.force_on_top
     }
 }
 /**

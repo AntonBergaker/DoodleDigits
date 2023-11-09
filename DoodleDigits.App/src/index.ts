@@ -29,6 +29,8 @@ let savedState: SaveStateData
 const savedSettingsPromise = loadSettingsOrDefault()
 let savedSettings: SaveSettingsData
 
+let mainWindow: BrowserWindow
+
 contextMenu({
     showSelectAll: true,
     showSearchWithGoogle: false,
@@ -51,6 +53,21 @@ contextMenu({
                 saveSettings(savedSettings)
             },
         },
+        defaultActions.separator(),
+        {
+            label: "Always on Top",
+            type: "checkbox",
+            checked: savedSettings.always_on_top,
+            click: (item, window, event) => {
+                savedSettings.always_on_top = !savedSettings.always_on_top
+
+                item.checked = savedSettings.always_on_top
+                mainWindow.setAlwaysOnTop(savedSettings.always_on_top)
+
+                sendIpc(window, "updateSettings", savedSettings)
+                saveSettings(savedSettings)
+            },
+        },
     ],
 })
 
@@ -61,7 +78,7 @@ const createWindow = async () => {
     const size = savedState.window_dimensions
 
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         height: size.y,
         width: size.x,
         webPreferences: {
@@ -73,6 +90,7 @@ const createWindow = async () => {
             color: "#00000000",
             symbolColor: "#ffffff",
         },
+        alwaysOnTop: savedSettings.always_on_top,
         darkTheme: savedSettings.theme.includes("dark"),
         icon: "./root/icon.ico",
     })
