@@ -34,13 +34,13 @@ export class PageMeasurer {
 
         let start = 0
         while (start < newValue.length) {
-            const end = newValue.indexOf("\n", start + 1)
+            const end = newValue.indexOf("\n", start)
             if (end == -1) {
                 this.lines.push({ start, end: newValue.length })
                 break
             }
             this.lines.push({ start, end })
-            start = end
+            start = end + 1
         }
 
         this.lastInput = newValue

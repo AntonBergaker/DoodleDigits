@@ -68,6 +68,11 @@ const createWindow = async () => {
             preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
         },
         autoHideMenuBar: true,
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+            color: "#00000000",
+            symbolColor: "#ffffff",
+        },
         darkTheme: savedSettings.theme.includes("dark"),
         icon: "./root/icon.ico",
     })

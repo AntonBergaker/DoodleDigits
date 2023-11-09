@@ -1,7 +1,7 @@
 .container {
     position: fixed;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 29.5px);
 
     overflow: auto;
     margin: 0;
@@ -20,4 +20,3 @@ html, body {
     height: 100%;
     overflow: hidden;
 }
-

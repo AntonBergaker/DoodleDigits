@@ -1,10 +1,10 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
-import { CalculatorPage } from "../pages/calculator/calculator-page"
 import { getDefaultSettings, getDefaultState } from "../saving/saving-defaults"
 import { SaveStateData, SaveSettingsData } from "../saving/saving"
 import { StateSavingScheduler } from "../saving/state-saving-scheduler"
 import { mockElectronApi } from "../web/mock-electron"
+import { MainWindow } from "../pages/calculator/main-window"
 
 const [state, settings] = readStateAndSettings()
 let themeLink: HTMLLinkElement | undefined = undefined
@@ -13,7 +13,7 @@ applySettings(settings)
 
 function render() {
     const root = createRoot(document.getElementById("document-root"))
-    root.render(<CalculatorPage settings={settings} state={state} onInput={onCalculatorInput} />)
+    root.render(<MainWindow settings={settings} state={state} onInput={onCalculatorInput} />)
 }
 
 
@@ -27,7 +27,9 @@ function applySettings(settings: SaveSettingsData) {
     if (settings.theme == "dark") {
         themeLink = document.createElement("link")
         themeLink.rel = "stylesheet"
-        if (window.developmentMode) {
+        if (WEB) {
+            themeLink.href = "./themes/dark/dark.css"
+        } else if (window.developmentMode) {
             themeLink.href = "../../static/themes/dark/dark.css"
         } else {
             themeLink.href = "../../renderer/static/themes/dark/dark.css"
