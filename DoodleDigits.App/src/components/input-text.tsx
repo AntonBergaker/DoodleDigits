@@ -10,7 +10,7 @@ export const InputText = React.forwardRef<HTMLDivElement, InputTextProps>(
     (props, ref) => {
         const [text, setText] = useState(props.defaultText ?? "")
 
-        async function onInput(target: any) {
+        async function onInput(target: HTMLTextAreaElement) {
             setText(target.value)
             props.onInput(target.value)
         }
@@ -19,11 +19,12 @@ export const InputText = React.forwardRef<HTMLDivElement, InputTextProps>(
             <div ref={ref} className="input-container">
                 <InputMagic text={text} />
                 <textarea
-                    onInput={(a) => onInput(a.target)}
+                    onInput={(a) => a.target instanceof HTMLTextAreaElement && onInput(a.target)}
                     className="input"
                     autoCapitalize="off"
                     spellCheck="false"
-                    defaultValue={props.defaultText}></textarea>
+                    defaultValue={props.defaultText}>
+                </textarea>
             </div>
         )
     }

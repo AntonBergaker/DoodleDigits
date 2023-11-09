@@ -26,7 +26,7 @@ export function ResultView(props: ResultsViewProps) {
         const line = props.pageMeasurer.getCharacterLine(
             getRange(result.range)[1]
         )
-
+        
         let array: string[]
         if (resultsPerLine.has(line)) {
             array = resultsPerLine.get(line)

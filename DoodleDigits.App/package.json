@@ -1,14 +1,12 @@
 {
   "name": "doodledigits.app",
   "productName": "Doodle Digits",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "An inline calculator where you write equations into a large textbox and the answers are given to you as you type.",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start -- --dev",
     "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],

@@ -7,13 +7,13 @@ import { InputText } from "../../components/input-text"
 import { CalculatorResult } from "../../calculator/calculator-result"
 import { SaveStateData, SaveSettingsData } from "../../saving/saving"
 
-type CalculatorPageSettings = {
+type CalculatorPageProps = {
     state: SaveStateData
     settings: SaveSettingsData
     onInput?: (string: string) => void
 }
 
-export function CalculatorPage(props: CalculatorPageSettings) {
+export function CalculatorPage(props: CalculatorPageProps) {
     const [result, setResult] = useState(
         undefined as CalculatorResult | undefined
     )
