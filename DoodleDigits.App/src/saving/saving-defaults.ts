@@ -13,7 +13,7 @@ export function getDefaultSettings(
 ): SaveSettingsData {
     return {
         theme: isDarkModeFunction() ? "dark" : "default",
-        force_on_top: false,
+        always_on_top: false,
         zoom: 0,
     }
 }

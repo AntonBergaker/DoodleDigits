@@ -7,6 +7,7 @@ import { mockElectronApi } from "../web/mock-electron"
 import { MainWindow } from "../pages/calculator/main-window"
 
 const [state, settings] = readStateAndSettings()
+let preTheme: string | undefined = undefined
 let themeLink: HTMLLinkElement | undefined = undefined
 
 applySettings(settings)
@@ -18,25 +19,34 @@ function render() {
 
 
 function applySettings(settings: SaveSettingsData) {
-    // Insert dark mode css theme
-    if (themeLink != undefined) {
-        themeLink.remove()
-        themeLink = undefined
-    }
 
-    if (settings.theme == "dark") {
-        themeLink = document.createElement("link")
-        themeLink.rel = "stylesheet"
-        if (WEB) {
-            themeLink.href = "./themes/dark/dark.css"
-        } else if (window.developmentMode) {
-            themeLink.href = "../../static/themes/dark/dark.css"
-        } else {
-            themeLink.href = "../../renderer/static/themes/dark/dark.css"
+    if (preTheme != settings.theme) {
+        preTheme = settings.theme
+        // Insert dark mode css theme
+        if (themeLink != undefined) {
+            themeLink.remove()
+            themeLink = undefined
         }
-        document.head.appendChild(themeLink)
+
+        if (settings.theme == "dark") {
+            themeLink = document.createElement("link")
+            themeLink.rel = "stylesheet"
+            themeLink.href = getStaticPath("themes/dark/dark.css");
+            document.head.appendChild(themeLink)
+        }
     }
 }
+
+function getStaticPath(path: string): string {
+    if (WEB) {
+        return "./" + path
+    } else if (window.developmentMode) {
+        return "../../static/" + path
+    } else {
+        return "../../renderer/static/" + path
+    }
+}
+
 
 render()
 
