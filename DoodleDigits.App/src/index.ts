@@ -99,6 +99,12 @@ const createWindow = async () => {
         const [x, y] = mainWindow.getSize()
         sendIpc(mainWindow, "sizeChanged", { x, y })
     })
+    mainWindow.on("focus", () => {
+        sendIpc(mainWindow, "focusedChanged", { focused: true })
+    })
+    mainWindow.on("blur", () => {
+        sendIpc(mainWindow, "focusedChanged", { focused: false })
+    })
 
     const query = `?state=${btoa(JSON.stringify(savedState))}&settings=${btoa(
         JSON.stringify(savedSettings)

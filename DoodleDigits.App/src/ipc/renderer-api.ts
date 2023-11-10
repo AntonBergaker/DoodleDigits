@@ -4,6 +4,7 @@ import { SaveSettingsData } from "../saving/saving"
 export const rendererApi = {
     updateSettings: (data: SaveSettingsData) => {},
     sizeChanged: (data: { x: number; y: number }) => {},
+    focusedChanged: (data: { focused: boolean }) => {},
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
