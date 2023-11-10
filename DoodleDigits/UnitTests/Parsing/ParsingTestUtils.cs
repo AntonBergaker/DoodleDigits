@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DoodleDigits.Core;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Parsing;
 using DoodleDigits.Core.Parsing.Ast;
 using NUnit.Framework;

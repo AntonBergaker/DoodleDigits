@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core; 
+namespace DoodleDigits.Core.Tokenizing; 
 public enum TokenType {
     Add,
     Subtract,
@@ -47,8 +44,8 @@ public enum TokenType {
 public class Token : IEquatable<Token> {
     public static readonly Dictionary<string, TokenType> SymbolTokens;
 
-    private static readonly Dictionary<string, TokenType> stringToToken;
-    private static readonly Dictionary<TokenType, string> tokenToString;
+    private static readonly Dictionary<string, TokenType> StringToToken;
+    private static readonly Dictionary<TokenType, string> TokenToString;
 
     static Token() {
 
@@ -96,23 +93,23 @@ public class Token : IEquatable<Token> {
             ("cross", TokenType.Cross),
         }).ToArray();
 
-        stringToToken = tokens.ToDictionary(x => x.token, x => x.type);
-        tokenToString = new Dictionary<TokenType, string>();
+        StringToToken = tokens.ToDictionary(x => x.token, x => x.type);
+        TokenToString = new Dictionary<TokenType, string>();
         foreach (var token in tokens) {
-            if (tokenToString.ContainsKey(token.type)) {
+            if (TokenToString.ContainsKey(token.type)) {
                 continue;
             }
-            tokenToString.Add(token.type, token.token);
+            TokenToString.Add(token.type, token.token);
         }
     }
 
 
     public static string StringForTokenType(TokenType type) {
-        return tokenToString[type];
+        return TokenToString[type];
     }
 
     public static bool TryTokenTypeForString(string @string, out TokenType tokenType) {
-        return stringToToken.TryGetValue(@string, out tokenType);
+        return StringToToken.TryGetValue(@string, out tokenType);
     }
 
 

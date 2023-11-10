@@ -1,11 +1,9 @@
 ﻿using System;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
-using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Parsing.Ast;
-using DoodleDigits.Core.Functions.Implementations.Named;
 
-namespace DoodleDigits.Core; 
+namespace DoodleDigits.Core.Functions; 
 public class FunctionData {
     public readonly string[] Names;
 

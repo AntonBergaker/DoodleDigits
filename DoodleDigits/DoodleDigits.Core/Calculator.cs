@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Parsing;
 
 namespace DoodleDigits.Core; 
@@ -16,8 +17,8 @@ public class CalculationResult {
 
 public class Calculator {
 
-    private readonly Executor executor;
-    private readonly Parser parser;
+    private readonly Executor _executor;
+    private readonly Parser _parser;
 
     /// <summary>
     /// Creates a new calculator with the the functions found inside <see cref="FunctionLibrary"/> and constants from <see cref="ConstantLibrary"/>
@@ -33,13 +34,13 @@ public class Calculator {
     /// <param name="constants">Constants to use</param>
     public Calculator(IEnumerable<FunctionData> functions, IEnumerable<Constant> constants) {
         var functionData = functions as FunctionData[] ?? functions.ToArray();
-        executor = new Executor(functionData, constants);
-        parser = new Parser(functionData);
+        _executor = new Executor(functionData, constants);
+        _parser = new Parser(functionData);
     }
 
     public CalculationResult Calculate(string input) {
-        ParseResult parseResult = parser.Parse(input);
-        ExecutionResult executionResult = executor.Execute(parseResult.Root);
+        ParseResult parseResult = _parser.Parse(input);
+        ExecutionResult executionResult = _executor.Execute(parseResult.Root);
 
         List<Result> results = new();
         results.AddRange(executionResult.Results);

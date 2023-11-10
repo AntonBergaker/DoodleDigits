@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core; 
+namespace DoodleDigits.Core.Tokenizing; 
 public class Tokenizer {
-    private int index;
-    private string input;
+    private int _index;
+    private string _input;
 
     private static readonly Dictionary<char, string[]> IdentifyTokens;
 
@@ -37,23 +35,23 @@ public class Tokenizer {
     }
 
     public Tokenizer() {
-        index = 0;
-        input = null!;
+        _index = 0;
+        _input = null!;
     }
 
     public Token[] Tokenize(string input) {
-        this.input = input;
-        index = 0;
+        this._input = input;
+        _index = 0;
 
         List<Token> tokens = new();
 
         int lastIndex = -1;
 
         while (CanRead) {
-            if (lastIndex == index) {
+            if (lastIndex == _index) {
                 throw new Exception("The indexer was not incremented last loop");
             }
-            lastIndex = index;
+            lastIndex = _index;
             Token? token = TokenizeOneInternal();
             if (token != null) {
                 tokens.Add(token);
@@ -64,8 +62,8 @@ public class Tokenizer {
     }
 
     public Token? TokenizeOne(string input, int index = 0) {
-        this.input = input;
-        this.index = index;
+        this._input = input;
+        this._index = index;
         if (CanRead == false) {
             return new Token("eof", TokenType.EndOfFile);
         }
@@ -75,50 +73,50 @@ public class Tokenizer {
 
     private Token? TokenizeOneInternal() {
         char c = PeekOne();
-        int startIndex = index;
+        int startIndex = _index;
 
         if (c == '\n') {
-            index++;
+            _index++;
             return new Token("\n", TokenType.NewLine, startIndex..startIndex);
         }
         if (char.IsWhiteSpace(c)) {
-            index++;
+            _index++;
             return null;
         }
         if (TryReadNumber()) {
-            return new Token(input[startIndex..index].Trim(), TokenType.Number, startIndex..index);
+            return new Token(_input[startIndex.._index].Trim(), TokenType.Number, startIndex.._index);
         }
         if (IdentifyTokens.TryGetValue(c, out string[]? tokensWithChar)) {
             foreach (string str in tokensWithChar) {
-                int endIndex = index + str.Length;
-                if (input.Length >= endIndex && input[index..endIndex] == str) {
-                    index += str.Length;
-                    return new Token(str, Token.SymbolTokens[str], startIndex..index);
+                int endIndex = _index + str.Length;
+                if (_input.Length >= endIndex && _input[_index..endIndex] == str) {
+                    _index += str.Length;
+                    return new Token(str, Token.SymbolTokens[str], startIndex.._index);
                 }
             }
         }
-        if (IsIdentifierFirstCharacter(index, out int readLength)) {
-            index += readLength;
-            while (CanRead && IsIdentifierCharacter(index, out readLength)) {
-                index+= readLength;
+        if (IsIdentifierFirstCharacter(_index, out int readLength)) {
+            _index += readLength;
+            while (CanRead && IsIdentifierCharacter(_index, out readLength)) {
+                _index+= readLength;
             }
-            string identifier = input[startIndex..index];
+            string identifier = _input[startIndex.._index];
 
             if (Token.TryTokenTypeForString(identifier, out TokenType type)) {
-                return new Token(identifier, type, startIndex..index);
+                return new Token(identifier, type, startIndex.._index);
             }
 
-            return new Token(identifier, TokenType.Identifier, startIndex..index);
+            return new Token(identifier, TokenType.Identifier, startIndex.._index);
         }
 
-        index++;
+        _index++;
         return new Token(c.ToString(), TokenType.Unknown, startIndex..startIndex);
     }
 
-    private bool CanRead => index < input.Length;
+    private bool CanRead => _index < _input.Length;
     
     private bool IsIdentifierFirstCharacter(int index, out int length) {
-        char @char = input[index];
+        char @char = _input[index];
         if (char.IsLetter(@char) || @char == '_') {
             length = 1;
             return true;
@@ -130,8 +128,8 @@ public class Tokenizer {
         }
 
         // Compare to every length of emoji, starting with the longest
-        for (int i = Math.Min(input.Length, index + EmojiMaxLength); i > index; i--) {
-            if (AllEmoji.Contains(input[index..i])) {
+        for (int i = Math.Min(_input.Length, index + EmojiMaxLength); i > index; i--) {
+            if (AllEmoji.Contains(_input[index..i])) {
                 length = i - index;
                 return true;
             }
@@ -141,7 +139,7 @@ public class Tokenizer {
         return false;
     }
     private bool IsIdentifierCharacter(int index, out int length) {
-        char c = input[index];
+        char c = _input[index];
         if (char.IsDigit(c)) {
             length = 1;
             return true;
@@ -156,7 +154,7 @@ public class Tokenizer {
 
     
     private bool TryReadNumber() {
-        int startIndex = index;
+        int startIndex = _index;
 
         bool TryReadNumberInternal(string allowedDigits) {
 
@@ -179,7 +177,7 @@ public class Tokenizer {
 
                 if (c == '.') {
                     if (usedComma) {
-                        index--;
+                        _index--;
                         return false;
                     }
 
@@ -191,7 +189,7 @@ public class Tokenizer {
                 else if (c == '_') {
                 }
                 else {
-                    index--;
+                    _index--;
                     break;
                 }
             }
@@ -204,10 +202,10 @@ public class Tokenizer {
         if (PeekOne() == '0') {
             string start = Peek(2);
             if (start == "0x") {
-                index += 2;
+                _index += 2;
                 result = TryReadNumberInternal("0123456789abcdefABCDEF");
             } else if (start == "0b") {
-                index += 2;
+                _index += 2;
                 result = TryReadNumberInternal("01");
             }
         }
@@ -215,15 +213,15 @@ public class Tokenizer {
         if (result == false) {
             result = TryReadNumberInternal("0123456789");
             // See if it's in scientific notation
-            if (index < input.Length && input[index] is 'E' or 'e' or 'ᴇ') {
-                int preScienceIndex = index;
-                index++;
-                if (index < input.Length && input[index] is '+' or '-') {
-                    index++;
+            if (_index < _input.Length && _input[_index] is 'E' or 'e' or 'ᴇ') {
+                int preScienceIndex = _index;
+                _index++;
+                if (_index < _input.Length && _input[_index] is '+' or '-') {
+                    _index++;
                 }
 
-                if (index >= input.Length || char.IsNumber(input[index]) == false) {
-                    index = preScienceIndex;
+                if (_index >= _input.Length || char.IsNumber(_input[_index]) == false) {
+                    _index = preScienceIndex;
                 }
                 else {
                     JumpUntilFalse(x => char.IsNumber(x));
@@ -233,33 +231,33 @@ public class Tokenizer {
         }
 
         if (result == false) {
-            index = startIndex;
+            _index = startIndex;
         }
 
         return result;
     }
 
     private char PeekOne() {
-        return input[index];
+        return _input[_index];
     }
 
     private string Peek(int count) {
-        return input[index.. Math.Min(index + count, input.Length)];
+        return _input[_index.. Math.Min(_index + count, _input.Length)];
     }
 
     private char ReadOne() {
-        return input[index++];
+        return _input[_index++];
     }
 
     private void JumpUntilFalse(Func<char, bool> testFunction) {
-        while (CanRead && testFunction(input[index])) {
-            index++;
+        while (CanRead && testFunction(_input[_index])) {
+            _index++;
         }
     }
 
     private string Read(int count) {
-        string result = input[index.. (index + count)];
-        index += count;
+        string result = _input[_index.. (_index + count)];
+        _index += count;
         return result;
     }
 }

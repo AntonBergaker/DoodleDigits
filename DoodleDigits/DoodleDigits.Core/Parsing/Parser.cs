@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Tokenizing;
 using DoodleDigits.Core.Utilities;
@@ -20,50 +21,50 @@ public class ParseResult {
 }
 
 public class Parser {
-    private readonly Dictionary<string, FunctionData> functions;
-    private readonly Tokenizer tokenizer;
-    private TokenReader reader;
-    private readonly List<ParseError> errors;
+    private readonly Dictionary<string, FunctionData> _functions;
+    private readonly Tokenizer _tokenizer;
+    private TokenReader _reader;
+    private readonly List<ParseError> _errors;
 
-    private bool insideAbsoluteExpression;
+    private bool _insideAbsoluteExpression;
 
     public Parser(IEnumerable<FunctionData> functions) { 
-        this.functions = new();
+        this._functions = new();
         foreach (FunctionData function in functions) {
             foreach (string functionName in function.Names) {
-                this.functions.Add(functionName, function);
+                this._functions.Add(functionName, function);
             }
         }
-        tokenizer = new Tokenizer();
-        reader = null!;
-        errors = new List<ParseError>();
+        _tokenizer = new Tokenizer();
+        _reader = null!;
+        _errors = new List<ParseError>();
     }
 
 
     public ParseResult Parse(string input) {
-        errors.Clear();
-        insideAbsoluteExpression = false;
+        _errors.Clear();
+        _insideAbsoluteExpression = false;
 
-        reader = new TokenReader(tokenizer.Tokenize(input));
+        _reader = new TokenReader(_tokenizer.Tokenize(input));
 
-        tokenizer.Tokenize(input);
+        _tokenizer.Tokenize(input);
 
         AstNode statements = ReadStatements();
 
-        return new ParseResult(new List<ParseError>(errors), statements);
+        return new ParseResult(new List<ParseError>(_errors), statements);
     }
 
     private AstNode ReadStatements() {
         List<Expression> expressions = new();
-        while (reader.ReachedEnd == false) {
+        while (_reader.ReachedEnd == false) {
             Expression expression = ReadExpression();
             if (expression is not ErrorNode) {
                 expressions.Add(expression);
             }
 
-            Token peek = reader.Peek();
+            Token peek = _reader.Peek();
             if (peek.Type == TokenType.Comma) {
-                reader.Skip();
+                _reader.Skip();
             }
 
         }
@@ -86,16 +87,16 @@ public class Parser {
     private Expression ReadBaseCast() {
         Expression expression = ReadBinaryBooleanOr();
 
-        if (reader.Peek().Type is TokenType.As or TokenType.In) {
-            reader.Skip();
+        if (_reader.Peek().Type is TokenType.As or TokenType.In) {
+            _reader.Skip();
 
-            Token type = reader.Peek();
+            Token type = _reader.Peek();
 
             if (type.Type != TokenType.Identifier) {
-                errors.Add(new ParseError(type.Position, $"{type.Content} is not a base identifier"));
+                _errors.Add(new ParseError(type.Position, $"{type.Content} is not a base identifier"));
                 return expression;
             }
-            reader.Skip();
+            _reader.Skip();
 
             return new BaseCast(expression, BaseCast.StringToTarget(type.Content), expression.Position.Start..type.Position.End);
         }
@@ -119,19 +120,19 @@ public class Parser {
 
         Expression lhs = next();
 
-        Token nextToken = reader.Peek(false);
+        Token nextToken = _reader.Peek(false);
         if (ComparisonTokens.Contains(nextToken.Type)) {
             Comparison.Builder builder = new(lhs, Utils.Join(nextToken.Position, lhs.Position));
 
             while (ComparisonTokens.Contains(nextToken.Type)) {
-                reader.Skip(false);
+                _reader.Skip(false);
                 Expression rhs = next();
                 if (rhs is ErrorNode) {
                     break;
                 }
 
                 builder.Add(Comparison.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(nextToken.Position, rhs.Position));
-                nextToken = reader.Peek();
+                nextToken = _reader.Peek();
             }
 
             // If there's only a single argument, return as it is
@@ -150,14 +151,14 @@ public class Parser {
 
     private bool CanBeImplicitlyMultiplied(TokenType type) {
         return type is TokenType.ParenthesisOpen or TokenType.Identifier or TokenType.Number or TokenType.BracketOpen ||
-               (type == TokenType.AbsoluteLine && insideAbsoluteExpression == false);
+               (type == TokenType.AbsoluteLine && _insideAbsoluteExpression == false);
     }
 
     private Expression ReadMultiplyDivide() {
         Func<Expression> next = ReadPower;
         Expression lhs = next();
 
-        Token peek = reader.Peek(false);
+        Token peek = _reader.Peek(false);
         while (true) {
             BinaryOperation.OperationType? type = null;
             // Implicit multiplication
@@ -166,7 +167,7 @@ public class Parser {
             }
             // Explicit multiplication or division
             if (peek.Type is TokenType.Multiply or TokenType.Divide or TokenType.Modulus or TokenType.Cross) {
-                reader.Skip(false);
+                _reader.Skip(false);
                 type = BinaryOperation.GetTypeFromToken(peek.Type);
             }
 
@@ -177,7 +178,7 @@ public class Parser {
                 }
                 lhs = new BinaryOperation(lhs, type.Value, rhs,
                     Utils.Join(lhs.Position, rhs.Position));
-                peek = reader.Peek(false);
+                peek = _reader.Peek(false);
                 continue;
             }
             else {
@@ -192,7 +193,7 @@ public class Parser {
         Func<Expression> next = ReadPower;
         Expression lhs = next();
 
-        Token peek = reader.Peek(false);
+        Token peek = _reader.Peek(false);
         while (CanBeImplicitlyMultiplied(peek.Type)) {
             Expression rhs = next();
             if (rhs is ErrorNode) {
@@ -200,7 +201,7 @@ public class Parser {
             }
             lhs = new BinaryOperation(lhs, BinaryOperation.OperationType.Multiply, rhs,
                 Utils.Join(lhs.Position, rhs.Position));
-            peek = reader.Peek(false);
+            peek = _reader.Peek(false);
         }
 
         return lhs;
@@ -215,15 +216,15 @@ public class Parser {
     private Expression GenericReadBinary(TokenType[] operations, Func<Expression> next) {
         Expression lhs = next();
 
-        Token nextToken = reader.Peek(false);
+        Token nextToken = _reader.Peek(false);
         while (operations.Contains(nextToken.Type)) {
-            reader.Skip(false);
+            _reader.Skip(false);
             Expression rhs = next();
             if (rhs is ErrorNode) {
                 break;
             }
             lhs = new BinaryOperation(lhs, BinaryOperation.GetTypeFromToken(nextToken.Type), rhs, Utils.Join(lhs.Position, nextToken.Position, rhs.Position));
-            nextToken = reader.Peek(false);
+            nextToken = _reader.Peek(false);
         }
 
         return lhs;
@@ -232,10 +233,10 @@ public class Parser {
 
     private Expression ReadPreUnary() {
 
-        Token peek = reader.Peek();
+        Token peek = _reader.Peek();
 
         if (peek.Type is TokenType.Add or TokenType.Subtract or TokenType.Exclamation) {
-            reader.Skip();
+            _reader.Skip();
             Expression value = ReadPreUnary();
             return new UnaryOperation(UnaryOperation.GetTypeFromToken(peek.Type), value, Utils.Join(peek.Position, value.Position));
         }
@@ -246,18 +247,18 @@ public class Parser {
     private Expression ReadPostUnary() {
         Expression expression = ReadLiteral();
 
-        Token peek = reader.Peek();
+        Token peek = _reader.Peek();
         while (peek.Type == TokenType.Exclamation) {
-            reader.Skip();
+            _reader.Skip();
             expression = new UnaryOperation(UnaryOperation.OperationType.Factorial, expression, Utils.Join(expression.Position, peek.Position));
-            peek = reader.Peek();
+            peek = _reader.Peek();
         }
 
         return expression;
     }
 
     private Expression ReadLiteral() {
-        return ReadLiteral(reader.Read());
+        return ReadLiteral(_reader.Read());
     }
 
     private Expression ReadLiteral(Token token) {
@@ -274,18 +275,18 @@ public class Parser {
     // Assumes token is a |
     private Expression ReadAbsoluteExpression(Token token) {
         // Flag as being inside an absolute expression, and save the previous state
-        bool wasInsideAbsolute = insideAbsoluteExpression;
-        insideAbsoluteExpression = true;
+        bool wasInsideAbsolute = _insideAbsoluteExpression;
+        _insideAbsoluteExpression = true;
 
         Expression expression = ReadExpression();
 
-        insideAbsoluteExpression = wasInsideAbsolute;
+        _insideAbsoluteExpression = wasInsideAbsolute;
 
         // This should be a |
-        Token nextToken = reader.Read();
+        Token nextToken = _reader.Read();
         Index end = nextToken.Position.End;
         if (nextToken.Type != TokenType.AbsoluteLine) {
-            errors.Add(new ParseError(nextToken.Position, "Unclosed absolute line"));
+            _errors.Add(new ParseError(nextToken.Position, "Unclosed absolute line"));
             end = expression.Position.End;
         }
 
@@ -295,19 +296,19 @@ public class Parser {
 
     private Expression ReadVectorOrParenthesis(Token token) {
         // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
-        bool wasInsideAbsolute = insideAbsoluteExpression;
-        insideAbsoluteExpression = false;
+        bool wasInsideAbsolute = _insideAbsoluteExpression;
+        _insideAbsoluteExpression = false;
 
         Expression expression = ReadExpression();
 
 
         // This should be a parenthesis if parenthesis, or a comma if a vector
-        Token nextToken = reader.Peek();
+        Token nextToken = _reader.Peek();
         TokenType expectedEnd = token.Type == TokenType.BracketOpen ? TokenType.BracketClose : TokenType.ParenthesisClose;
         if (nextToken.Type == expectedEnd) {
-            reader.Skip();
+            _reader.Skip();
             expression.Position = token.Position.Start..nextToken.Position.End;
-            insideAbsoluteExpression = wasInsideAbsolute;
+            _insideAbsoluteExpression = wasInsideAbsolute;
             return expression;
         }
 
@@ -315,28 +316,28 @@ public class Parser {
         if (nextToken.Type == TokenType.Comma) {
             List<Expression> expressions = new() { expression };
             while (nextToken.Type == TokenType.Comma) {
-                reader.Skip();
+                _reader.Skip();
                 Expression nextExpression = ReadExpression();
                 if (nextExpression is not ErrorNode) {
                     expressions.Add(nextExpression);
                 }
-                nextToken = reader.Peek();
+                nextToken = _reader.Peek();
             }
 
             expression = new VectorDecleration(expressions, token.Position.Start..expressions.Last().Position.End);
 
             if (nextToken.Type == expectedEnd) {
-                reader.Skip();
+                _reader.Skip();
                 expression.Position = token.Position.Start..nextToken.Position.End;
-                insideAbsoluteExpression = wasInsideAbsolute;
+                _insideAbsoluteExpression = wasInsideAbsolute;
                 return expression;
             }
         }
 
         // If neither, flag as unclosed parenthesis and return
-        errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
+        _errors.Add(new ParseError(nextToken.Position, "Unclosed parenthesis"));
         expression.Position = token.Position.Start..expression.Position.End;
-        insideAbsoluteExpression = wasInsideAbsolute;
+        _insideAbsoluteExpression = wasInsideAbsolute;
         return expression;
     }
 
@@ -352,7 +353,7 @@ public class Parser {
             }
         }
 
-        if (functions.ContainsKey(token.Content.ToLower())) {
+        if (_functions.ContainsKey(token.Content.ToLower())) {
             return ReadFunction(token);
         }
 
@@ -361,21 +362,21 @@ public class Parser {
 
     private Expression ReadFunction(Token token) {
         bool expectsVector = false;
-        if (functions.TryGetValue(token.Content, out var functionData)) {
+        if (_functions.TryGetValue(token.Content, out var functionData)) {
             expectsVector = (functionData.ExpectedType & Functions.FunctionExpectedType.Vector) > 0;
         }
-        Token next = reader.Peek();
+        Token next = _reader.Peek();
         Index start = token.Position.Start;
         Index end = token.Position.End;
         if (next.Type == TokenType.ParenthesisOpen) {
             // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
-            bool wasInsideAbsolute = insideAbsoluteExpression;
-            insideAbsoluteExpression = false;
+            bool wasInsideAbsolute = _insideAbsoluteExpression;
+            _insideAbsoluteExpression = false;
            
             List<Expression> parameters = new();
-            reader.Skip();
+            _reader.Skip();
 
-            while (reader.ReachedEnd == false) {
+            while (_reader.ReachedEnd == false) {
                 Expression ex = ReadExpression();
                 if (ex is ErrorNode) {
                     break;
@@ -384,18 +385,18 @@ public class Parser {
                 parameters.Add(ex);
                 end = ex.Position.End;
 
-                Token peek = reader.Peek();
+                Token peek = _reader.Peek();
                 if (peek.Type is TokenType.ParenthesisClose or TokenType.EndOfFile) {
-                    reader.Skip();
+                    _reader.Skip();
                     end = peek.Position.End;
 
                     // Go back to previous state
-                    insideAbsoluteExpression = wasInsideAbsolute;
+                    _insideAbsoluteExpression = wasInsideAbsolute;
                     break;
                 }
 
                 if (peek.Type == TokenType.Comma) {
-                    reader.Skip();
+                    _reader.Skip();
                     end = peek.Position.End;
                     continue;
                 }
@@ -426,7 +427,7 @@ public class Parser {
         if (token.Content[functionLength] == '_') {
             // Underscore means we try to read a literal down here
             // Parse the one token
-            Token? hotSwappedToken = tokenizer.TokenizeOne(token.Content, functionLength+1);
+            Token? hotSwappedToken = _tokenizer.TokenizeOne(token.Content, functionLength+1);
             if (hotSwappedToken == null || hotSwappedToken.Type is TokenType.Unknown or TokenType.EndOfFile) {
                 return false;
             }

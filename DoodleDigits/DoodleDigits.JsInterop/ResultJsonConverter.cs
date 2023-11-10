@@ -1,12 +1,11 @@
-﻿using DoodleDigits.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
+using DoodleDigits.Core;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
-namespace DoodleDigitsJsInterop;
+namespace DoodleDigitsJs.Interop;
 
 public static class ResultJsonConverter {
     private static KeyValuePair<string, JsonNode?> RangeToJson(Range range) {
