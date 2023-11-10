@@ -26,6 +26,16 @@ namespace SourceGenerator {
             }
         }
 
+        public void StartBlock(string str) {
+            AddLine(str + " {");
+            Indent();
+        }
+
+        public void EndBlock() {
+            Unindent();
+            AddLine("}");
+        }
+
         public void Indent() {
             _indent++;
         }
