@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace SourceGenerator {
     [Generator]
@@ -46,15 +43,12 @@ namespace SourceGenerator {
                 "using System;",
                 "using DoodleDigits.Core;",
                 "using DoodleDigits.Core.Functions;",
-                "namespace DoodleDigits.Core {"
+                "",
+                "namespace DoodleDigits.Core.Functions;"
             );
-            builder.Indent();
-            builder.AddLine("partial class FunctionLibrary {");
-            builder.Indent();
-            builder.AddLine("static FunctionLibrary() {");
-            builder.Indent();
-            builder.AddLine("Functions = new FunctionData[] {");
-            builder.Indent();
+            builder.StartBlock("partial class FunctionLibrary");
+            builder.StartBlock("static FunctionLibrary()");
+            builder.StartBlock("Functions = new FunctionData[]");
 
             foreach (MethodDeclarationSyntax method in syntaxReceiver.References) {
                 var semanticModel = context.Compilation.GetSemanticModel(method.SyntaxTree);
@@ -76,14 +70,11 @@ namespace SourceGenerator {
 
             builder.Unindent();
             builder.AddLine("};");
-            builder.Unindent();
-            builder.AddLine("}");
-            builder.Unindent();
-            builder.AddLine("}");
-            builder.Unindent();
-            builder.AddLine("}");
+
+            builder.EndBlock();
+            builder.EndBlock();
             
-            context.AddSource("Generated_FunctionLibrary", builder.ToString());
+            context.AddSource("FunctionLibrary.g.cs", builder.ToString());
         }
 
         private class AttributeData { 

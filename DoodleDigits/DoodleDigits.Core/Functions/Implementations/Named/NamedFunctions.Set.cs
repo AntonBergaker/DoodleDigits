@@ -1,14 +1,7 @@
 ﻿using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Execution;
-using Rationals;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DoodleDigits.Core.Parsing.Ast;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Functions.Implementations.Binary;
 

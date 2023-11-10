@@ -6,3 +6,10 @@
 .input {
     caret-color: #eeeeee;
 }
+
+.titleBar {
+    background-color: #0767B3;
+}
+.titleBar.unfocused {
+    background-color: #808080;
+}

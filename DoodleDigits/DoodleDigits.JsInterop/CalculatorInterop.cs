@@ -1,10 +1,7 @@
-using DoodleDigits.Core;
-using DoodleDigits.Core.Execution.Results;
-using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
-using System.Text.Json;
+using DoodleDigits.Core;
 
-namespace DoodleDigitsJsInterop;
+namespace DoodleDigitsJs.Interop;
 
 public partial class CalculatorInterop
 {
