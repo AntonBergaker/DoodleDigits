@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using DoodleDigits.Core;
+using DoodleDigits.Core.Tokenizing;
 
 namespace UnitTests; 
 class TokenizerTest {

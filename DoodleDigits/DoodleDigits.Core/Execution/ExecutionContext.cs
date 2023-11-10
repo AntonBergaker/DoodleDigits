@@ -10,26 +10,26 @@ using DoodleDigits.Core.Parsing.Ast;
 namespace DoodleDigits.Core.Execution; 
 
 public class ExecutionContext {
-    private readonly Dictionary<string, Value> constants;
-    private readonly Dictionary<string, Value> variables;
-    private readonly List<Result> results;
+    private readonly Dictionary<string, Value> _constants;
+    private readonly Dictionary<string, Value> _variables;
+    private readonly List<Result> _results;
 
-    public IReadOnlyDictionary<string, Value> Constants => constants;
-    public Dictionary<string, Value> Variables => variables;
-    public IReadOnlyList<Result> Results => results;
+    public IReadOnlyDictionary<string, Value> Constants => _constants;
+    public Dictionary<string, Value> Variables => _variables;
+    public IReadOnlyList<Result> Results => _results;
 
     public ExecutionContext(IEnumerable<Constant> constants) {
-        this.constants = constants.ToDictionary(x => x.Name, x => x.Value);
-        this.variables = new();
-        this.results = new();
+        this._constants = constants.ToDictionary(x => x.Name, x => x.Value);
+        this._variables = new();
+        this._results = new();
     }
 
     public void AddResult(Result result) {
-        results.Add(result);
+        _results.Add(result);
     }
 
     public void Clear() {
-        results.Clear();
-        variables.Clear();
+        _results.Clear();
+        _variables.Clear();
     }
 }

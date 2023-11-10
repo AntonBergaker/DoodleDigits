@@ -13,20 +13,20 @@ public partial class MatrixValue : Value {
     public interface IMatrixElement { }
 
     public class MatrixDimension : IMatrixElement, IEnumerable<IMatrixElement> {
-        private readonly IMatrixElement[] elements;
+        private readonly IMatrixElement[] _elements;
         public readonly int Length;
 
-        public IMatrixElement this[int index] => elements[index];
+        public IMatrixElement this[int index] => _elements[index];
 
         public MatrixDimension(IEnumerable<IMatrixElement> elements) {
-            this.elements = elements.ToArray();
-            Length = this.elements.Length;
+            this._elements = elements.ToArray();
+            Length = this._elements.Length;
         }
 
         public MatrixDimension(params IMatrixElement[] elements) : this((IEnumerable<IMatrixElement>)elements) { }
 
         public IEnumerator<IMatrixElement> GetEnumerator() {
-            return ((IEnumerable<IMatrixElement>)elements).GetEnumerator();
+            return ((IEnumerable<IMatrixElement>)_elements).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -38,11 +38,11 @@ public partial class MatrixValue : Value {
                 return false;
             }
 
-            return Enumerable.SequenceEqual(elements, otherDimension.elements);
+            return Enumerable.SequenceEqual(_elements, otherDimension._elements);
         }
 
         public override int GetHashCode() {
-            return HashCode.Combine(elements);
+            return HashCode.Combine(_elements);
         }
     }
 
@@ -70,11 +70,11 @@ public partial class MatrixValue : Value {
     /// Helper struct with implicit casts that are sometimes weird but make the matrix easier to work with.
     /// </summary>
     public struct MatrixElement {
-        private IMatrixElement element;
+        private IMatrixElement _element;
 
         public MatrixElement this[int index] {
             get {
-                if (element is MatrixDimension md) {
+                if (_element is MatrixDimension md) {
                     return new MatrixElement(md[index]);
                 }
 
@@ -88,7 +88,7 @@ public partial class MatrixValue : Value {
 
         public int Length { 
             get {
-                if (element is MatrixDimension md) {
+                if (_element is MatrixDimension md) {
                     return md.Length;
                 }
 
@@ -101,7 +101,7 @@ public partial class MatrixValue : Value {
 
         public Value Value {
             get {
-                if (element is MatrixValueElement mve) {
+                if (_element is MatrixValueElement mve) {
                     return mve.Value;
                 }
 
@@ -110,7 +110,7 @@ public partial class MatrixValue : Value {
         }
 
         public MatrixElement(IMatrixElement element) {
-            this.element = element;
+            this._element = element;
         }
     }
 

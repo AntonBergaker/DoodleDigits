@@ -3,32 +3,32 @@ using System.Linq;
 
 namespace DoodleDigits.Core.Tokenizing; 
 class TokenReader {
-    private readonly Token[] tokens;
-    private int index;
+    private readonly Token[] _tokens;
+    private int _index;
 
     public TokenReader(Token[] tokens) {
-        this.tokens = tokens;
-        index = 0;
+        this._tokens = tokens;
+        _index = 0;
 
         int lastIndex = tokens.LastOrDefault()?.Position.End.Value ?? 0;
-        EofToken = new Token("eof", TokenType.EndOfFile, lastIndex..lastIndex);
+        _eofToken = new Token("eof", TokenType.EndOfFile, lastIndex..lastIndex);
     }
 
-    public bool ReachedEnd => index >= tokens.Length;
-    public int Position => Math.Min(index, tokens.Length);
+    public bool ReachedEnd => _index >= _tokens.Length;
+    public int Position => Math.Min(_index, _tokens.Length);
 
-    private Token EofToken;
+    private Token _eofToken;
 
     private Token SafeRead(int index) {
-        if (index >= tokens.Length) {
-            return EofToken;
+        if (index >= _tokens.Length) {
+            return _eofToken;
         }
 
-        return tokens[index];
+        return _tokens[index];
     }
 
     public Token Peek(bool skipNewLine = true) {
-        int tempIndex = index;
+        int tempIndex = _index;
         while (skipNewLine && SafeRead(tempIndex).Type == TokenType.NewLine) {
             tempIndex++;
         }
@@ -36,18 +36,18 @@ class TokenReader {
     }
 
     public Token Read(bool skipNewLine = true) {
-        while (skipNewLine && SafeRead(index).Type == TokenType.NewLine) {
-            index++;
+        while (skipNewLine && SafeRead(_index).Type == TokenType.NewLine) {
+            _index++;
         }
-        return SafeRead(index++);
+        return SafeRead(_index++);
     }
 
     public void Skip(bool skipNewLine = true) {
-        while (skipNewLine && SafeRead(index).Type == TokenType.NewLine) {
-            index++;
+        while (skipNewLine && SafeRead(_index).Type == TokenType.NewLine) {
+            _index++;
         }
 
-        index++;
+        _index++;
     }
 
 }

@@ -244,9 +244,9 @@ public static partial class RationalUtils {
         }
 
         // Add missing 0s
-        int remaining0s = magnitude - (index - 1);
-        if (remaining0s > 0) {
-            sb.Append('0', remaining0s);
+        int remaining0S = magnitude - (index - 1);
+        if (remaining0S > 0) {
+            sb.Append('0', remaining0S);
         }
 
         return sb.ToString();

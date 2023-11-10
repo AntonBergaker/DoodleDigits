@@ -2,12 +2,12 @@
 
 namespace SourceGenerator {
     class CodeBuilder {
-        private readonly StringBuilder builder;
-        private int indent;
+        private readonly StringBuilder _builder;
+        private int _indent;
 
         public CodeBuilder() {
-            builder = new StringBuilder();
-            indent = 0;
+            _builder = new StringBuilder();
+            _indent = 0;
         }
 
         public void AddLine(string line) {
@@ -17,25 +17,25 @@ namespace SourceGenerator {
                 }
                 return;
             }
-            builder.AppendLine(new string('\t', indent) + line);
+            _builder.AppendLine(new string('\t', _indent) + line);
         }
 
         public void AddLines(params string[] lines) {
             foreach (string line in lines) {
-                builder.AppendLine(new string('\t', indent) + line);
+                _builder.AppendLine(new string('\t', _indent) + line);
             }
         }
 
         public void Indent() {
-            indent++;
+            _indent++;
         }
 
         public void Unindent() {
-            indent--;
+            _indent--;
         }
 
         public override string ToString() {
-            return builder.ToString();
+            return _builder.ToString();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Execution.ValueTypes;
+using DoodleDigits.Core.Tokenizing;
 using DoodleDigits.Core.Utilities;
 
 namespace DoodleDigits.Core.Parsing.Ast; 
