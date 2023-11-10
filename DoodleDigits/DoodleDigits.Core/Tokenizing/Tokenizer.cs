@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DoodleDigits.Core.Utilities;
+﻿using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core.Tokenizing; 
+namespace DoodleDigits.Core.Tokenizing;
 public class Tokenizer {
     private int _index;
     private string _input;

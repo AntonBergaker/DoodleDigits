@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 using Rationals;
 
-namespace DoodleDigits.Core.Utilities; 
+namespace DoodleDigits.Core.Utilities;
 public static partial class RationalUtils {
     private static readonly Dictionary<char, int> NumberCharacters = new() {
         { '0', 0 },

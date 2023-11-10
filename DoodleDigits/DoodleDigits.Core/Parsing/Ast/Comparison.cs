@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Text;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Functions.Implementations.Binary;
@@ -9,7 +6,7 @@ using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Tokenizing;
 using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core.Parsing.Ast; 
+namespace DoodleDigits.Core.Parsing.Ast;
 
 public class Comparison : Expression {
     public enum ComparisonType {

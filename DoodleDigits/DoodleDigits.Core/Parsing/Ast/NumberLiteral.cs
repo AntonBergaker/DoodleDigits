@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DoodleDigits.Core.Parsing.Ast; 
+﻿namespace DoodleDigits.Core.Parsing.Ast;
 public class NumberLiteral : Expression {
     public string Number { get; }
 

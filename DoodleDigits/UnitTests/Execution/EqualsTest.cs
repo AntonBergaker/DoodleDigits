@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Execution.Results;
+﻿using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 using NUnit.Framework;
 
-namespace UnitTests.Execution; 
+namespace UnitTests.Execution;
 class EqualsTest {
     [Test]
     public void TestBinaryEquals() {

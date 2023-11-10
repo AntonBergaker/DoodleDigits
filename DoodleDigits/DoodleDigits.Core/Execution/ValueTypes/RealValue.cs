@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using DoodleDigits.Core.Execution.Results;
-using DoodleDigits.Core.Functions.Implementations.Binary;
+﻿using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution.ValueTypes; 
+namespace DoodleDigits.Core.Execution.ValueTypes;
 public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
     public readonly Rational Value;
 

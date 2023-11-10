@@ -1,10 +1,8 @@
-﻿using System;
-using DoodleDigits.Core.Execution;
+﻿using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
-using DoodleDigits.Core.Parsing.Ast;
 using Rationals;
 
-namespace DoodleDigits.Core.Functions.Implementations.Binary; 
+namespace DoodleDigits.Core.Functions.Implementations.Binary;
 public static partial class BinaryOperations {
     public static Value Equals(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
         {

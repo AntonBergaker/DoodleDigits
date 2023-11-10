@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace DoodleDigits.Core.Tokenizing; 
+﻿namespace DoodleDigits.Core.Tokenizing;
 public enum TokenType {
     Add,
     Subtract,

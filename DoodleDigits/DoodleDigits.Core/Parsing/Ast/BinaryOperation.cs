@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DoodleDigits.Core.Execution;
+﻿using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Tokenizing;
 using DoodleDigits.Core.Utilities;
 
-namespace DoodleDigits.Core.Parsing.Ast; 
+namespace DoodleDigits.Core.Parsing.Ast;
 public static class BinaryOperationExtensions {
     public static BinaryOperation.OperationSide Flip(this BinaryOperation.OperationSide side) {
         return side == BinaryOperation.OperationSide.Left ? BinaryOperation.OperationSide.Right : BinaryOperation.OperationSide.Left;

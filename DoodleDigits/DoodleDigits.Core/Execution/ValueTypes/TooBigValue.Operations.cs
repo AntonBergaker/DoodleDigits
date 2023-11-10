@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using DoodleDigits.Core.Parsing.Ast;
+﻿using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Functions.Implementations.Binary;
 using Rationals;
 

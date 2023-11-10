@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DoodleDigits.Core.Utilities; 
+namespace DoodleDigits.Core.Utilities;
 public class TwoWayDictionary<T0, T1> : IEnumerable<KeyValuePair<T0, T1>> where T0: notnull where T1 : notnull {
     private readonly Dictionary<T0, T1> _dictionary01;
     private readonly Dictionary<T1, T0> _dictionary10;

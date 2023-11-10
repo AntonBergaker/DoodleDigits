@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 using Rationals;
 
-namespace DoodleDigits.Core.Utilities; 
+namespace DoodleDigits.Core.Utilities;
 public static partial class RationalUtils {
 
     public static Rational Parse(string input, int maxMagnitude = 200, int @base = 10) {

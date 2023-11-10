@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
-namespace DoodleDigits.Core.Functions.Implementations.Named; 
+namespace DoodleDigits.Core.Functions.Implementations.Named;
 public static partial class NamedFunctions {
 
     private static RealValue ConvertArgumentToReal(IConvertibleToReal value, ExecutionContext context, Function node, int index) {

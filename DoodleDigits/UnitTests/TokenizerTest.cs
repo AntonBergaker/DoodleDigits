@@ -1,10 +1,7 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using DoodleDigits.Core;
 using DoodleDigits.Core.Tokenizing;
 
-namespace UnitTests; 
+namespace UnitTests;
 class TokenizerTest {
 
     [Test]

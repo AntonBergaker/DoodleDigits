@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Execution.Results;
+﻿using DoodleDigits.Core.Execution.Results;
 using NUnit.Framework;
 
-namespace UnitTests.Execution; 
+namespace UnitTests.Execution;
 class VariableTest {
     [Test]
     public void TestVariableAssignment() {

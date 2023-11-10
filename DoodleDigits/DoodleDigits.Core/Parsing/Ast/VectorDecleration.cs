@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DoodleDigits.Core.Parsing.Ast; 
+﻿namespace DoodleDigits.Core.Parsing.Ast;
 public class VectorDecleration : Expression {
     public readonly Expression[] Expressions;
 

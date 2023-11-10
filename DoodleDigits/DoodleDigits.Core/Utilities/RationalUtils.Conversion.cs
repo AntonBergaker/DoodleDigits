@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Rationals;
 
-namespace DoodleDigits.Core.Utilities; 
+namespace DoodleDigits.Core.Utilities;
 public static partial class RationalUtils {
     public static double ToDouble(this Rational rational) {
         // Lifted from https://github.com/tompazourek/Rationals/tree/master/src/Rationals made to work with doubles

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DoodleDigits.Core.Parsing; 
+﻿namespace DoodleDigits.Core.Parsing;
 public class ParseError {
     public readonly Range Position;
     public readonly string Message;

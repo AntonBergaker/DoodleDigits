@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DoodleDigits.Core.Utilities;
-
-namespace DoodleDigits.Core.Parsing.Ast; 
+﻿namespace DoodleDigits.Core.Parsing.Ast;
 public class ExpressionList : AstNode {
     public List<Expression> Expressions { get; }
 

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Execution;
-using DoodleDigits.Core.Execution.Results;
+﻿using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.ValueTypes;
-using DoodleDigits.Core.Parsing.Ast;
 
-namespace DoodleDigits.Core.Functions.Implementations.Binary; 
+namespace DoodleDigits.Core.Functions.Implementations.Binary;
 
 public static partial class BinaryOperations {
     private static (BooleanValue lhs, BooleanValue rhs) ConvertToBool(IConvertibleToBool lhs, IConvertibleToBool rhs, ExecutionContext context, BinaryNodes nodes) {

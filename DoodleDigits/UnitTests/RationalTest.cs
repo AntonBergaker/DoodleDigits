@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using DoodleDigits.Core.Utilities;
 using NUnit.Framework;
 using Rationals;
 
-namespace UnitTests; 
+namespace UnitTests;
 class RationalTest {
     private static readonly (string @string, Rational rational)[] DecimalTestData = {
         ("1", 1),

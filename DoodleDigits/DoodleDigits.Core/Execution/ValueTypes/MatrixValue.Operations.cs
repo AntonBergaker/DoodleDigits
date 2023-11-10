@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
-using DoodleDigits.Core.Execution.Results;
+﻿using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Parsing.Ast;
-using Rationals;
 
 namespace DoodleDigits.Core.Execution.ValueTypes;
 

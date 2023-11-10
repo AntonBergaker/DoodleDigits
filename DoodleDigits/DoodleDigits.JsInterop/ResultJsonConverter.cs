@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using DoodleDigits.Core;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;

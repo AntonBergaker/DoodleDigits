@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Execution;
-using DoodleDigits.Core.Execution.ValueTypes;
+﻿using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Utilities;
-using Rationals;
 
-namespace DoodleDigits.Core; 
+namespace DoodleDigits.Core;
 public class Constant {
 
     public readonly string Name;

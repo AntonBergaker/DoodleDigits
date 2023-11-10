@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Rationals;
 
-namespace DoodleDigits.Core.Utilities; 
+namespace DoodleDigits.Core.Utilities;
 partial class RationalUtils {
     public static long GetComplexity(this BigInteger bigInteger) {
         return bigInteger.GetBitLength();

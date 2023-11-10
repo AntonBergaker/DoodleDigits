@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using DoodleDigits.Core.Execution;
+﻿using DoodleDigits.Core.Execution;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Parsing;
 
-namespace DoodleDigits.Core; 
+namespace DoodleDigits.Core;
 
 public class CalculationResult {
     public readonly Result[] Results;

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core.Parsing.Ast;
-
-namespace DoodleDigits.Core.Execution.ValueTypes; 
+﻿namespace DoodleDigits.Core.Execution.ValueTypes;
 public class UndefinedValue : Value {
     public enum UndefinedType {
         Unset,

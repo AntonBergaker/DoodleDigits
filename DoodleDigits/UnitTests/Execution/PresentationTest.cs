@@ -1,8 +1,7 @@
-﻿using System;
-using DoodleDigits.Core.Execution.ValueTypes;
+﻿using DoodleDigits.Core.Execution.ValueTypes;
 using NUnit.Framework;
 
-namespace UnitTests.Execution; 
+namespace UnitTests.Execution;
 class PresentationTest {
     private void AssertEqualPresentation(RealValue.PresentedForm expected, string input) {
         var result = ExecutionTestUtils.CalculateValueString(input);

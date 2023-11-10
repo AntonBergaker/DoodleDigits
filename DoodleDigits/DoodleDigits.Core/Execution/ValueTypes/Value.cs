@@ -1,11 +1,7 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using DoodleDigits.Core.Functions.Implementations.Binary;
+﻿using DoodleDigits.Core.Functions.Implementations.Binary;
 using DoodleDigits.Core.Parsing.Ast;
-using DoodleDigits.Core.Utilities;
-using Rationals;
 
-namespace DoodleDigits.Core.Execution.ValueTypes; 
+namespace DoodleDigits.Core.Execution.ValueTypes;
 public abstract class Value : IEquatable<Value> {
     public abstract override string ToString();
 

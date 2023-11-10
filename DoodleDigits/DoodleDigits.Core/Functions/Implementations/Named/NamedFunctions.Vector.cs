@@ -4,15 +4,9 @@ using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DoodleDigits.Core.Functions.Implementations.Binary;
-using MathNet.Numerics.LinearAlgebra.Complex;
 
-namespace DoodleDigits.Core.Functions.Implementations.Named; 
+namespace DoodleDigits.Core.Functions.Implementations.Named;
 static class VectorFunctions {
     [CalculatorFunction(FunctionExpectedType.Vector, "normalize", "normalise", "normal", "norm")]
     public static Value Normalize(Value value, ExecutionContext context, Function node) {

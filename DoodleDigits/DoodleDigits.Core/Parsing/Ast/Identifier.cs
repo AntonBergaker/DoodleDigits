@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DoodleDigits.Core.Parsing.Ast; 
+﻿namespace DoodleDigits.Core.Parsing.Ast;
 public class Identifier : Expression {
     public string Value { get; }
 

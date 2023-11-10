@@ -1,14 +1,10 @@
 ﻿using DoodleDigits.Core.Utilities;
 using Rationals;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using DoodleDigits.Core.Parsing.Ast;
 
-namespace DoodleDigits.Core.Execution.ValueTypes; 
+namespace DoodleDigits.Core.Execution.ValueTypes;
 public partial class MatrixValue : Value {
     public interface IMatrixElement { }
 

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Globalization;
-using DoodleDigits.Core.Execution.Results;
+﻿using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Parsing.Ast;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution.ValueTypes; 
+namespace DoodleDigits.Core.Execution.ValueTypes;
 public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
     public enum PresentationForm {
         Unset,

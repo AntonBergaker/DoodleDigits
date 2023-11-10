@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DoodleDigits.Core.Execution.Results;
+﻿using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Functions.Implementations.Binary;
@@ -9,7 +6,7 @@ using DoodleDigits.Core.Parsing.Ast;
 using DoodleDigits.Core.Utilities;
 using Rationals;
 
-namespace DoodleDigits.Core.Execution; 
+namespace DoodleDigits.Core.Execution;
 
 public class ExecutionResult {
     public readonly Result[] Results;

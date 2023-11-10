@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleDigits.Core;
-using DoodleDigits.Core.Execution;
+﻿using DoodleDigits.Core;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 using DoodleDigits.Core.Functions;
-using DoodleDigits.Core.Parsing;
 using NUnit.Framework;
 using Rationals;
 
-namespace UnitTests.Execution; 
+namespace UnitTests.Execution;
 static class ExecutionTestUtils {
 
     public static void AssertEqual(Rational expected, string input) {

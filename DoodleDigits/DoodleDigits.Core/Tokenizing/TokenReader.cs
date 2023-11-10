@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace DoodleDigits.Core.Tokenizing; 
+﻿namespace DoodleDigits.Core.Tokenizing;
 class TokenReader {
     private readonly Token[] _tokens;
     private int _index;
