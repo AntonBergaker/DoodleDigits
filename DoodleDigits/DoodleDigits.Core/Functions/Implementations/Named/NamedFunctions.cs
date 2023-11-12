@@ -8,12 +8,12 @@ using Rationals;
 namespace DoodleDigits.Core.Functions.Implementations.Named;
 public static partial class NamedFunctions {
 
-    private static RealValue ConvertArgumentToReal(IConvertibleToReal value, ExecutionContext context, Function node, int index) {
+    private static RealValue ConvertArgumentToReal(IConvertibleToReal value, ExecutorContext context, Function node, int index) {
         return value.ConvertToReal(context, node.Arguments[index]);
     }
     
     [CalculatorFunction(FunctionExpectedType.Real, 1, 2, "log")]
-    public static Value Log(Value[] values, ExecutionContext context, Function node) {
+    public static Value Log(Value[] values, ExecutorContext context, Function node) {
         if (values[0] is not IConvertibleToReal convertibleToReal0) {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
@@ -45,7 +45,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "root")]
-    public static Value Root(Value value, Value root, ExecutionContext context, Function node) {
+    public static Value Root(Value value, Value root, ExecutorContext context, Function node) {
 
         if (value is IConvertibleToReal rValue && root is IConvertibleToReal rRoot) {
             var dValue = ConvertArgumentToReal(rValue, context, node, 0);
@@ -66,7 +66,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "ln")]
-    public static Value Ln(Value value, ExecutionContext context, Function node) {
+    public static Value Ln(Value value, ExecutorContext context, Function node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
@@ -81,7 +81,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 2, int.MaxValue, "gcd", "gcf")]
-    public static Value GreatestCommonDivisor(Value[] values, ExecutionContext context, Function node) {
+    public static Value GreatestCommonDivisor(Value[] values, ExecutorContext context, Function node) {
         List<RealValue> realValues = new();
         for (int i = 0; i < values.Length; i++) {
             if (values[i] is not IConvertibleToReal valueCtr) {
@@ -107,7 +107,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "sqrt", "square_root")]
-    public static Value Sqrt(Value value, ExecutionContext context, Function node) {
+    public static Value Sqrt(Value value, ExecutorContext context, Function node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
@@ -122,7 +122,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real | FunctionExpectedType.Vector, "abs", "absolute")]
-    public static Value Absolute(Value value, ExecutionContext context, Function node) {
+    public static Value Absolute(Value value, ExecutorContext context, Function node) {
         if (value is TooBigValue tbv) {
             return tbv.IsPositive ? tbv : tbv.Negate();
         }
@@ -141,7 +141,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "sign", "sig")]
-    public static Value Sign(Value value, ExecutionContext context, Function node) {
+    public static Value Sign(Value value, ExecutorContext context, Function node) {
         if (value is TooBigValue tbv) {
             return tbv.IsPositive ? new RealValue(Rational.One) : new RealValue(-1);
         }
@@ -156,7 +156,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "floor")]
-    public static Value Floor(Value value, ExecutionContext context, Function node) {
+    public static Value Floor(Value value, ExecutorContext context, Function node) {
         if (value is TooBigValue) {
             return value;
         }
@@ -170,7 +170,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "round")]
-    public static Value Round(Value value, ExecutionContext context, Function node) {
+    public static Value Round(Value value, ExecutorContext context, Function node) {
         if (value is TooBigValue) {
             return value;
         }
@@ -184,7 +184,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "ceil", "ceiling")]
-    public static Value Ceil(Value value, ExecutionContext context, Function node) {
+    public static Value Ceil(Value value, ExecutorContext context, Function node) {
         if (value is TooBigValue) {
             return value;
         }

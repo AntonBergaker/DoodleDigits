@@ -11,7 +11,7 @@ public static class BinaryOperationHelpers {
     /// <summary>
     /// Returns value if it's a realvalue. Tries to convert it if shouldConvert is true. Utility function since this is a common if statement
     /// </summary>
-    public static bool TryConvertToReal(Value value, bool shouldConvert, BinaryOperation.OperationSide side, ExecutionContext context, BinaryNodes nodes, [NotNullWhen(true)] out RealValue? realValue) {
+    public static bool TryConvertToReal(Value value, bool shouldConvert, BinaryOperation.OperationSide side, ExecutorContext context, BinaryNodes nodes, [NotNullWhen(true)] out RealValue? realValue) {
         if (value is RealValue rv) {
             realValue = rv;
             return true;
@@ -26,7 +26,7 @@ public static class BinaryOperationHelpers {
         return false;
     }
     
-    public static RealValue ConvertToReal(this IConvertibleToReal convertible, ExecutionContext context, BinaryNodes nodes, BinaryOperation.OperationSide side) {
+    public static RealValue ConvertToReal(this IConvertibleToReal convertible, ExecutorContext context, BinaryNodes nodes, BinaryOperation.OperationSide side) {
         if (side == BinaryOperation.OperationSide.Left) {
             return convertible.ConvertToReal(context, nodes.Lhs);
         }

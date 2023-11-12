@@ -7,7 +7,7 @@ using Rationals;
 namespace DoodleDigits.Core.Functions.Implementations.Binary;
 public static partial class BinaryOperations {
 
-    public static Value Xor(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value Xor(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         if (lhs is BooleanValue lhsBool && rhs is BooleanValue rhsBool) {
             return new BooleanValue(lhsBool.Value ^ rhsBool.Value);
         }
@@ -27,7 +27,7 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value BitwiseOr(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value BitwiseOr(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
             var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context, nodes);
             lhsReal = lhsReal.Round(context, nodes.Rhs);
@@ -43,7 +43,7 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value BitwiseAnd(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value BitwiseAnd(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
             var (lhsReal, rhsReal) = ConvertToReal(lhsCtr, rhsCtr, context, nodes);
             lhsReal = lhsReal.Round(context, nodes.Rhs);
@@ -59,7 +59,7 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value ShiftLeft(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value ShiftLeft(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         if (lhs is TooBigValue) {
             return lhs;
         }
@@ -109,7 +109,7 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value ShiftRight(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value ShiftRight(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         if (rhs is TooBigValue tbvRhs) {
             return ShiftLeft(lhs, tbvRhs.Negate(), context, nodes);
         }

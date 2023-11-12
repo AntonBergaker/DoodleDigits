@@ -4,7 +4,7 @@ using DoodleDigits.Core.Execution.ValueTypes;
 namespace DoodleDigits.Core.Functions.Implementations.Binary;
 
 public static partial class BinaryOperations {
-    private static (BooleanValue lhs, BooleanValue rhs) ConvertToBool(IConvertibleToBool lhs, IConvertibleToBool rhs, ExecutionContext context, BinaryNodes nodes) {
+    private static (BooleanValue lhs, BooleanValue rhs) ConvertToBool(IConvertibleToBool lhs, IConvertibleToBool rhs, ExecutorContext context, BinaryNodes nodes) {
 
         return (
             lhs.ConvertToBool(context, nodes.Lhs),
@@ -12,7 +12,7 @@ public static partial class BinaryOperations {
         );
     }
 
-    private static Value BooleanOperation(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, Func<bool, bool, bool> func) {
+    private static Value BooleanOperation(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes, Func<bool, bool, bool> func) {
         if (lhs is IConvertibleToBool ctbLhs && rhs is IConvertibleToBool ctbRhs) {
             var (boolLhs, boolRhs) = ConvertToBool(ctbLhs, ctbRhs, context, nodes);
             return new BooleanValue(func(boolLhs.Value, boolRhs.Value));
@@ -25,15 +25,15 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value BooleanAnd(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value BooleanAnd(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return BooleanOperation(lhs, rhs, context, nodes, (lhs, rhs) =>  lhs && rhs);
     }
 
-    public static Value BooleanXor(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value BooleanXor(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return BooleanOperation(lhs, rhs, context, nodes, (lhs, rhs) => lhs ^ rhs);
     }
 
-    public static Value BooleanOr(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value BooleanOr(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return BooleanOperation(lhs, rhs, context, nodes, (lhs, rhs) => lhs || rhs);
     }
 }

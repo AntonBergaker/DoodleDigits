@@ -22,7 +22,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "max")]
-    public static Value Max(Value[] values, ExecutionContext context, Function node) {
+    public static Value Max(Value[] values, ExecutorContext context, Function node) {
         int? forceIndex = null;
         if (TryMatrixToSet(values, out var resultValues)) {
             forceIndex = 0;
@@ -47,7 +47,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "min")]
-    public static Value Min(Value[] values, ExecutionContext context, Function node) {
+    public static Value Min(Value[] values, ExecutorContext context, Function node) {
         int? forceIndex = null;
         if (TryMatrixToSet(values, out var resultValues)) {
             forceIndex = 0;
@@ -72,7 +72,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "sum")]
-    public static Value Sum(Value[] values, ExecutionContext context, Function node) {
+    public static Value Sum(Value[] values, ExecutorContext context, Function node) {
         int? forceIndex = null;
         if (TryMatrixToSet(values, out var resultValues)) {
             forceIndex = 0;
@@ -91,7 +91,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "average")]
-    public static Value Average(Value[] values, ExecutionContext context, Function node) {
+    public static Value Average(Value[] values, ExecutorContext context, Function node) {
         var sum = Sum(values, context, node);
 
         if (sum is RealValue rv) {
@@ -102,7 +102,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "median")]
-    public static Value Median(Value[] values, ExecutionContext context, Function node) {
+    public static Value Median(Value[] values, ExecutorContext context, Function node) {
         int? forceIndex = null;
         if (TryMatrixToSet(values, out var resultValues)) {
             forceIndex = 0;

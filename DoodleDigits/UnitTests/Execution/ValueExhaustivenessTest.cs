@@ -34,11 +34,11 @@ class ValueExhaustivenessTest {
         )),
     };
 
-    private ExecutionContext MakeContext() => new ExecutionContext(new Constant[0]);
+    private ExecutorContext MakeContext() => new ExecutorContext(new(), new());
 
     [Test]
     public void TestUnary() {
-        ExecutionContext context = MakeContext();
+        ExecutorContext context = MakeContext();
         foreach (Value value in AllValues) {
             foreach (var op in UnaryOperation.AllFunctions) {
                 op(value, context, new UnaryOperation(UnaryOperation.OperationType.Add, new ErrorNode()));
@@ -49,7 +49,7 @@ class ValueExhaustivenessTest {
 
     [Test]
     public void TestBinary() {
-        ExecutionContext context = MakeContext();
+        ExecutorContext context = MakeContext();
         foreach (var op in BinaryOperation.AllFunctions) {
             foreach (Value lhs in AllValues) {
                 foreach (Value rhs in AllValues) {
@@ -62,7 +62,7 @@ class ValueExhaustivenessTest {
 
     [Test]
     public void TestNamedFunctions() {
-        ExecutionContext context = MakeContext();
+        ExecutorContext context = MakeContext();
         int valueCount = AllValues.Length;
         Value[] allValues = AllValues;
 

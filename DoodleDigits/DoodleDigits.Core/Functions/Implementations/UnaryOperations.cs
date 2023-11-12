@@ -6,7 +6,7 @@ using Rationals;
 namespace DoodleDigits.Core.Functions.Implementations;
 public static class UnaryOperations {
 
-    public static Value UnaryPlus(Value value, ExecutionContext context, UnaryOperation node) {
+    public static Value UnaryPlus(Value value, ExecutorContext context, UnaryOperation node) {
         if (value is TooBigValue) {
             return value;
         }
@@ -22,7 +22,7 @@ public static class UnaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
     }
 
-    public static Value UnaryNegate(Value value, ExecutionContext context, UnaryOperation node) {
+    public static Value UnaryNegate(Value value, ExecutorContext context, UnaryOperation node) {
         if (value is TooBigValue tooBigValue) {
             return tooBigValue.Negate();
         }
@@ -38,7 +38,7 @@ public static class UnaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value UnaryNot(Value value, ExecutionContext context, UnaryOperation node) {
+    public static Value UnaryNot(Value value, ExecutorContext context, UnaryOperation node) {
         if (value is IConvertibleToBool convertibleToBool) {
             value = convertibleToBool.ConvertToBool(context, node.Value);
         }
@@ -50,7 +50,7 @@ public static class UnaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    private static Value IntegerFactorial(RealValue value, ExecutionContext context, UnaryOperation node) {
+    private static Value IntegerFactorial(RealValue value, ExecutorContext context, UnaryOperation node) {
         Rational val = 1;
         if (value.Value > 10000) {
             return new TooBigValue(TooBigValue.Sign.Positive);
@@ -62,7 +62,7 @@ public static class UnaryOperations {
         return new RealValue(val, false, value.Form);
     }
 
-    public static Value UnaryFactorial(Value value, ExecutionContext context, UnaryOperation node) {
+    public static Value UnaryFactorial(Value value, ExecutorContext context, UnaryOperation node) {
         if (value is IConvertibleToReal convertibleToReal) {
             value = convertibleToReal.ConvertToReal(context, node.Value);
         }

@@ -18,7 +18,7 @@ public class Comparison : Expression {
         LessThan,
     }
 
-    public delegate Value BinaryEqualsFunction(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes);
+    public delegate Value BinaryEqualsFunction(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes);
 
     static Comparison() {
         var ops =

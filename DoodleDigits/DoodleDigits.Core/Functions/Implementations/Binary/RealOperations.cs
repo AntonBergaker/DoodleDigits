@@ -6,7 +6,7 @@ namespace DoodleDigits.Core.Functions.Implementations.Binary;
 
 public static partial class BinaryOperations {
     private static (RealValue lhs, RealValue rhs) ConvertToReal(IConvertibleToReal lhs, IConvertibleToReal rhs,
-        ExecutionContext context, BinaryNodes nodes) {
+        ExecutorContext context, BinaryNodes nodes) {
         return (
             lhs.ConvertToReal(context, nodes.Lhs),
             rhs.ConvertToReal(context, nodes.Rhs)
@@ -14,10 +14,10 @@ public static partial class BinaryOperations {
     }
 
     delegate Value? ImplementationFunction(Value other, BinaryOperation.OperationSide side,
-        bool castAttempt, ExecutionContext context, BinaryNodes nodes);
+        bool castAttempt, ExecutorContext context, BinaryNodes nodes);
 
 
-    private static Value ExecuteBinaryImplementation(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<Value, Value, Value?>? fallback = null) {
+    private static Value ExecuteBinaryImplementation(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes, ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<Value, Value, Value?>? fallback = null) {
         Value? result;
         
         result = lhsMethod(rhs, BinaryOperation.OperationSide.Left, false, context, nodes);
@@ -58,7 +58,7 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    private static Value ExecuteBinaryRealImplementation(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, 
+    private static Value ExecuteBinaryRealImplementation(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes, 
         ImplementationFunction lhsMethod, ImplementationFunction rhsMethod, Func<RealValue, ImplementationFunction> getRealFunc) =>
         ExecuteBinaryImplementation(lhs, rhs, context, nodes, lhsMethod, rhsMethod, (lhs, rhs) => {
             if (lhs is IConvertibleToReal lhsCtr && rhs is IConvertibleToReal rhsCtr) {
@@ -72,27 +72,27 @@ public static partial class BinaryOperations {
         });
 
 
-    public static Value Add(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+    public static Value Add(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) =>
         ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryAdd, rhs.TryAdd, x => x.TryAdd);
 
-    public static Value Subtract(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+    public static Value Subtract(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) =>
         ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TrySubtract, rhs.TrySubtract, x => x.TrySubtract);
 
-    public static Value Divide(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+    public static Value Divide(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) =>
         ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryDivide, rhs.TryDivide, x => x.TryDivide);
 
-    public static Value Multiply(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+    public static Value Multiply(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) =>
         ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryMultiply, rhs.TryMultiply, x => x.TryMultiply);
 
-    public static Value Modulus(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+    public static Value Modulus(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) =>
         ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryModulus, rhs.TryModulus, x => x.TryModulus);
 
 
-    public static Value Power(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) =>
+    public static Value Power(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) =>
         ExecuteBinaryRealImplementation(lhs, rhs, context, nodes, lhs.TryPower, rhs.TryPower, x => x.TryPower);
 
 
-    public static Value Cross(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value Cross(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         if (lhs is MatrixValue lhsMatrix && rhs is MatrixValue rhsMatrix) {
             return MatrixValue.Cross(lhsMatrix, rhsMatrix, context, nodes);
         }

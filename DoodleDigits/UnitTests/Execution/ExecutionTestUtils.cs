@@ -8,16 +8,16 @@ using Rationals;
 namespace UnitTests.Execution;
 static class ExecutionTestUtils {
 
-    public static void AssertEqual(Rational expected, string input) {
-        AssertEqual(new RealValue(expected), input);
+    public static void AssertEqual(Rational expected, string input, CalculatorSettings? settings = null) {
+        AssertEqual(new RealValue(expected), input, settings);
     }
 
-    public static void AssertEqual(bool expected, string input) {
-        AssertEqual(new BooleanValue(expected), input);
+    public static void AssertEqual(bool expected, string input, CalculatorSettings? settings = null) {
+        AssertEqual(new BooleanValue(expected), input, settings);
     }
 
-    public static void AssertEqual(Value expected, string input) {
-        var results = CalculateString(input);
+    public static void AssertEqual(Value expected, string input, CalculatorSettings? settings = null) {
+        var results = CalculateString(input, settings);
 
         foreach (Result result in results.Results) {
             if (result is ResultError error) {
@@ -36,16 +36,18 @@ static class ExecutionTestUtils {
         Assert.AreEqual(expectedValue, actualValue);
     }
 
-    public static CalculationResult CalculateString(string input) {
+    public static CalculationResult CalculateString(string input, CalculatorSettings? settings = null) {
         Calculator calculator = new(FunctionLibrary.Functions, ConstantLibrary.Constants);
-
+        if (settings != null) {
+            calculator.Settings = settings;
+        }
         return calculator.Calculate(input);
     }
 
-    public static Value CalculateValueString(string input) {
-        var result = CalculateString(input);
+    public static Value CalculateValueString(string input, CalculatorSettings? settings = null) {
+        var result = CalculateString(input, settings);
 
-        ResultValue last = result.Results.OfType<ResultValue>().LastOrDefault();
+        var last = result.Results.OfType<ResultValue>().LastOrDefault();
         if (last is not ResultValue rv) {
             Assert.Fail($"Input {input} did not return a result");
             throw new Exception();

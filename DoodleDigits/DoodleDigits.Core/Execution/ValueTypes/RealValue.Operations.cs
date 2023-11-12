@@ -6,7 +6,7 @@ using Rationals;
 namespace DoodleDigits.Core.Execution.ValueTypes;
 
 public partial class RealValue {
-    public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
             return new RealValue((this.Value + otherRealValue.Value).CanonicalForm, false, Form);
         }
@@ -14,7 +14,7 @@ public partial class RealValue {
         return null;
     }
 
-    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
             Rational value = side == BinaryOperation.OperationSide.Left ?
                 this.Value - otherRealValue.Value : 
@@ -26,7 +26,7 @@ public partial class RealValue {
         return null;
     }
 
-    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
             return new RealValue((this.Value * otherRealValue.Value).CanonicalForm, false, Form);
         }
@@ -34,7 +34,7 @@ public partial class RealValue {
         return null;
     }
 
-    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherRealValue, side);
 
@@ -48,7 +48,7 @@ public partial class RealValue {
         return null;
     }
 
-    public override Value? TryModulus(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryModulus(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherRealValue, side);
 
@@ -62,7 +62,7 @@ public partial class RealValue {
         return null;
     }
 
-    public override Value? TryPower(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryPower(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherRealValue, side);
 
