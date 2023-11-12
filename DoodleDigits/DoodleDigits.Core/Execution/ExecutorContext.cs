@@ -3,7 +3,7 @@ using DoodleDigits.Core.Execution.ValueTypes;
 
 namespace DoodleDigits.Core.Execution;
 
-public class ExecutionContext {
+public class ExecutorContext {
     private readonly Dictionary<string, Value> _constants;
     private readonly Dictionary<string, Value> _variables;
     private readonly List<Result> _results;
@@ -11,9 +11,11 @@ public class ExecutionContext {
     public IReadOnlyDictionary<string, Value> Constants => _constants;
     public Dictionary<string, Value> Variables => _variables;
     public IReadOnlyList<Result> Results => _results;
+    public CalculatorSettings Settings { get; internal set; }
 
-    public ExecutionContext(IEnumerable<Constant> constants) {
-        this._constants = constants.ToDictionary(x => x.Name, x => x.Value);
+    public ExecutorContext(CalculatorSettings settings, Dictionary<string, Value> constants) {
+        Settings = settings;
+        this._constants = constants;
         this._variables = new();
         this._results = new();
     }

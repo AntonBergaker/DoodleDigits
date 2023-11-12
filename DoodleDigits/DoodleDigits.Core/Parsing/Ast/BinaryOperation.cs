@@ -12,7 +12,7 @@ public static class BinaryOperationExtensions {
 }
 
 public class BinaryOperation : Expression {
-    public delegate Value OperationFunction(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes);
+    public delegate Value OperationFunction(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes);
     
     public enum OperationSide {
         Left,

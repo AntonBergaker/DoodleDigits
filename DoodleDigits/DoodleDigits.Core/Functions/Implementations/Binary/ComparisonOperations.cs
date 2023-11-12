@@ -4,7 +4,7 @@ using Rationals;
 
 namespace DoodleDigits.Core.Functions.Implementations.Binary;
 public static partial class BinaryOperations {
-    public static Value Equals(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value Equals(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         {
             // Boolean
             if (lhs is BooleanValue bLhs && rhs is BooleanValue bRhs) {
@@ -58,7 +58,7 @@ public static partial class BinaryOperations {
     }
 
 
-    public static Value NotEquals(Value value0, Value value1, ExecutionContext context, BinaryNodes nodes) {
+    public static Value NotEquals(Value value0, Value value1, ExecutorContext context, BinaryNodes nodes) {
         Value equalsValue = Equals(value0, value1, context, nodes);
         if (equalsValue is BooleanValue @bool) {
             return new BooleanValue(!@bool.Value);
@@ -67,7 +67,7 @@ public static partial class BinaryOperations {
         return equalsValue;
     }
 
-    private static Value CompareBinaryReals(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes, Func<Rational, Rational, bool> comparisonFunction) {
+    private static Value CompareBinaryReals(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes, Func<Rational, Rational, bool> comparisonFunction) {
         if (lhs is TooBigValue tbLhs && rhs is TooBigValue tbRhs) {
             return new BooleanValue(comparisonFunction(tbLhs.GetSimplifiedSize(), tbRhs.GetSimplifiedSize()));
         }
@@ -89,19 +89,19 @@ public static partial class BinaryOperations {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    public static Value LessThan(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value LessThan(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs < rhs);
     }
 
-    public static Value LessOrEqualTo(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value LessOrEqualTo(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs <= rhs);
     }
 
-    public static Value GreaterThan(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value GreaterThan(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs > rhs);
     }
 
-    public static Value GreaterOrEqualTo(Value lhs, Value rhs, ExecutionContext context, BinaryNodes nodes) {
+    public static Value GreaterOrEqualTo(Value lhs, Value rhs, ExecutorContext context, BinaryNodes nodes) {
         return CompareBinaryReals(lhs, rhs, context, nodes, (lhs, rhs) => lhs >= rhs);
     }
 }

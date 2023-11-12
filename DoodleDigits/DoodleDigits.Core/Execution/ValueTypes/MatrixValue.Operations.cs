@@ -22,7 +22,7 @@ public partial class MatrixValue {
         return new MatrixDimension(outerValues);
     }
 
-    private static MatrixDimension PerformOnAllElements(MatrixDimension matrix, Value other, BinaryOperation.OperationSide side, ExecutionContext context, BinaryNodes nodes, BinaryOperation.OperationFunction operation) {
+    private static MatrixDimension PerformOnAllElements(MatrixDimension matrix, Value other, BinaryOperation.OperationSide side, ExecutorContext context, BinaryNodes nodes, BinaryOperation.OperationFunction operation) {
 
         List<IMatrixElement> elements = new();
         foreach (IMatrixElement element in matrix) {
@@ -38,7 +38,7 @@ public partial class MatrixValue {
         return new MatrixDimension(elements);
     }
 
-    private Value? BinaryOperationPerElement(Value other, BinaryOperation.OperationSide side, ExecutionContext context,
+    private Value? BinaryOperationPerElement(Value other, BinaryOperation.OperationSide side, ExecutorContext context,
         BinaryNodes nodes, BinaryOperation.OperationFunction function) {
 
 
@@ -75,13 +75,13 @@ public partial class MatrixValue {
         return null;
     }
 
-    public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) =>
+    public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) =>
         BinaryOperationPerElement(other, side, context, nodes, BinaryOperations.Add);
 
-    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) =>
+    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) =>
         BinaryOperationPerElement(other, side, context, nodes, BinaryOperations.Subtract);
 
-    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (other is MatrixValue otherMatrixValue) {
             var (lhs, rhs) = BinaryOperationHelpers.GetLhsRhs(this, otherMatrixValue, side);
             return MultiplyMatrices(lhs, rhs, context, nodes);
@@ -95,7 +95,7 @@ public partial class MatrixValue {
         return null;
     }
 
-    private static Value MultiplyMatrices(MatrixValue lhs, MatrixValue rhs, ExecutionContext context, BinaryNodes nodes) {
+    private static Value MultiplyMatrices(MatrixValue lhs, MatrixValue rhs, ExecutorContext context, BinaryNodes nodes) {
 
 
         if (lhs.DimensionCount <= 2 && rhs.DimensionCount <= 2) {
@@ -156,7 +156,7 @@ public partial class MatrixValue {
         return null!;
     }
 
-    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (side == BinaryOperation.OperationSide.Left) {
             if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherReal)) {
                 return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Divide), false);
@@ -166,7 +166,7 @@ public partial class MatrixValue {
         return null;
     }
 
-    public static Value Cross(MatrixValue lhsMatrix, MatrixValue rhsMatrix, ExecutionContext context, BinaryNodes nodes) {
+    public static Value Cross(MatrixValue lhsMatrix, MatrixValue rhsMatrix, ExecutorContext context, BinaryNodes nodes) {
         if (lhsMatrix.DimensionCount != 1) {
             context.AddResult(new ResultError("Matrix must be a vector", nodes.Lhs.Position));
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);

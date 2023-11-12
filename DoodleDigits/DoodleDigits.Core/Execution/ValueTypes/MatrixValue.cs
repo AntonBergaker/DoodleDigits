@@ -174,7 +174,7 @@ public partial class MatrixValue : Value {
 
     public bool IsVector => DimensionCount == 1;
 
-    public Rational Magnitude(ExecutionContext context, Expression node) {
+    public Rational Magnitude(ExecutorContext context, Expression node) {
         if (IsVector == false) {
             throw new InvalidOperationException("Matrix is not a vector");
         }

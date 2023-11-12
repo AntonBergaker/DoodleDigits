@@ -90,13 +90,13 @@ public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
         return new RealValue(value.Value, triviallyAchieved.Value, form.Value);
     }
 
-    public BooleanValue ConvertToBool(ExecutionContext context, Expression node) {
+    public BooleanValue ConvertToBool(ExecutorContext context, Expression node) {
         BooleanValue newValue = new BooleanValue(Value > new Rational(1, 2));
         context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, node.Position));
         return newValue;
     }
 
-    public RealValue Round(ExecutionContext context, Expression node) {
+    public RealValue Round(ExecutorContext context, Expression node) {
         if (HasDecimal == false) {
             return this;
         }
@@ -108,7 +108,7 @@ public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
 
     public bool HasDecimal => Value.FractionPart != 0;
 
-    public RealValue ConvertToReal(ExecutionContext context, Expression node) {
+    public RealValue ConvertToReal(ExecutorContext context, Expression node) {
         return this;
     }
 }

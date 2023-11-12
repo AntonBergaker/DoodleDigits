@@ -25,13 +25,13 @@ public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
         return Value ? "true" : "false";
     }
 
-    public RealValue ConvertToReal(ExecutionContext context, Expression node) {
+    public RealValue ConvertToReal(ExecutorContext context, Expression node) {
         RealValue newValue = new RealValue(Value ? Rational.One : Rational.Zero);
         context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, node.Position));
         return newValue;
     }
 
-    public BooleanValue ConvertToBool(ExecutionContext context, Expression node) {
+    public BooleanValue ConvertToBool(ExecutorContext context, Expression node) {
         return this;
     }
 

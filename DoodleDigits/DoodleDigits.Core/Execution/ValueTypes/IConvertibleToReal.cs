@@ -2,5 +2,5 @@
 
 namespace DoodleDigits.Core.Execution.ValueTypes;
 public interface IConvertibleToReal {
-    public RealValue ConvertToReal(ExecutionContext context, Expression expression);
+    public RealValue ConvertToReal(ExecutorContext context, Expression expression);
 }

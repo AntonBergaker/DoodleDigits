@@ -16,34 +16,34 @@ public class ExecutionResult {
 }
 
 public class Executor {
-    private readonly ExecutionContext _context;
     private readonly List<Result> _results;
     private readonly Dictionary<string, FunctionData> _functions;
+    private readonly Dictionary<string, Value> _constants;
 
     public Executor(IEnumerable<FunctionData> functions, IEnumerable<Constant> constants) {
         _results = new List<Result>();
-        this._functions = new Dictionary<string, FunctionData>();
+        _functions = new Dictionary<string, FunctionData>();
         foreach (FunctionData functionData in functions) {
             foreach (string name in functionData.Names) {
-                this._functions.Add(name, functionData);
+                _functions.Add(name, functionData);
             }
         }
-        _context = new ExecutionContext(constants);
+        _constants = constants.ToDictionary(x => x.Name, x => x.Value);
     }
 
-    public ExecutionResult Execute(AstNode root) {
+    public ExecutionResult Execute(AstNode root, CalculatorSettings settings) {
         _results.Clear();
-        _context.Clear();
+        var context = new ExecutorContext(settings, _constants);
 
         if (root is ExpressionList list) {
             foreach (Expression expression in list.Expressions) {
-                _results.Add(new ResultValue(Calculate(expression), expression.Position));
+                _results.Add(new ResultValue(Calculate(expression, context), expression.Position));
             }
         } else if (root is Expression ex) {
-            _results.Add(new ResultValue(Calculate(ex), ex.Position));
+            _results.Add(new ResultValue(Calculate(ex, context), ex.Position));
         }
 
-        _results.AddRange(_context.Results);
+        _results.AddRange(context.Results);
 
         _results.Sort((a, b) => a.Position.Start.Value - b.Position.Start.Value);
 
@@ -51,69 +51,56 @@ public class Executor {
     }
 
 
-    private Value Calculate(Expression expression) {
+    private Value Calculate(Expression expression, ExecutorContext context) {
 
-        switch (expression) {
-            case BinaryOperation bo:
-                return Calculate(bo);
-            case UnaryOperation uo:
-                return Calculate(uo);
-            case NumberLiteral nl:
-                return Calculate(nl);
-            case Identifier id:
-                return Calculate(id);
-            case Function f:
-                return Calculate(f);
-            case Comparison ec:
-                return Calculate(ec);
-            case BaseCast bc:
-                return Calculate(bc);
-            case VectorDecleration vd:
-                return Calculate(vd);
-            case ErrorNode error:
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
-            default: throw new Exception("Expression not handled for " + expression.GetType());
-        }
-
+        return expression switch {
+            BinaryOperation bo => CalculateBinary(bo, context),
+            UnaryOperation uo => CalculateUnary(uo, context),
+            NumberLiteral nl => CalculateNumber(nl, context),
+            Identifier id => CalculateIdentifier(id, context),
+            Function f => CalculateFunction(f, context),
+            Comparison ec => CalculateComparison(ec, context),
+            BaseCast bc => CalculateBaseCast(bc, context),
+            VectorDecleration vd => CalculateVector(vd, context),
+            ErrorNode error => new UndefinedValue(UndefinedValue.UndefinedType.Error),
+            _ => throw new Exception("Expression not handled for " + expression.GetType()),
+        };
     }
 
-    private Value Calculate(Function function) {
-        if (_functions.TryGetValue(function.Identifier, out var functionData)) {
+    private Value CalculateFunction(Function function, ExecutorContext context) {
+        if (_functions.TryGetValue(function.Identifier, out var functionData) == false) {
+            _results.Add(new ResultError($"Unknown function: {function.Identifier}", function.Position));
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+        }
 
-            int minParameters = functionData.ParameterCount.Start.Value;
-            int maxParameters = functionData.ParameterCount.End.GetOffset(int.MaxValue);
+        int minParameters = functionData.ParameterCount.Start.Value;
+        int maxParameters = functionData.ParameterCount.End.GetOffset(int.MaxValue);
 
 
-;                if (function.Arguments.Length < minParameters ||
-                function.Arguments.Length > maxParameters) {
-
-                string errorMessage;
-                if (minParameters == maxParameters) {
-                    errorMessage = $"Function needs {minParameters} parameters";
-                } else if (maxParameters == int.MaxValue) {
-                    errorMessage = $"Function needs at least {minParameters} parameters";
-                }
-                else {
-                    errorMessage = $"Function expects between {minParameters} and {maxParameters} parameters";
-                }
-
-                _results.Add(new ResultError(errorMessage, function.Position));
-                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+        if (function.Arguments.Length < minParameters ||
+            function.Arguments.Length > maxParameters) {
+            string errorMessage;
+            if (minParameters == maxParameters) {
+                errorMessage = $"Function needs {minParameters} parameters";
+            } else if (maxParameters == int.MaxValue) {
+                errorMessage = $"Function needs at least {minParameters} parameters";
+            } else {
+                errorMessage = $"Function needs between {minParameters} and {maxParameters} parameters";
             }
 
-            return functionData.Function(function.Arguments.Select(x => Calculate(x)).ToArray(), _context, function);
+            _results.Add(new ResultError(errorMessage, function.Position));
+            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
 
-        _results.Add(new ResultError($"Unknown function: {function.Identifier}", function.Position));
-        return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+        return functionData.Function(function.Arguments.Select(x => Calculate(x, context)).ToArray(), context, function);
     }
 
-    private Value Calculate(Identifier identifier) {
-        if (_context.Constants.TryGetValue(identifier.Value, out Value? constantValue)) {
+    private Value CalculateIdentifier(Identifier identifier, ExecutorContext context) {
+        if (context.Constants.TryGetValue(identifier.Value, out Value? constantValue)) {
             return constantValue;
         }
 
-        if (_context.Variables.TryGetValue(identifier.Value, out Value? variableValue)) {
+        if (context.Variables.TryGetValue(identifier.Value, out Value? variableValue)) {
             return variableValue;
         }
 
@@ -121,7 +108,7 @@ public class Executor {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    private Value Calculate(NumberLiteral numberLiteral) {
+    private Value CalculateNumber(NumberLiteral numberLiteral, ExecutorContext context) {
         string number = numberLiteral.Number;
         int @base = 10;
         RealValue.PresentedForm form = RealValue.PresentedForm.Decimal;
@@ -145,25 +132,25 @@ public class Executor {
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
     }
 
-    private Value Calculate(UnaryOperation unaryOperation) {
+    private Value CalculateUnary(UnaryOperation unaryOperation, ExecutorContext context) {
         
-        Value value = Calculate(unaryOperation.Value);
+        Value value = Calculate(unaryOperation.Value, context);
 
         UnaryOperation.OperationFunction func = UnaryOperation.GetFunctionFromType(unaryOperation.Operation);
         
-        return func(value, _context, unaryOperation);
+        return func(value, context, unaryOperation);
     }
 
-    private Value Calculate(Comparison comparison) {
+    private Value CalculateComparison(Comparison comparison, ExecutorContext context) {
 
         Value? CalculateExpression(Expression expression) {
             if (expression is Identifier identifier) {
-                if (_context.Variables.ContainsKey(identifier.Value) == false &&
-                    _context.Constants.ContainsKey(identifier.Value) == false) {
+                if (context.Variables.ContainsKey(identifier.Value) == false &&
+                    context.Constants.ContainsKey(identifier.Value) == false) {
                     return null;
                 }
             }
-            var a = Calculate(expression);
+            var a = Calculate(expression, context);
             return a;
         }
 
@@ -185,7 +172,7 @@ public class Executor {
                 }
                 Identifier value = (Identifier)comparison.Expressions[i];
 
-                _context.Variables[value.Value] = calculatedResult.Clone(false);
+                context.Variables[value.Value] = calculatedResult.Clone(false);
             }
 
             return calculatedResult;
@@ -193,11 +180,11 @@ public class Executor {
         else {
             for (int i = 0; i < comparison.Signs.Length; i++) {
                 var type = comparison.Signs[i];
-                Value lhs = calculatedResults[i] ?? Calculate(comparison.Expressions[i]);
-                Value rhs = calculatedResults[i + 1] ?? Calculate(comparison.Expressions[i + 1]);
+                Value lhs = calculatedResults[i] ?? Calculate(comparison.Expressions[i], context);
+                Value rhs = calculatedResults[i + 1] ?? Calculate(comparison.Expressions[i + 1], context);
 
                 Comparison.BinaryEqualsFunction func = Comparison.GetOperationFromType(type);
-                Value result = func(lhs, rhs, _context, 
+                Value result = func(lhs, rhs, context, 
                     new BinaryNodes(comparison, comparison.Expressions[i], comparison.Expressions[i+1]));
                 
                 if (result is not BooleanValue booleanValue) {
@@ -213,17 +200,17 @@ public class Executor {
         }
     }
 
-    private Value Calculate(BinaryOperation bo) {
-        Value lhs = Calculate(bo.Lhs);
-        Value rhs = Calculate(bo.Rhs);
+    private Value CalculateBinary(BinaryOperation bo, ExecutorContext context) {
+        Value lhs = Calculate(bo.Lhs, context);
+        Value rhs = Calculate(bo.Rhs, context);
 
         BinaryOperation.OperationFunction func = BinaryOperation.GetOperationFromType(bo.Operation);
 
-        return func(lhs, rhs, _context, new BinaryNodes(bo));
+        return func(lhs, rhs, context, new BinaryNodes(bo));
     }
 
-    private Value Calculate(BaseCast baseCast) {
-        Value expression = Calculate(baseCast.Expression);
+    private Value CalculateBaseCast(BaseCast baseCast, ExecutorContext context) {
+        Value expression = Calculate(baseCast.Expression, context);
 
         if (expression is TooBigValue) {
             return expression;
@@ -244,7 +231,7 @@ public class Executor {
         return expression;
     }
 
-    private Value Calculate(VectorDecleration vectorDeclaration) {
+    private Value CalculateVector(VectorDecleration vectorDeclaration, ExecutorContext context) {
         MatrixValue.MatrixDimension? InternalCalculate(VectorDecleration vectorDeclaration) {
             List<MatrixValue.IMatrixElement> elements = new();
 
@@ -256,7 +243,7 @@ public class Executor {
                     }
                     elements.Add(dimension);
                 } else {
-                    Value result = Calculate(expression);
+                    Value result = Calculate(expression, context);
                     if (result is MatrixValue mv) {
                         elements.Add(mv.Dimension);
                     }

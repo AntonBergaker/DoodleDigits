@@ -6,7 +6,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes;
 
 public partial class TooBigValue {
     public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert,
-        ExecutionContext context, BinaryNodes nodes) {
+        ExecutorContext context, BinaryNodes nodes) {
         if (other is TooBigValue otherTbv) {
             if (this.ValueSign is Sign.Positive or Sign.Negative &&
                 otherTbv.ValueSign is Sign.NegativeInfinity or Sign.PositiveInfinity) {
@@ -24,7 +24,7 @@ public partial class TooBigValue {
         return null;
     }
 
-    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TrySubtract(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (other is TooBigValue) {
             int mySimpleSize = this.GetSimplifiedSize();
             int otherSimpleSize = this.GetSimplifiedSize();
@@ -64,7 +64,7 @@ public partial class TooBigValue {
         return null;
     }
 
-    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (side == BinaryOperation.OperationSide.Left) {
             if (other is TooBigValue otherTooBigValue) {
                 int lhsSimpleSize = this.GetSimplifiedSize();
@@ -101,7 +101,7 @@ public partial class TooBigValue {
         return null;
     }
 
-    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (other is TooBigValue otherTbv) {
             int mySize = this.GetSimplifiedSize();
             int otherSize = otherTbv.GetSimplifiedSize();
@@ -132,7 +132,7 @@ public partial class TooBigValue {
         return null;
     }
 
-    public override Value? TryModulus(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryModulus(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (side == BinaryOperation.OperationSide.Left) {
             if (other is TooBigValue otherTbv) {
                 int mySize = this.GetSimplifiedSize();
@@ -157,7 +157,7 @@ public partial class TooBigValue {
         return null;
     }
 
-    public override Value? TryPower(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutionContext context, BinaryNodes nodes) {
+    public override Value? TryPower(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (side == BinaryOperation.OperationSide.Left) {
             if (other is TooBigValue) {
                 if (GetSimplifiedSize() < 0) {

@@ -35,13 +35,13 @@ public static partial class RationalUtils {
             int denominatorMagnitude = 1;
             bool passedDecimal = false;
 
-            if (input.StartsWith("-")) {
+            if (input.StartsWith('-')) {
                 input = input[1..];
                 numeratorString.Append('-');
             }
 
             // Leading 0 because of biginteger weirdness
-            numeratorString.Append("0");
+            numeratorString.Append('0');
 
             foreach (char @char in input) {
                 if (@char == '_' || @char == ' ') {

@@ -50,7 +50,7 @@ public partial class TooBigValue : Value, IConvertibleToBool {
         });
     }
 
-    public BooleanValue ConvertToBool(ExecutionContext context, Expression node) {
+    public BooleanValue ConvertToBool(ExecutorContext context, Expression node) {
         BooleanValue newValue = new BooleanValue(IsPositive);
         context.AddResult(new ResultConversion(this, newValue, ResultConversion.ConversionType.TypeChange, node.Position));
         return newValue;
