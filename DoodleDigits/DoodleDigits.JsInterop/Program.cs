@@ -1,4 +1,4 @@
-﻿namespace DoodleDigitsJs.Interop;
+﻿namespace DoodleDigits.JsInterop;
 
 /// <summary>
 /// I don't know why I need this. If anyone can figure out how to turn this into a library completely please make a pull request.

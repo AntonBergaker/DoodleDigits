@@ -1,0 +1,45 @@
+{
+  "mainAssemblyName": "DoodleDigits.JsInterop.dll",
+  "resources": {
+    "hash": "sha256-oYzop7PzsvkqNs+XiZa7+SDxYmv4yfuxM6fDEZKO3xk=",
+    "jsModuleNative": {
+      "dotnet.native.js": "sha256-Q7sxjQWiJTLXMuRexctKySXuaDMq13wiJfh1vEo21xM="
+    },
+    "jsModuleRuntime": {
+      "dotnet.runtime.js": "sha256-WdSX3HQvnBYF0KJLZoOyHvTzMHetaob6PV0Kn2K+QXw="
+    },
+    "wasmNative": {
+      "dotnet.native.wasm": "sha256-nuit48uhE44kaHw6IKTqSm0fjgOP7R04sGxHPuKyIxE="
+    },
+    "icu": {
+      "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
+      "icudt_EFIGS.dat": "sha256-8fItetYY8kQ0ww6oxwTLiT3oXlBwHKumbeP2pRF4yTc=",
+      "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
+    },
+    "assembly": {
+      "DoodleDigits.Core.wasm": "sha256-A3WmLJi3uhb/z/DqtCC3a7CzuNTTsW9xY1TkirYTRhU=",
+      "DoodleDigits.JsInterop.wasm": "sha256-B9aAfrxeinv2JSzsg9CkdIR3/NuajOjW2YQE4XgYzPo=",
+      "MathNet.Numerics.wasm": "sha256-kvNuJoKWciXhHWnTIf4yrOMhOGweMGmPfGdoXZj4ScY=",
+      "Rationals.wasm": "sha256-MQVhzZ4TKqq4/+NybP9N60VqpLeEj9qIi7M60TfShOY=",
+      "System.Collections.Concurrent.wasm": "sha256-K8seTnpe72PIv3asamZqLl+c1rJfBtvjjICYHgB/GqU=",
+      "System.Collections.wasm": "sha256-82omAELZPmOKeCtqhA0FrTuBkiVlCRyDJph6eA/rvrw=",
+      "System.ComponentModel.Primitives.wasm": "sha256-olnz3OgDJ8VYNg0haYR5fiAhl4RBjdWyWgRhwKYE7cc=",
+      "System.Linq.wasm": "sha256-EJXA+Xj2RYz1LGQSkA0dqEwQII7jlrn+kXznVm/OpvY=",
+      "System.Memory.wasm": "sha256-xqx+1FmYotufJoTdaOlG1TwQbNWM0fVj/lQZ+y+i3Kc=",
+      "System.Private.CoreLib.wasm": "sha256-ebRI1gikTuNJb3I6LDjV51Z39KqV//5B3ZXOzMTuyXE=",
+      "System.Runtime.InteropServices.JavaScript.wasm": "sha256-Scu8f+rUcyHWC9cmsMmL37oc+oeSRwqeAtwamnWpKfY=",
+      "System.Runtime.Numerics.wasm": "sha256-O27z3+TBUK5LHbeGQ5MDwhCgruopsUasGdnJ2zz2X0A=",
+      "System.Text.Encodings.Web.wasm": "sha256-/ipcKkJyTDGrXZ6CzgQYljZdyCaNwA1Yv88LwzBWqEE=",
+      "System.Text.Json.wasm": "sha256-0oKAYVa8nykQ7ySrUhzkdJDMQtcoQCuBiZww9Nzkybc=",
+      "System.Text.RegularExpressions.wasm": "sha256-Wk4X6jOUmyyFVE6pY4RBxE1a/Gjmta+NrKA/XZ7hYfE=",
+      "aot-instances.wasm": "sha256-F5jaGmVc7vzFjqtI3doCGKg/fQ7XiaS/ql2ej46UKTw="
+    },
+    "vfs": {
+      "runtimeconfig.bin": {
+        "supportFiles/0_runtimeconfig.bin": "sha256-bZVADVE9/vuk4VK9UcMd3AREONFSoWULYacsy5DHL3I="
+      }
+    }
+  },
+  "debugLevel": 0,
+  "globalizationMode": "sharded"
+}

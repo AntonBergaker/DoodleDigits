@@ -13,3 +13,6 @@
 .titleBar.unfocused {
     background-color: #808080;
 }
+.titleBarDropdown {
+    background-color: #333;
+}

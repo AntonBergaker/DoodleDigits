@@ -1,3 +1,4 @@
+import { CalculatorAngleUnit, CalculatorSettings } from "../saving/saving"
 import { CalculatorResult } from "./calculator-result"
 
 let dotnetExports: any = undefined
@@ -11,12 +12,19 @@ export type WorkerMessageOutput = {
     index: number
 }
 
-export async function calculate(input: string): Promise<CalculatorResult> {
+export type CalculatorInputSettings = {
+    angleUnit: CalculatorAngleUnit
+}
+
+export async function calculate(
+    input: string,
+    settings: CalculatorSettings
+): Promise<CalculatorResult> {
     if (dotnetExports == undefined) {
         const anyWindow = window as any
         // If the script hasn't loaded yet, give it time
         let tries = 0
-        while (!anyWindow.dotnetLmao) {
+        while (!anyWindow.dotnetGlobalReference) {
             if (tries > 100) {
                 throw Error("Failed to find dotnet inside the window class.")
             }
@@ -24,7 +32,7 @@ export async function calculate(input: string): Promise<CalculatorResult> {
             tries++
         }
 
-        const dotnet = (window as any).dotnetLmao
+        const dotnet = anyWindow.dotnetGlobalReference
         const { getAssemblyExports, getConfig } = await dotnet
             .withDiagnosticTracing(false)
             .withApplicationArgumentsFromQuery()
@@ -34,8 +42,17 @@ export async function calculate(input: string): Promise<CalculatorResult> {
         dotnetExports = await getAssemblyExports(config.mainAssemblyName)
     }
 
+    const inputSettings: CalculatorInputSettings = {
+        angleUnit: settings.angle_unit,
+    }
+
+    console.log(inputSettings)
+
     const result = JSON.parse(
-        dotnetExports.DoodleDigitsJsInterop.CalculatorInterop.Calculate(input)
+        dotnetExports.DoodleDigits.JsInterop.CalculatorInterop.Calculate(
+            input,
+            JSON.stringify(inputSettings)
+        )
     ) as CalculatorResult
     return result
 }

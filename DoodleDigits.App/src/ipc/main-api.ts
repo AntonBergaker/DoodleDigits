@@ -1,10 +1,11 @@
 import { IpcMainEvent } from "electron"
-import { SaveStateData } from "../saving/saving"
-import { SaveSettingsData } from "../saving/saving"
+import { CalculatorAngleUnit, SaveStateData } from "../saving/saving"
+import { CalculatorSettings } from "../saving/saving"
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 export const mainApi = {
     saveState: (state: SaveStateData) => {},
+    updateAngleUnit: (angleUnit: CalculatorAngleUnit) => {},
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 

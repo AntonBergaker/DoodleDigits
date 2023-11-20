@@ -26,7 +26,7 @@ export function ResultView(props: ResultsViewProps) {
         const line = props.pageMeasurer.getCharacterLine(
             getRange(result.range)[1]
         )
-        
+
         let array: string[]
         if (resultsPerLine.has(line)) {
             array = resultsPerLine.get(line)
@@ -115,31 +115,37 @@ function getValueText(value: Value, includeEqualSign: boolean): string | null {
         return null
     }
     if (value.type == "matrix") {
-        return getMatrixText(value);
+        return getMatrixText(value)
     }
 
     return null
 }
 
 function getMatrixText(matrix: MatrixValue): string {
-    const dimensions = getMatrixDimensionCount(matrix);
-    
-    const [start, end] = dimensions == 1 ? "()" : "[]";
-    return getMatrixDimensionText(matrix.matrix, start, end);
+    const dimensions = getMatrixDimensionCount(matrix)
+
+    const [start, end] = dimensions == 1 ? "()" : "[]"
+    return getMatrixDimensionText(matrix.matrix, start, end)
 }
-function getMatrixDimensionText(matrixDimension: MatrixDimension | Value, start: string, end: string) : string {
+function getMatrixDimensionText(
+    matrixDimension: MatrixDimension | Value,
+    start: string,
+    end: string
+): string {
     if (Array.isArray(matrixDimension)) {
-        return `${start}${matrixDimension.map(x => getMatrixDimensionText(x, start, end)).join(", ")}${end}`
+        return `${start}${matrixDimension
+            .map((x) => getMatrixDimensionText(x, start, end))
+            .join(", ")}${end}`
     } else {
-        return getValueText(matrixDimension, false);
+        return getValueText(matrixDimension, false)
     }
 }
 function getMatrixDimensionCount(matrix: MatrixValue): number {
     let dimensions = 0
     let currentDimension: Value | MatrixDimension = matrix.matrix
     while (Array.isArray(currentDimension)) {
-        dimensions++;
-        currentDimension = currentDimension[0];
+        dimensions++
+        currentDimension = currentDimension[0]
     }
-    return dimensions;
+    return dimensions
 }
