@@ -3,7 +3,7 @@ using DoodleDigits.Core;
 using DoodleDigits.Core.Execution.Results;
 using DoodleDigits.Core.Execution.ValueTypes;
 
-namespace DoodleDigitsJs.Interop;
+namespace DoodleDigits.JsInterop;
 
 public static class ResultJsonConverter {
     private static KeyValuePair<string, JsonNode?> RangeToJson(Range range) {

@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DoodleDigits.Core;
 
-namespace DoodleDigitsJs.Interop;
+namespace DoodleDigits.JsInterop;
 
 public partial class CalculatorInterop
 {
@@ -13,9 +13,9 @@ public partial class CalculatorInterop
     {
         var calculator = new Calculator();
 
-        var settings = JsonSerializer.Deserialize(settingsJson, JsonContext.Default.CalculatorSettings);
+        var settings = JsonSerializer.Deserialize(settingsJson, JsonContext.Default.CalculatorSettingsInterop);
         if (settings != null) {
-            calculator.Settings = settings;
+            calculator.Settings = settings.ToSettings();
         }
 
         var result = calculator.Calculate(input);
@@ -24,5 +24,5 @@ public partial class CalculatorInterop
     }
 }
 
-[JsonSerializable(typeof(CalculatorSettings))]
+[JsonSerializable(typeof(CalculatorSettingsInterop))]
 public partial class JsonContext : JsonSerializerContext { }

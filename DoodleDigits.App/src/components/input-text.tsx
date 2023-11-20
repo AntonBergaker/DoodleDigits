@@ -19,12 +19,14 @@ export const InputText = React.forwardRef<HTMLDivElement, InputTextProps>(
             <div ref={ref} className="input-container">
                 <InputMagic text={text} />
                 <textarea
-                    onInput={(a) => a.target instanceof HTMLTextAreaElement && onInput(a.target)}
+                    onInput={(a) =>
+                        a.target instanceof HTMLTextAreaElement &&
+                        onInput(a.target)
+                    }
                     className="input"
                     autoCapitalize="off"
                     spellCheck="false"
-                    defaultValue={props.defaultText}>
-                </textarea>
+                    defaultValue={props.defaultText}></textarea>
             </div>
         )
     }

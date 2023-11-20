@@ -17,13 +17,13 @@ class VariableTest {
         {
             var result = ExecutionTestUtils.CalculateString("x = true").Results.LastOrDefault() as ResultValue;
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Value.TriviallyAchieved);
+            Assert.IsTrue(result!.Value.TriviallyAchieved);
         }
 
         {
             var result = ExecutionTestUtils.CalculateString("x = 5").Results.LastOrDefault() as ResultValue;
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Value.TriviallyAchieved);
+            Assert.IsTrue(result!.Value.TriviallyAchieved);
         }
     }
 }

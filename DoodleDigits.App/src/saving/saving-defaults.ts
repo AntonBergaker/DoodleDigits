@@ -1,4 +1,4 @@
-import { SaveSettingsData, SaveStateData } from "./saving"
+import { CalculatorSettings, SaveStateData } from "./saving"
 
 export function getDefaultState(): SaveStateData {
     return {
@@ -10,10 +10,11 @@ export function getDefaultState(): SaveStateData {
 
 export function getDefaultSettings(
     isDarkModeFunction: () => boolean
-): SaveSettingsData {
+): CalculatorSettings {
     return {
         theme: isDarkModeFunction() ? "dark" : "default",
         always_on_top: false,
         zoom: 0,
+        angle_unit: "radians",
     }
 }

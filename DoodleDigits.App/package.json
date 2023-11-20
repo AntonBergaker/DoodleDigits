@@ -1,7 +1,7 @@
 {
   "name": "doodledigits.app",
   "productName": "Doodle Digits",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "An inline calculator where you write equations into a large textbox and the answers are given to you as you type.",
   "main": ".webpack/main",
   "scripts": {
@@ -35,7 +35,9 @@
     "eslint-plugin-import": "^2.27.5",
     "fork-ts-checker-webpack-plugin": "^7.3.0",
     "node-loader": "^2.0.0",
+    "node-sass": "^9.0.0",
     "prettier": "3.0.0",
+    "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",

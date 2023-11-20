@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{1535CBA9-627F-4358-A472-551B0FACE4C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoodleDigitsJs.Interop", "DoodleDigits.JsInterop\DoodleDigitsJs.Interop.csproj", "{3A38E1FB-40E2-4C39-AA70-59C1E6E1E644}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoodleDigits.JsInterop", "DoodleDigits.JsInterop\DoodleDigits.JsInterop.csproj", "{3A38E1FB-40E2-4C39-AA70-59C1E6E1E644}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

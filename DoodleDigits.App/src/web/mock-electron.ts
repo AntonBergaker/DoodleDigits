@@ -3,5 +3,7 @@ export function mockElectronApi() {
         onSizeChanged: () => {},
         onUpdateSettings: () => {},
         saveState: () => {},
+        onFocusedChanged: () => {},
+        updateAngleUnit: () => {},
     }
 }

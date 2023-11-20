@@ -1,0 +1,59 @@
+@font-face {
+    font-family: "PatrickHand";
+    src: 
+        local("PatrickHandE"), 
+        url("./img/PatrickHand-RegularE.ttf") format("truetype");
+}
+
+.titleBar {
+    height: 29.5px;
+    background-color: #3393DF;
+    padding: 0;
+    margin: 0;
+    display: flex;
+
+    &.unfocused {
+        background-color: #999;
+    }
+
+    > h1 {
+        color: white;
+        padding: 0;
+        margin: 2px 0 0 10px;
+        font-size: 18px;
+        font-weight: 100;
+        
+        font-family: "PatrickHand", Arial, sans-serif;
+    }
+
+    >.seperator {
+        margin: 4.5px 0px 4px 4px;
+        color: #FFFFFFAA;
+    }
+
+    > .dropdownButton {
+        margin: 0;
+        padding: 0;
+        width: 29px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    > .dropdownButton svg {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+    }
+    > .dropdownButton:hover {
+        background-color: #88888866;
+    }
+    > .padding {
+        margin: 0;
+        padding: 0;
+        flex-grow: 1;
+    }
+    > .draggable {
+        -webkit-app-region: drag;
+    }
+}

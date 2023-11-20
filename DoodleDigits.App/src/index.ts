@@ -4,7 +4,7 @@ import {
     loadSettingsOrDefault,
     loadStateOrDefault,
     saveSettings,
-    SaveSettingsData,
+    CalculatorSettings,
     saveState,
     SaveStateData,
 } from "./saving/saving"
@@ -27,7 +27,7 @@ if (require("electron-squirrel-startup")) {
 const savedStatePromise = loadStateOrDefault()
 let savedState: SaveStateData
 const savedSettingsPromise = loadSettingsOrDefault()
-let savedSettings: SaveSettingsData
+let savedSettings: CalculatorSettings
 
 let mainWindow: BrowserWindow
 
@@ -114,6 +114,12 @@ const createWindow = async () => {
 
 onIpc("saveState", (event, state) => {
     saveState(state)
+})
+
+onIpc("updateAngleUnit", (event, angleUnit) => {
+    savedSettings.angle_unit = angleUnit
+    sendIpc(mainWindow, "updateSettings", savedSettings)
+    saveSettings(savedSettings)
 })
 
 app.setPath("userData", directory + "/electron")

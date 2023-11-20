@@ -23,7 +23,6 @@ public class Calculator {
     /// Creates a new calculator with the the functions found inside <see cref="FunctionLibrary"/> and constants from <see cref="ConstantLibrary"/>
     /// </summary>
     public Calculator() : this(FunctionLibrary.Functions, ConstantLibrary.Constants) {
-
     }
 
     /// <summary>

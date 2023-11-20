@@ -11,10 +11,13 @@ export type SaveStateData = {
     }
 }
 
-export type SaveSettingsData = {
+export type CalculatorAngleUnit = "radians" | "degrees"
+
+export type CalculatorSettings = {
     theme: string
     zoom: number
     always_on_top: boolean
+    angle_unit: CalculatorAngleUnit
 }
 
 export const directory =
@@ -35,26 +38,27 @@ async function writeFile(filename: string, content: string): Promise<void> {
 }
 
 export async function loadStateOrDefault(): Promise<SaveStateData> {
+    let state = getDefaultState()
+
     const stateJson = await loadFile("state.json")
-    let state: SaveStateData
-    if (stateJson == null) {
-        state = getDefaultState()
-    } else {
-        state = JSON.parse(stateJson)
+    if (stateJson != null) {
+        const loadedState = JSON.parse(stateJson)
+        fixLegacyState(loadedState)
+        state = { ...state, ...loadedState }
     }
-    fixLegacyState(state)
     return state
 }
 
-export async function loadSettingsOrDefault(): Promise<SaveSettingsData> {
+export async function loadSettingsOrDefault(): Promise<CalculatorSettings> {
+    let settings = getDefaultSettings(() => nativeTheme.shouldUseDarkColors)
+
     const settingsJson = await loadFile("settings.json")
-    let settings: SaveSettingsData
-    if (settingsJson == null) {
-        settings = getDefaultSettings(() => nativeTheme.shouldUseDarkColors)
-    } else {
-        settings = JSON.parse(settingsJson)
+    if (settingsJson != null) {
+        const loadedSettings = JSON.parse(settingsJson)
+        fixLegacySettings(loadedSettings)
+        settings = { ...settings, ...loadedSettings }
     }
-    fixLegacySettings(settings)
+
     return settings
 }
 
@@ -62,7 +66,7 @@ export function saveState(state: SaveStateData) {
     writeFile("state.json", JSON.stringify(state))
 }
 
-export function saveSettings(settings: SaveSettingsData) {
+export function saveSettings(settings: CalculatorSettings) {
     writeFile("settings.json", JSON.stringify(settings))
 }
 
@@ -70,7 +74,7 @@ export function saveSettings(settings: SaveSettingsData) {
  * Cleans up the file and ports legacy settings to be standardized
  * @param state
  */
-function fixLegacySettings(settings: SaveSettingsData) {
+function fixLegacySettings(settings: CalculatorSettings) {
     const untypedSettings = settings as any
     if (typeof untypedSettings.dark_mode == "boolean") {
         settings.theme = untypedSettings.dark_mode ? "dark" : "default"

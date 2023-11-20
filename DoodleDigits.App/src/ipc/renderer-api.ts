@@ -1,8 +1,8 @@
-import { SaveSettingsData } from "../saving/saving"
+import { CalculatorSettings } from "../saving/saving"
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 export const rendererApi = {
-    updateSettings: (data: SaveSettingsData) => {},
+    updateSettings: (data: CalculatorSettings) => {},
     sizeChanged: (data: { x: number; y: number }) => {},
     focusedChanged: (data: { focused: boolean }) => {},
 }

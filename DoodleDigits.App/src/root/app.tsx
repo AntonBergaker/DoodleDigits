@@ -1,25 +1,30 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
 import { getDefaultSettings, getDefaultState } from "../saving/saving-defaults"
-import { SaveStateData, SaveSettingsData } from "../saving/saving"
+import { SaveStateData, CalculatorSettings } from "../saving/saving"
 import { StateSavingScheduler } from "../saving/state-saving-scheduler"
 import { mockElectronApi } from "../web/mock-electron"
-import { MainWindow } from "../pages/calculator/main-window"
+import { MainWindow } from "../pages/main-window"
 
-const [state, settings] = readStateAndSettings()
+const [state, defaultSettings] = readStateAndSettings()
 let preTheme: string | undefined = undefined
 let themeLink: HTMLLinkElement | undefined = undefined
 
-applySettings(settings)
+applySettings(defaultSettings)
 
 function render() {
     const root = createRoot(document.getElementById("document-root"))
-    root.render(<MainWindow settings={settings} state={state} onInput={onCalculatorInput} />)
+
+    root.render(
+        <MainWindow
+            defaultSettings={defaultSettings}
+            state={state}
+            onInput={onCalculatorInput}
+        />
+    )
 }
 
-
-function applySettings(settings: SaveSettingsData) {
-
+function applySettings(settings: CalculatorSettings) {
     if (preTheme != settings.theme) {
         preTheme = settings.theme
         // Insert dark mode css theme
@@ -28,10 +33,12 @@ function applySettings(settings: SaveSettingsData) {
             themeLink = undefined
         }
 
-        if (settings.theme == "dark") {
+        if (settings.theme != "default") {
             themeLink = document.createElement("link")
             themeLink.rel = "stylesheet"
-            themeLink.href = getStaticPath("themes/dark/dark.css");
+            themeLink.href = getStaticPath(
+                `themes/${settings.theme}/${settings.theme}.css`
+            )
             document.head.appendChild(themeLink)
         }
     }
@@ -47,31 +54,30 @@ function getStaticPath(path: string): string {
     }
 }
 
-
 render()
 
 if (!window.electronApi) {
-    mockElectronApi();
+    mockElectronApi()
 }
 
 window.electronApi.onUpdateSettings((event, settings) =>
     applySettings(settings)
 )
 
-const stateScheduler = new StateSavingScheduler(state);
+const stateScheduler = new StateSavingScheduler(state)
 
 function onCalculatorInput(input: string) {
-    state.content = input;
-    stateScheduler.scheduleSave();
+    state.content = input
+    stateScheduler.scheduleSave()
 }
 
-window.electronApi.onSizeChanged( (event, data) => {
+window.electronApi.onSizeChanged((event, data) => {
     state.window_dimensions.x = data.x
     state.window_dimensions.y = data.y
     stateScheduler.scheduleSave()
-} )
+})
 
-function readStateAndSettings(): [SaveStateData, SaveSettingsData] {
+function readStateAndSettings(): [SaveStateData, CalculatorSettings] {
     const urlParams = new URLSearchParams(window.location.search)
     let state
     const stateQuery = urlParams.get("state")

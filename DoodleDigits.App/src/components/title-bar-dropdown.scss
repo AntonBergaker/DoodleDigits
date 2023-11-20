@@ -1,0 +1,38 @@
+.titleBarDropdown {
+    position: absolute;
+    padding: 15px 0px 15px 0px;
+    top: 29.5px;
+    z-index: 1;
+    background-color: white;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+
+    filter: drop-shadow(0px 0px 10px #00000033);
+
+    >button, >div {
+        text-align: left;
+        margin: 0;
+        padding: 10px 20px 10px 20px;
+        border: none;
+        background-color: transparent;
+        font-family: 'Segoe UI', Helvetica, sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+
+        &:hover {
+            background-color: #88888888;
+            cursor: pointer;
+            user-select: none;
+        }
+    }
+    >.labeledToggle {
+        >label {
+            font-size: 10px;
+            opacity: 0.6;
+        }
+        >span {
+            display: block;
+        }
+    }
+}
