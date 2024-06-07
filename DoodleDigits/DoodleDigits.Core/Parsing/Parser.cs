@@ -321,7 +321,7 @@ public class Parser {
                 nextToken = _reader.Peek();
             }
 
-            expression = new VectorDecleration(expressions, token.Position.Start..expressions.Last().Position.End);
+            expression = new VectorDeclaration(expressions, token.Position.Start..expressions.Last().Position.End);
 
             if (nextToken.Type == expectedEnd) {
                 _reader.Skip();
@@ -401,7 +401,7 @@ public class Parser {
             }
 
             if (expectsVector && functionData?.ParameterCount.End.Value == 1 && parameters.Count > 1) {
-                return new Function(token.Content, new[] { new VectorDecleration(parameters, next.Position.Start..end) }, start..end);
+                return new Function(token.Content, new[] { new VectorDeclaration(parameters, next.Position.Start..end) }, start..end);
             } 
 
             return new Function(token.Content, parameters, start..end);

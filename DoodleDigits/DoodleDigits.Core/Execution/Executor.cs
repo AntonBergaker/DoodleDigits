@@ -61,7 +61,7 @@ public class Executor {
             Function f => CalculateFunction(f, context),
             Comparison ec => CalculateComparison(ec, context),
             BaseCast bc => CalculateBaseCast(bc, context),
-            VectorDecleration vd => CalculateVector(vd, context),
+            VectorDeclaration vd => CalculateVector(vd, context),
             ErrorNode error => new UndefinedValue(UndefinedValue.UndefinedType.Error),
             _ => throw new Exception("Expression not handled for " + expression.GetType()),
         };
@@ -231,12 +231,12 @@ public class Executor {
         return expression;
     }
 
-    private Value CalculateVector(VectorDecleration vectorDeclaration, ExecutorContext context) {
-        MatrixValue.MatrixDimension? InternalCalculate(VectorDecleration vectorDeclaration) {
+    private Value CalculateVector(VectorDeclaration vectorDeclaration, ExecutorContext context) {
+        MatrixValue.MatrixDimension? InternalCalculate(VectorDeclaration vectorDeclaration) {
             List<MatrixValue.IMatrixElement> elements = new();
 
             foreach (Expression expression in vectorDeclaration.Expressions) {
-                if (expression is VectorDecleration vd) {
+                if (expression is VectorDeclaration vd) {
                     var dimension = InternalCalculate(vd);
                     if (dimension == null) {
                         return null;

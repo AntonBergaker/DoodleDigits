@@ -24,23 +24,46 @@ public static partial class NamedFunctions {
             return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
         }
 
+        Rational @base;
         if (values.Length == 1) {
-            return RealValue.FromDouble(Rational.Log10( value.Value ), false, value.Form);
+            @base = 10;
+        } else {
+            if (values[1] is TooBigValue { IsPositive: true }) {
+                return new RealValue(Rational.Zero, false, value.Form);
+            }
+
+            if (values[1] is not IConvertibleToReal convertibleToReal1) {
+                return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+            }
+
+            @base = ConvertArgumentToReal(convertibleToReal1, context, node, 1).Value;
         }
 
-        if (values[1] is TooBigValue {IsPositive: true}) {
-            return new RealValue(Rational.Zero, false, value.Form);
+        if (@base == 1 || @base <= 0) {
+            return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
         }
 
-        if (values[1] is not IConvertibleToReal convertibleToReal1) {
-            return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+        // Try lazy even evaluation because double shenanigans might give obvious ugly answers
+        {
+            var remainingValue = value.Value;
+            int count = 1;
+            
+            for (int i = 0; i < 100; i++) {
+                count++;
+                remainingValue = (remainingValue/@base).CanonicalForm;
+                if (remainingValue == @base) {
+                    return new RealValue(count, false, value.Form);
+                }
+                if (remainingValue < Rational.One) {
+                    break;
+                }
+            }
         }
 
-        var @base = ConvertArgumentToReal(convertibleToReal1, context, node, 1);
-
+        // Fallback to potentially funky doubles
         return RealValue.FromDouble(Rational.Log(
             value.Value,
-            (double)@base.Value
+            (double)@base
         ), false, value.Form);
     }
 
