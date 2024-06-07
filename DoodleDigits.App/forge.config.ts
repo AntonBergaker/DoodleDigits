@@ -15,6 +15,7 @@ const config: ForgeConfig = {
         icon: "./src/root/icon",
         executableName: "DoodleDigits",
         name: "Doodle Digits",
+        extraResource: "./static/themes",
     },
     rebuildConfig: {},
     makers: [

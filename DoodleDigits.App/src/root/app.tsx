@@ -50,7 +50,12 @@ function getStaticPath(path: string): string {
     } else if (window.developmentMode) {
         return "../../static/" + path
     } else {
-        return "../../renderer/static/" + path
+        const windowAny = window as any
+        return (
+            windowAny.path.join(windowAny.process_resourcesPath, "..") +
+            "/resources/" +
+            path
+        )
     }
 }
 

@@ -83,6 +83,7 @@ const createWindow = async () => {
         width: size.x,
         webPreferences: {
             preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+            sandbox: false,
         },
         autoHideMenuBar: true,
         titleBarStyle: "hidden",

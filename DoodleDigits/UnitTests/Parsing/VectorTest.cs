@@ -7,14 +7,14 @@ class VectorTest {
     public void TestVectorDeclaration() {
 
         ParsingTestUtils.AssertEqual(
-            new VectorDecleration(
+            new VectorDeclaration(
                 new NumberLiteral("5"),
                 new NumberLiteral("3")
             ), "(5, 3)"
         );
 
         ParsingTestUtils.AssertEqual(
-            new VectorDecleration(
+            new VectorDeclaration(
                 new BinaryOperation(
                     new NumberLiteral("1"),
                     BinaryOperation.OperationType.Add,
@@ -29,12 +29,12 @@ class VectorTest {
         );
 
         ParsingTestUtils.AssertEqual(
-            new VectorDecleration(new[] {
-                new VectorDecleration(new [] {
+            new VectorDeclaration(new[] {
+                new VectorDeclaration(new [] {
                     new NumberLiteral("5"),
                     new NumberLiteral("3")
                 }),
-                new VectorDecleration(new [] {
+                new VectorDeclaration(new [] {
                     new NumberLiteral("5"),
                     new NumberLiteral("2")
                 }),
@@ -43,12 +43,12 @@ class VectorTest {
         );
 
         ParsingTestUtils.AssertEqual(
-            new VectorDecleration(
-                new VectorDecleration(
+            new VectorDeclaration(
+                new VectorDeclaration(
                     new NumberLiteral("5"),
                     new NumberLiteral("3")
                 ),
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("5"),
                     new NumberLiteral("2")
                 )
@@ -61,7 +61,7 @@ class VectorTest {
 
         ParsingTestUtils.AssertEqual(
             new Function("normalize",
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("5"),
                     new NumberLiteral("3")
                 )
@@ -70,7 +70,7 @@ class VectorTest {
 
         ParsingTestUtils.AssertEqual(
             new Function("abs",
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("25"),
                     new NumberLiteral("5")
                 )
@@ -84,12 +84,12 @@ class VectorTest {
 
         ParsingTestUtils.AssertEqual(
             new BinaryOperation(
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("5"),
                     new NumberLiteral("5")
                 ),
                 BinaryOperation.OperationType.Multiply,
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("1"),
                     new NumberLiteral("2")
                 )
@@ -98,12 +98,12 @@ class VectorTest {
 
         ParsingTestUtils.AssertEqual(
             new BinaryOperation(
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("7"),
                     new NumberLiteral("8")
                 ),
                 BinaryOperation.OperationType.Multiply,
-                new VectorDecleration(
+                new VectorDeclaration(
                     new NumberLiteral("1"),
                     new NumberLiteral("2")
                 )
