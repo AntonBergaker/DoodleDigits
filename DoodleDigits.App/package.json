@@ -1,7 +1,7 @@
 {
   "name": "doodledigits.app",
   "productName": "Doodle Digits",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "An inline calculator where you write equations into a large textbox and the answers are given to you as you type.",
   "main": ".webpack/main",
   "scripts": {
