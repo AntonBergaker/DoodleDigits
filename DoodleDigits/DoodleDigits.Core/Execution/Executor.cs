@@ -92,6 +92,7 @@ public class Executor {
             return true;
         }
 
+        // Built in function
         if (_functions.TryGetValue(function.Identifier, out var functionData)) {
             if (CheckParameterCount(functionData.ParameterCount) == false) {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -99,6 +100,7 @@ public class Executor {
             return functionData.Function(function.Arguments.Select(x => Calculate(x, context)).ToArray(), context, function);
         } 
         
+        // User function
         if (context.TryGetVariable(function.Identifier, out var foundVariable) && foundVariable is FunctionValue functionValue) {
             var count = functionValue.ArgumentNames.Length;
             if (CheckParameterCount(count..count) == false) {
@@ -115,6 +117,9 @@ public class Executor {
                 context.AddVariable(variable.Identifier, variable.Value);
             }
             var result = Calculate(functionValue.Implementation, context);
+            if (result.TriviallyAchieved) {
+                result = result.Clone(false);
+            }
             context.PopVariableStack();
             return result;
         } 
