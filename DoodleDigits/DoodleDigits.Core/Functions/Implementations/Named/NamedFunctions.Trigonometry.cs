@@ -48,7 +48,7 @@ public static partial class NamedFunctions {
     /// <param name="context"></param>
     /// <param name="trigFunction"></param>
     /// <returns></returns>
-    private static Value TrigReciprocal(Value value, ExecutorContext context, Function node, Func<Value, ExecutorContext, Function, Value> trigFunction) {
+    private static Value TrigReciprocal(Value value, ExecutorContext context, FunctionCall node, Func<Value, ExecutorContext, FunctionCall, Value> trigFunction) {
 
         Value result = trigFunction(value, context, node);
 
@@ -69,7 +69,7 @@ public static partial class NamedFunctions {
     /// <param name="context"></param>
     /// <param name="trigArcFunction"></param>
     /// <returns></returns>
-    private static Value TrigArcReciprocal(Value value, ExecutorContext context, Function node, Func<Value, ExecutorContext, Function, Value> trigArcFunction) {
+    private static Value TrigArcReciprocal(Value value, ExecutorContext context, FunctionCall node, Func<Value, ExecutorContext, FunctionCall, Value> trigArcFunction) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             if (realValue.Value.IsZero == false) {
@@ -85,7 +85,7 @@ public static partial class NamedFunctions {
     #region Non Hyperbolic Functions
 
     [CalculatorFunction(FunctionExpectedType.Real, "sin")]
-    public static Value Sine(Value value, ExecutorContext context, Function node) {
+    public static Value Sine(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
 
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
@@ -116,7 +116,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "cos")]
-    public static Value Cosine(Value value, ExecutorContext context, Function node) {
+    public static Value Cosine(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
@@ -143,7 +143,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "tan")]
-    public static Value Tangent(Value value, ExecutorContext context, Function node) {
+    public static Value Tangent(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
@@ -167,19 +167,19 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "sec")]
-    public static Value Secant(Value value, ExecutorContext context, Function node) =>
+    public static Value Secant(Value value, ExecutorContext context, FunctionCall node) =>
         TrigReciprocal(value, context, node, Cosine);
 
     [CalculatorFunction(FunctionExpectedType.Real, "csc", "cosec")]
-    public static Value Cosecant(Value value, ExecutorContext context, Function node) =>
+    public static Value Cosecant(Value value, ExecutorContext context, FunctionCall node) =>
         TrigReciprocal(value, context, node, Sine);
 
     [CalculatorFunction(FunctionExpectedType.Real, "cot", "cotan", "ctg")]
-    public static Value Cotangent(Value value, ExecutorContext context, Function node) =>
+    public static Value Cotangent(Value value, ExecutorContext context, FunctionCall node) =>
         TrigReciprocal(value, context, node, Tangent);
 
     [CalculatorFunction(FunctionExpectedType.Real, "arcsin", "asin")]
-    public static Value ArcSine(Value value, ExecutorContext context, Function node) {
+    public static Value ArcSine(Value value, ExecutorContext context, FunctionCall node) {
         if (value is not IConvertibleToReal convertibleToReal) {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
@@ -190,7 +190,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arccos", "acos")]
-    public static Value ArcCosine(Value value, ExecutorContext context, Function node) {
+    public static Value ArcCosine(Value value, ExecutorContext context, FunctionCall node) {
         if (value is not IConvertibleToReal convertibleToReal) {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
@@ -201,7 +201,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arctan", "atan")]
-    public static Value ArcTangent(Value value, ExecutorContext context, Function node) {
+    public static Value ArcTangent(Value value, ExecutorContext context, FunctionCall node) {
         if (value is not IConvertibleToReal convertibleToReal) {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
@@ -223,14 +223,14 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arcsec", "asec")]
-    public static Value ArcSecant(Value value, ExecutorContext context, Function node) =>
+    public static Value ArcSecant(Value value, ExecutorContext context, FunctionCall node) =>
         TrigArcReciprocal(value, context, node, ArcCosine);
 
     [CalculatorFunction(FunctionExpectedType.Real, "arccsc", "arccosec", "acsc", "acosec")]
-    public static Value ArcCosecant(Value value, ExecutorContext context, Function node) =>
+    public static Value ArcCosecant(Value value, ExecutorContext context, FunctionCall node) =>
         TrigArcReciprocal(value, context, node, ArcSine);
     [CalculatorFunction(FunctionExpectedType.Real, "arccot", "arccotan", "arcctg", "acot", "acotan", "actg")]
-    public static Value ArcCotangent(Value value, ExecutorContext context, Function node) {
+    public static Value ArcCotangent(Value value, ExecutorContext context, FunctionCall node) {
         Value result = ArcTangent(value, context, node);
         if (result is IConvertibleToReal resultReal) {
             RealValue realValue = resultReal.ConvertToReal(context, node);
@@ -248,7 +248,7 @@ public static partial class NamedFunctions {
 
     #region Hyperbolic functions
     [CalculatorFunction(FunctionExpectedType.Real, "sinh")]
-    public static Value SineHyperbolic(Value value, ExecutorContext context, Function node) {
+    public static Value SineHyperbolic(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             Rational rational = realValue.Value;
@@ -264,7 +264,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "cosh")]
-    public static Value CosineHyperbolic(Value value, ExecutorContext context, Function node) {
+    public static Value CosineHyperbolic(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             Rational rational = realValue.Value;
@@ -281,7 +281,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "tanh")]
-    public static Value TangentHyperbolic(Value value, ExecutorContext context, Function node) {
+    public static Value TangentHyperbolic(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             Rational rational = realValue.Value;
@@ -298,19 +298,19 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "sech")]
-    public static Value SecantHyperbolic(Value value, ExecutorContext context, Function node) =>
+    public static Value SecantHyperbolic(Value value, ExecutorContext context, FunctionCall node) =>
         TrigReciprocal(value, context, node, CosineHyperbolic);
 
     [CalculatorFunction(FunctionExpectedType.Real, "csch", "cosech")]
-    public static Value CosecantHyperbolic(Value value, ExecutorContext context, Function node) =>
+    public static Value CosecantHyperbolic(Value value, ExecutorContext context, FunctionCall node) =>
         TrigReciprocal(value, context, node, SineHyperbolic);
 
     [CalculatorFunction(FunctionExpectedType.Real, "coth", "cotanh", "ctgh")]
-    public static Value CotangentHyperbolic(Value value, ExecutorContext context, Function node) =>
+    public static Value CotangentHyperbolic(Value value, ExecutorContext context, FunctionCall node) =>
         TrigReciprocal(value, context, node, TangentHyperbolic);
 
     [CalculatorFunction(FunctionExpectedType.Real, "arcsinh", "asinh")]
-    public static Value ArcSineHyperbolic(Value value, ExecutorContext context, Function node) {
+    public static Value ArcSineHyperbolic(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             Rational rational = realValue.Value;
@@ -327,7 +327,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arccosh", "acosh")]
-    public static Value ArcCosineHyperbolic(Value value, ExecutorContext context, Function node) {
+    public static Value ArcCosineHyperbolic(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             Rational rational = realValue.Value;
@@ -344,7 +344,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arctanh", "atanh")]
-    public static Value ArcTangentHyperbolic(Value value, ExecutorContext context, Function node) {
+    public static Value ArcTangentHyperbolic(Value value, ExecutorContext context, FunctionCall node) {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             Rational rational = realValue.Value;
@@ -361,15 +361,15 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arcsech", "asech")]
-    public static Value ArcSecantHyperbolic(Value value, ExecutorContext context, Function node) =>
+    public static Value ArcSecantHyperbolic(Value value, ExecutorContext context, FunctionCall node) =>
         TrigArcReciprocal(value, context, node, ArcCosineHyperbolic);
 
     [CalculatorFunction(FunctionExpectedType.Real, "arccsch", "arccosech", "acsch", "acosech")]
-    public static Value ArcCosecantHyperbolic(Value value, ExecutorContext context, Function node) =>
+    public static Value ArcCosecantHyperbolic(Value value, ExecutorContext context, FunctionCall node) =>
         TrigArcReciprocal(value, context, node, ArcSineHyperbolic);
 
     [CalculatorFunction(FunctionExpectedType.Real, "arccoth", "arccotanh", "arcctgh", "acoth", "acotanh", "actgh")]
-    public static Value ArcCotangentHyperbolic(Value value, ExecutorContext context, Function node) =>
+    public static Value ArcCotangentHyperbolic(Value value, ExecutorContext context, FunctionCall node) =>
         TrigArcReciprocal(value, context, node, ArcTangentHyperbolic);
 
     #endregion

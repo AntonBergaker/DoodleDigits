@@ -1,4 +1,6 @@
-﻿namespace DoodleDigits.Core.Tokenizing;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace DoodleDigits.Core.Tokenizing;
 class TokenReader {
     private readonly Token[] _tokens;
     private int _index;
@@ -27,6 +29,21 @@ class TokenReader {
     public Token Peek(bool skipNewLine = true) {
         int tempIndex = _index;
         while (skipNewLine && SafeRead(tempIndex).Type == TokenType.NewLine) {
+            tempIndex++;
+        }
+        return SafeRead(tempIndex);
+    }
+
+    public Token Peek(int count, bool skipNewLine = true) {
+        if (skipNewLine == false) {
+            return SafeRead(_index+count);
+        }
+
+        int tempIndex = _index;
+        for (int i = 0; i < count; i++) {
+            while (SafeRead(tempIndex).Type == TokenType.NewLine) {
+                tempIndex++;
+            }
             tempIndex++;
         }
         return SafeRead(tempIndex);

@@ -75,7 +75,7 @@ class ValueExhaustivenessTest {
                         parameters[i] = allValues[index / (int)Math.Pow(valueCount, i) % valueCount];
                     }
 
-                    function.Function(parameters, context, new Function(function.Names[0], Enumerable.Repeat(new ErrorNode(), parameterCount) ));
+                    function.Function(parameters, context, new FunctionCall(function.Names[0], Enumerable.Repeat(new ErrorNode(), parameterCount) ));
                 }
             }
         }

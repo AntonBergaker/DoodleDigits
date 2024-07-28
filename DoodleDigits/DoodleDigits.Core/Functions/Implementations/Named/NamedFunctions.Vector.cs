@@ -9,7 +9,7 @@ using DoodleDigits.Core.Functions.Implementations.Binary;
 namespace DoodleDigits.Core.Functions.Implementations.Named;
 static class VectorFunctions {
     [CalculatorFunction(FunctionExpectedType.Vector, "normalize", "normalise", "normal", "norm")]
-    public static Value Normalize(Value value, ExecutorContext context, Function node) {
+    public static Value Normalize(Value value, ExecutorContext context, FunctionCall node) {
         if (value is MatrixValue matrix) {
             if (matrix.DimensionCount == 1) {
                 Rational total = matrix.Magnitude(context, node);
@@ -37,7 +37,7 @@ static class VectorFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Vector, "magnitude")]
-    public static Value Magnitude(Value value, ExecutorContext context, Function node) {
+    public static Value Magnitude(Value value, ExecutorContext context, FunctionCall node) {
         if (value is MatrixValue matrix) {
             if (matrix.DimensionCount == 1) {
                 return new RealValue(matrix.Magnitude(context, node));
@@ -48,7 +48,7 @@ static class VectorFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Vector, "determinant", "det")]
-    public static Value Determinant(Value value, ExecutorContext context, Function node) {
+    public static Value Determinant(Value value, ExecutorContext context, FunctionCall node) {
         if (value is MatrixValue matrix) {
             if (matrix.DimensionCount != 2 ||
                 matrix.Dimension.Length != ((MatrixValue.MatrixDimension)matrix.Dimension[0]).Length) {
@@ -103,7 +103,7 @@ static class VectorFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Vector, "proj", "project")]
-    public static Value Projection(Value value, Value @base, ExecutorContext context, Function node) {
+    public static Value Projection(Value value, Value @base, ExecutorContext context, FunctionCall node) {
         if (value is MatrixValue matrixValue && @base is MatrixValue matrixBase) {
             var binaryNodes = new BinaryNodes(node, node.Arguments[0], node.Arguments[1]);
             Value crossResult = BinaryOperations.Multiply(matrixValue, matrixBase, context, binaryNodes);

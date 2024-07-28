@@ -8,7 +8,7 @@ class StructureTest {
     public void TestNewlineSeparation() {
 
         ParsingTestUtils.AssertEqual(
-            new ExpressionList(
+            new NodeList(
                 new () {
                     new NumberLiteral("5"),
                     new NumberLiteral("5")
@@ -31,7 +31,7 @@ class StructureTest {
 
 
         ParsingTestUtils.AssertEqual(
-            new ExpressionList(
+            new NodeList(
                 new() {
                     new NumberLiteral("5"),
                     new UnaryOperation(UnaryOperation.OperationType.Subtract, new NumberLiteral("5"))

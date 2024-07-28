@@ -60,7 +60,7 @@ class VectorTest {
     public void TestFunctionWithVectorInput() {
 
         ParsingTestUtils.AssertEqual(
-            new Function("normalize",
+            new FunctionCall("normalize",
                 new VectorDeclaration(
                     new NumberLiteral("5"),
                     new NumberLiteral("3")
@@ -69,7 +69,7 @@ class VectorTest {
         );
 
         ParsingTestUtils.AssertEqual(
-            new Function("abs",
+            new FunctionCall("abs",
                 new VectorDeclaration(
                     new NumberLiteral("25"),
                     new NumberLiteral("5")
