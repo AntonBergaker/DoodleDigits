@@ -171,13 +171,13 @@ class BinaryOperationTest {
         ParsingTestUtils.AssertEqual(
             new BinaryOperation(
                 new BinaryOperation(
-                    new NumberLiteral("5"),
+                    new Identifier("y"),
                     BinaryOperation.OperationType.Multiply,
-                    new Identifier("x")
+                    new NumberLiteral("5")
                 ), 
                 BinaryOperation.OperationType.Multiply, 
-                new Identifier("y")
-            ), "5x(y)"
+                new Identifier("x")
+            ), "(y)5x"
         );
 
 
@@ -226,11 +226,11 @@ class BinaryOperationTest {
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
-                    new Identifier("a")
+                    new NumberLiteral("5")
                 ),
                 BinaryOperation.OperationType.Multiply,
-                new NumberLiteral("5")
-            ), "5a(5)"
+                new Identifier("a")
+            ), "5(5)a"
         );
     }
 

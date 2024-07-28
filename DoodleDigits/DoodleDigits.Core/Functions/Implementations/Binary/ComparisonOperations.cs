@@ -38,6 +38,13 @@ public static partial class BinaryOperations {
         }
 
         {
+            // Vector
+            if (lhs is MatrixValue matrixLhs && rhs is MatrixValue matrixRhs) {
+                return new BooleanValue(matrixLhs.Equals(matrixRhs));
+            }
+        }
+
+        {
             // Fallback real
             if (lhs is IConvertibleToReal ctrLhs && rhs is IConvertibleToReal ctrRhs) {
                 RealValue realLhs = ctrLhs.ConvertToReal(context, nodes.Lhs);
@@ -54,7 +61,7 @@ public static partial class BinaryOperations {
             }
         }
 
-        return new UndefinedValue(UndefinedValue.UndefinedType.Error);
+        return new BooleanValue(false, triviallyAchieved: false, BooleanValue.PresentationForm.FromComparison);
     }
 
 

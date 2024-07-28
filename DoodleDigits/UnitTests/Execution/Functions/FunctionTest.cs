@@ -5,14 +5,14 @@ namespace UnitTests.Execution.Functions;
 class FunctionTest
 {
     [Test]
-    public void TestSimpleFunctions() {
+    public void SimpleFunctions() {
         ExecutionTestUtils.AssertEqual(2, "sqrt(4)");
         ExecutionTestUtils.AssertEqual(2, "sqrt 4");
         ExecutionTestUtils.AssertEqual(4, "sqrt(4^2)");
     }
 
     [Test]
-    public void TestFunctionsWithNumberBase() {
+    public void FunctionsWithNumberBase() {
         ExecutionTestUtils.AssertEqual(2, "log10 100");
         ExecutionTestUtils.AssertEqual(2, "log_10 100");
         ExecutionTestUtils.AssertEqual(2, "log(100, 10)");
@@ -24,7 +24,7 @@ class FunctionTest
     }
 
     [Test]
-    public void TestVariableParameterCount() {
+    public void VariableParameterCount() {
         ExecutionTestUtils.AssertEqual(5, "max(1, 2, 3, 4, 5)");
         ExecutionTestUtils.AssertEqual(1, "min(1, 2, 3, 4, 5)");
 
@@ -33,24 +33,24 @@ class FunctionTest
     }
 
     [Test]
-    public void TestMax() {
+    public void Max() {
         ExecutionTestUtils.AssertEqual(3, "max(1, 2, 3)");
     }
 
     [Test]
-    public void TestMin() {
+    public void Min() {
         ExecutionTestUtils.AssertEqual(1, "min(1, 2, 3, infinity)");
     }
 
     [Test]
-    public void TestSum() {
+    public void Sum() {
         ExecutionTestUtils.AssertEqual(6, "sum(1, 2, 3)");
         ExecutionTestUtils.AssertEqual(1, "sum(1)");
         ExecutionTestUtils.AssertEqual(7, "sum( [1, 2, 4])");
     }
 
     [Test]
-    public void TestMedian() {
+    public void Median() {
         ExecutionTestUtils.AssertEqual(2, "median(1, 2, 3)");
         ExecutionTestUtils.AssertEqual(2, "median(1, 2, 4)");
         ExecutionTestUtils.AssertEqual(2, "median(1205, 1, 2)");

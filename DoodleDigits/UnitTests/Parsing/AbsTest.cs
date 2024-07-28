@@ -9,7 +9,7 @@ class AbsTest {
     public void TestAbsolute() {
 
         ParsingTestUtils.AssertEqual(
-            new Function("abs",
+            new FunctionCall("abs",
                 new NumberLiteral("5")
             ),
             "|5|"
@@ -21,11 +21,11 @@ class AbsTest {
     [Test]
     public void TestNestedAbs() {
         ParsingTestUtils.AssertEqual(
-            new Function("abs",
+            new FunctionCall("abs",
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Add,
-                    new Function("abs",
+                    new FunctionCall("abs",
                         new NumberLiteral("2")
                     )
                 )
@@ -34,11 +34,11 @@ class AbsTest {
         );
 
         ParsingTestUtils.AssertEqual(
-            new Function("abs",
+            new FunctionCall("abs",
                 new BinaryOperation(
                     new NumberLiteral("5"),
                     BinaryOperation.OperationType.Multiply,
-                    new Function("abs",
+                    new FunctionCall("abs",
                         new NumberLiteral("2")
                     )
                 )
@@ -47,9 +47,9 @@ class AbsTest {
         );
 
         ParsingTestUtils.AssertEqual(
-            new Function("abs",
-                new Function("sin",
-                    new Function("abs", 
+            new FunctionCall("abs",
+                new FunctionCall("sin",
+                    new FunctionCall("abs", 
                         new NumberLiteral("5")    
                     )
                 )
@@ -65,7 +65,7 @@ class AbsTest {
             new BinaryOperation(
                 new NumberLiteral("1"),
                 BinaryOperation.OperationType.Multiply,
-                new Function("abs",
+                new FunctionCall("abs",
                     new NumberLiteral("5")
                 )
             ),
@@ -74,7 +74,7 @@ class AbsTest {
 
         ParsingTestUtils.AssertEqual(
             new BinaryOperation(
-                new Function("abs",
+                new FunctionCall("abs",
                     new NumberLiteral("5")
                 ),
                 BinaryOperation.OperationType.Multiply,
@@ -88,8 +88,8 @@ class AbsTest {
     [Test]
     public void TestFunctionArgument() {
         ParsingTestUtils.AssertEqual(
-            new Function("sin",
-                new Function("abs",
+            new FunctionCall("sin",
+                new FunctionCall("abs",
                     new NumberLiteral("7")
                 )
             ),
@@ -97,8 +97,8 @@ class AbsTest {
         );
 
         ParsingTestUtils.AssertEqual(
-            new Function("sin",
-                new Function("abs",
+            new FunctionCall("sin",
+                new FunctionCall("abs",
                     new BinaryOperation(
                         new NumberLiteral("7"),
                         BinaryOperation.OperationType.Subtract,

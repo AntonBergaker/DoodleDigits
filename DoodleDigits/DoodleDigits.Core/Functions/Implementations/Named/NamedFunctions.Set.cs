@@ -33,7 +33,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "max")]
-    public static Value Max(Value[] values, ExecutorContext context, Function node) {
+    public static Value Max(Value[] values, ExecutorContext context, FunctionCall node) {
         var arguments = node.Arguments;
         TurnSetOrMatrixToSet(ref values, ref arguments);
 
@@ -55,7 +55,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "min")]
-    public static Value Min(Value[] values, ExecutorContext context, Function node) {
+    public static Value Min(Value[] values, ExecutorContext context, FunctionCall node) {
         var arguments = node.Arguments;
         TurnSetOrMatrixToSet(ref values, ref arguments);
 
@@ -77,7 +77,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "sum")]
-    public static Value Sum(Value[] values, ExecutorContext context, Function node) {
+    public static Value Sum(Value[] values, ExecutorContext context, FunctionCall node) {
         var arguments = node.Arguments;
         TurnSetOrMatrixToSet(ref values, ref arguments);
 
@@ -93,7 +93,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "average")]
-    public static Value Average(Value[] values, ExecutorContext context, Function node) {
+    public static Value Average(Value[] values, ExecutorContext context, FunctionCall node) {
         var sum = Sum(values, context, node);
 
         if (sum is RealValue rv) {
@@ -108,7 +108,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "median")]
-    public static Value Median(Value[] values, ExecutorContext context, Function node) {
+    public static Value Median(Value[] values, ExecutorContext context, FunctionCall node) {
         var arguments = node.Arguments;
         TurnSetOrMatrixToSet(ref values, ref arguments);
 
@@ -155,7 +155,7 @@ public static partial class NamedFunctions {
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, 1, int.MaxValue, "standard_deviation")]
-    public static Value StandardDeviation(Value[] values, ExecutorContext context, Function node) {
+    public static Value StandardDeviation(Value[] values, ExecutorContext context, FunctionCall node) {
         var average = Average(values, context, node);
 
         var arguments = node.Arguments;
@@ -178,6 +178,6 @@ public static partial class NamedFunctions {
 
         var deviationsAverage = BinaryOperations.Divide(sumOfDeviations, new RealValue(arguments.Length), context, new(node, node, node));
 
-        return Root(deviationsAverage, new RealValue(2), context, new Function("", node, node));
+        return Root(deviationsAverage, new RealValue(2), context, new FunctionCall("", node, node));
     }
 }

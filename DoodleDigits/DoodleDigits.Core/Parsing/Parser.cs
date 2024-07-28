@@ -2,6 +2,7 @@
 using System.Globalization;
 using DoodleDigits.Core.Functions;
 using DoodleDigits.Core.Parsing.Ast;
+using DoodleDigits.Core.Parsing.Ast.AmbiguousNodes;
 using DoodleDigits.Core.Tokenizing;
 using DoodleDigits.Core.Utilities;
 
@@ -52,11 +53,11 @@ public class Parser {
     }
 
     private AstNode ReadStatements() {
-        List<Expression> expressions = new();
+        List<AstNode> nodes = new();
         while (_reader.ReachedEnd == false) {
-            Expression expression = ReadExpression();
+            AstNode expression = ReadNode();
             if (expression is not ErrorNode) {
-                expressions.Add(expression);
+                nodes.Add(expression);
             }
 
             Token peek = _reader.Peek();
@@ -66,15 +67,72 @@ public class Parser {
 
         }
 
-        if (expressions.Count == 1) {
-            return expressions[0];
+        if (nodes.Count == 1) {
+            return nodes[0];
         }
 
-        if (expressions.Count == 0) {
-            return new ExpressionList(expressions, 0..0);
+        if (nodes.Count == 0) {
+            return new NodeList(nodes, 0..0);
         }
 
-        return new ExpressionList(expressions, Utils.Join(expressions.Select(x => x.Position).ToArray()));
+        return new NodeList(nodes, Utils.Join(nodes.Select(x => x.Position).ToArray()));
+    }
+
+    private AstNode ReadNode() {
+        // Check for function declaration
+        if (_reader.Peek().Type == TokenType.Identifier &&
+            _reader.Peek(1).Type == TokenType.ParenthesisOpen) {
+            return ReadFunctionDeclaration();
+        }
+
+        return ReadExpression();
+    }
+
+    private AstNode ReadFunctionDeclaration() {
+        var expression = ReadExpression();
+
+        // Must be a comparison with a single =
+        if (expression is not Comparison comparison) {
+            return expression;
+        }
+        if (comparison.Expressions.Length != 2 || comparison.Signs[0] != Comparison.ComparisonType.Equals) {
+            return expression;
+        }
+
+        string[] argumentNames;
+        var lhs = comparison.Expressions[0];
+        // Lhs must be a function call or multiplication since that matches the x(x) syntax
+        if (lhs is not FunctionCallOrMultiplication functionCall) {
+            return expression;
+        }
+
+        if (functionCall.Multiplication.Lhs is not Identifier identifier) {
+            return expression;
+        }
+        var binaryRhs = functionCall.Multiplication.Rhs;
+
+        if (binaryRhs is Identifier rhsIdentifier) {
+            argumentNames = [rhsIdentifier.Value];
+        } else if (binaryRhs is VectorDeclaration rhsVector) {
+            if (rhsVector.Expressions.All(x => x is Identifier) == false) {
+                return expression;
+            }
+
+            argumentNames = rhsVector.Expressions.Cast<Identifier>().Select(x => x.Value).ToArray();
+        } else {
+            return expression;
+        }
+
+        // Rhs is just a funny expression
+        var rhs = comparison.Expressions[1];
+
+        return new FunctionDeclarationOrEquals(
+            new FunctionDeclaration(
+                identifier.Value,
+                argumentNames,
+                rhs
+            ), comparison, expression.Position
+        );
     }
 
     private Expression ReadExpression() {
@@ -108,10 +166,11 @@ public class Parser {
     private Expression ReadBinaryBitwiseXor() => GenericReadBinary(TokenType.BitwiseXor, ReadBinaryBitwiseAnd);
     private Expression ReadBinaryBitwiseAnd() => GenericReadBinary(TokenType.BitwiseAnd, ReadComparison);
 
-    private static readonly TokenType[] ComparisonTokens = new[] {
+
+    private static readonly TokenType[] ComparisonTokens = [
         TokenType.Equals, TokenType.NotEquals, TokenType.GreaterOrEqualTo, TokenType.GreaterThan,
         TokenType.LessThan, TokenType.LessOrEqualTo
-    };
+    ];
     private Expression ReadComparison() {
         Func<Expression> next = ReadBinaryShifting;
 
@@ -255,14 +314,19 @@ public class Parser {
     }
 
     private Expression ReadLiteral() {
-        return ReadLiteral(_reader.Read());
-    }
-
-    private Expression ReadLiteral(Token token) {
+        var token = _reader.Read();
         return token.Type switch {
             TokenType.AbsoluteLine => ReadAbsoluteExpression(token),
             TokenType.ParenthesisOpen => ReadVectorOrParenthesis(token),
             TokenType.BracketOpen => ReadVectorOrParenthesis(token),
+            TokenType.Number => new NumberLiteral(token.Content, token.Position),
+            TokenType.Identifier => ReadFunction(token),
+            _ => new ErrorNode()
+        };
+    }
+
+    private Expression GetLiteralOrIdentifier(Token token) {
+        return token.Type switch {
             TokenType.Number => new NumberLiteral(token.Content, token.Position),
             TokenType.Identifier => ReadIdentifier(token),
             _ => new ErrorNode()
@@ -287,7 +351,7 @@ public class Parser {
             end = expression.Position.End;
         }
 
-        return new Function("abs", new[] { expression}, token.Position.Start..end);
+        return new FunctionCall("abs", new[] { expression}, token.Position.Start..end);
     }
 
 
@@ -338,7 +402,7 @@ public class Parser {
         return expression;
     }
 
-    private Expression ReadIdentifier(Token token) {
+    private Expression ReadFunction(Token token) {
         if (token.Content.StartsWith("log")) {
             if (ReadFunctionWithBuiltInParameter(token, "log", out Expression? log)) {
                 return log;
@@ -350,26 +414,38 @@ public class Parser {
             }
         }
 
+        // Always read built in functions
         if (_functions.ContainsKey(token.Content.ToLower())) {
-            return ReadFunction(token);
+            return ReadFunctionCall(token, false);
+        }
+        // Only read custom functions if we have a ( following
+        if (_reader.Peek().Type == TokenType.ParenthesisOpen) {
+            return ReadFunctionCall(token, true);
         }
 
+        return ReadIdentifier(token);
+    }
+
+    private Expression ReadIdentifier(Token token) {
         return new Identifier(token.Content, token.Position);
     }
 
-    private Expression ReadFunction(Token token) {
+    private Expression ReadFunctionCall(Token identifierToken, bool mightBeMultiplication) {
         bool expectsVector = false;
-        if (_functions.TryGetValue(token.Content, out var functionData)) {
-            expectsVector = (functionData.ExpectedType & Functions.FunctionExpectedType.Vector) > 0;
+        if (_functions.TryGetValue(identifierToken.Content, out var functionData)) {
+            expectsVector = (functionData.ExpectedType & FunctionExpectedType.Vector) > 0;
         }
+
+        FunctionCall functionCall;
+
         Token next = _reader.Peek();
-        Index start = token.Position.Start;
-        Index end = token.Position.End;
+        Index start = identifierToken.Position.Start;
+        Index end = identifierToken.Position.End;
         if (next.Type == TokenType.ParenthesisOpen) {
             // Flag as no longer being inside an absolute expression, as we need the closed parenthesis to close the absolute
             bool wasInsideAbsolute = _insideAbsoluteExpression;
             _insideAbsoluteExpression = false;
-           
+
             List<Expression> parameters = new();
             _reader.Skip();
 
@@ -401,15 +477,29 @@ public class Parser {
             }
 
             if (expectsVector && functionData?.ParameterCount.End.Value == 1 && parameters.Count > 1) {
-                return new Function(token.Content, new[] { new VectorDeclaration(parameters, next.Position.Start..end) }, start..end);
-            } 
-
-            return new Function(token.Content, parameters, start..end);
+                functionCall = new FunctionCall(identifierToken.Content, new[] { new VectorDeclaration(parameters, next.Position.Start..end) }, start..end);
+            } else {
+                functionCall = new FunctionCall(identifierToken.Content, parameters, start..end);
+            }
+        } else {
+            Expression expression = ReadOnlyImplicitMultiplication();
+            end = expression.Position.End;
+            functionCall = new FunctionCall(identifierToken.Content, new[] { expression }, start..end);
         }
 
-        Expression expression = ReadOnlyImplicitMultiplication();
-        end = expression.Position.End;
-        return new Function(token.Content, new[] { expression }, start..end);
+        if (mightBeMultiplication) {
+            return new FunctionCallOrMultiplication(
+                functionCall, 
+                new BinaryOperation(
+                    new Identifier(identifierToken.Content, identifierToken.Position),
+                    BinaryOperation.OperationType.Multiply,
+                    functionCall.Arguments.Length == 1 ? 
+                        functionCall.Arguments[0] : 
+                        new VectorDeclaration(functionCall.Arguments, start..end), 
+                start..end)
+            );
+        }
+        return functionCall;
     }
 
     private bool ReadFunctionWithBuiltInParameter(Token token, string functionName, [NotNullWhen(true)] out Expression? function) {
@@ -429,10 +519,10 @@ public class Parser {
                 return false;
             }
 
-            Expression @base = ReadLiteral(hotSwappedToken);
+            Expression @base = GetLiteralOrIdentifier(hotSwappedToken);
             Expression argument = ReadOnlyImplicitMultiplication();
 
-            function = new Function(functionName, new[] {argument, @base}, Utils.Join(token.Position, argument.Position));
+            function = new FunctionCall(functionName, new[] {argument, @base}, Utils.Join(token.Position, argument.Position));
             return true;
         }
 
@@ -442,7 +532,7 @@ public class Parser {
                 Expression baseLiteral = new NumberLiteral(@base.ToString(CultureInfo.InvariantCulture), newRange);
                 Expression argument = ReadLiteral();
 
-                function = new Function(functionName, new[] { argument, baseLiteral }, Utils.Join(token.Position, argument.Position));
+                function = new FunctionCall(functionName, new[] { argument, baseLiteral }, Utils.Join(token.Position, argument.Position));
                 return true;
             }
         }
