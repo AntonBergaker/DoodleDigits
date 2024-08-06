@@ -5,6 +5,8 @@
 Doodle Digits is an inline calculator where you write equations into a large textbox and the answers are given to you as you type.  
 This approach lets you easily go back and change things in your equation and is easy and intuitive to use.
 
+You can try an in browser version [here](https://anton.bergaker.com/doodle_digits).
+
 ## Features
 * Variables that can hold values
 * Arbitrary precision numbers allow you to calculate very large numbers, some high limits are put in for performance reasons
