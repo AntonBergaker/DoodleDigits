@@ -1,0 +1,12 @@
+.mainWindow {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+html, body, #document-root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}

@@ -6,8 +6,8 @@ import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin"
 import { DefinePlugin } from "webpack"
 
 rules.push({
-    test: /\.css$/,
-    use: [{ loader: "style-loader" }, { loader: "css-loader" }],
+    test: /\.(scss|css)$/,
+    use: ["style-loader", "css-loader", "sass-loader"],
 })
 
 const webConfig: Configuration = {

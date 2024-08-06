@@ -1,0 +1,22 @@
+.titleBarButton {
+    display: inline;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    right: 10px;
+    top: 10px;
+    z-index: 50;
+    background-color: #3393DF;
+    text-align: center;
+    cursor: pointer;
+
+    >svg {
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}

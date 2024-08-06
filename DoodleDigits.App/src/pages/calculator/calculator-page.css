@@ -1,8 +1,8 @@
-.container {
+.calculator {
     position: fixed;
     width: 100%;
-    height: calc(100% - 29.5px);
-
+    height: 100%;
+    
     overflow: auto;
     margin: 0;
     padding: 0;
@@ -14,9 +14,6 @@
     background-attachment: local;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
+.offsetTitlebar {
+    height: calc(100% - 29.5px);
 }

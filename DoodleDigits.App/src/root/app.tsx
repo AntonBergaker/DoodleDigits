@@ -1,12 +1,36 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { createRoot } from "react-dom/client"
 import { getDefaultSettings, getDefaultState } from "../saving/saving-defaults"
 import { SaveStateData, CalculatorSettings } from "../saving/saving"
 import { StateSavingScheduler } from "../saving/state-saving-scheduler"
-import { mockElectronApi } from "../web/mock-electron"
+import {
+    getStoredStateAndSettings,
+    mockElectronApi,
+} from "../web/mock-electron"
 import { MainWindow } from "../pages/main-window"
+import { ThemeData, getDarkTheme, getDefaultTheme } from "../saving/themes"
 
-const [state, defaultSettings] = readStateAndSettings()
+const urlParams = new URLSearchParams(window.location.search)
+
+let stateFunc = () => readStateAndSettings(urlParams)
+if (WEB) {
+    mockElectronApi()
+    stateFunc = () => getStoredStateAndSettings()
+}
+
+const [state, defaultSettings] = stateFunc()
+const customTitlebar = urlParams.get("titlebar") == "true"
+
+let availableThemes: ThemeData[] = [getDefaultTheme(), getDarkTheme()]
+
+// If passed an extra theme, add it
+{
+    const themeQuery = urlParams.get("theme")
+    if (themeQuery) {
+        availableThemes.push(JSON.parse(atob(themeQuery)))
+    }
+}
+
 let preTheme: string | undefined = undefined
 let themeLink: HTMLLinkElement | undefined = undefined
 
@@ -15,59 +39,64 @@ applySettings(defaultSettings)
 function render() {
     const root = createRoot(document.getElementById("document-root"))
 
-    root.render(
+    root.render(<ReactRoot />)
+}
+
+function ReactRoot() {
+    const [data, setAvailableThemes] = useState<ThemeData[]>([
+        getDefaultTheme(),
+        getDarkTheme(),
+    ])
+    availableThemes = data
+
+    useEffect(() => {
+        const unsub = window.electronApi.onUpdateAvailableThemes(
+            (event, themes) => {
+                setAvailableThemes(themes)
+            }
+        )
+        return () => unsub()
+    }, [])
+
+    return (
         <MainWindow
             defaultSettings={defaultSettings}
             state={state}
+            customTitlebar={customTitlebar}
+            availableThemes={availableThemes}
             onInput={onCalculatorInput}
         />
     )
 }
 
 function applySettings(settings: CalculatorSettings) {
-    if (preTheme != settings.theme) {
-        preTheme = settings.theme
-        // Insert dark mode css theme
+    const theme = availableThemes.find((x) => x.id == settings.theme)
+    if (!theme) {
+        return
+    }
+    if (preTheme != theme.id) {
+        preTheme = theme.id
+
+        // Remove previous css links
         if (themeLink != undefined) {
             themeLink.remove()
             themeLink = undefined
         }
 
-        if (settings.theme != "default") {
+        if (theme.styleSheet) {
             themeLink = document.createElement("link")
             themeLink.rel = "stylesheet"
-            themeLink.href = getStaticPath(
-                `themes/${settings.theme}/${settings.theme}.css`
-            )
+            themeLink.href = getStaticFilesPath(`themes/${theme.styleSheet}`)
             document.head.appendChild(themeLink)
         }
     }
 }
 
-function getStaticPath(path: string): string {
-    if (WEB) {
-        return "./" + path
-    } else if (window.developmentMode) {
-        return "../../static/" + path
-    } else {
-        const windowAny = window as any
-        return (
-            windowAny.path.join(windowAny.process_resourcesPath, "..") +
-            "/resources/" +
-            path
-        )
-    }
-}
-
 render()
 
-if (!window.electronApi) {
-    mockElectronApi()
-}
-
-window.electronApi.onUpdateSettings((event, settings) =>
+window.electronApi.onUpdateSettings((event, settings) => {
     applySettings(settings)
-)
+})
 
 const stateScheduler = new StateSavingScheduler(state)
 
@@ -82,27 +111,40 @@ window.electronApi.onSizeChanged((event, data) => {
     stateScheduler.scheduleSave()
 })
 
-function readStateAndSettings(): [SaveStateData, CalculatorSettings] {
-    const urlParams = new URLSearchParams(window.location.search)
+window.electronApi
+
+function getStaticFilesPath(path: string): string {
+    if (WEB) {
+        return "./" + path
+    } else if (window.developmentMode) {
+        return "../../static/" + path
+    } else {
+        return window.process_resourcesPath + "/../resources/" + path
+    }
+}
+
+function readStateAndSettings(
+    urlParams: URLSearchParams
+): [SaveStateData, CalculatorSettings] {
     let state
     const stateQuery = urlParams.get("state")
     if (stateQuery) {
         state = JSON.parse(atob(stateQuery))
     } else {
-        console.log("State was not sent to window. Creating defaults.")
         state = getDefaultState()
     }
-    const settingsQuery = urlParams.get("settings")
+
     let settings
+    const settingsQuery = urlParams.get("settings")
     if (settingsQuery) {
         settings = JSON.parse(atob(settingsQuery))
     } else {
-        console.log("Settings was not sent to window. Creating defaults.")
         settings = getDefaultSettings(
             () =>
                 window.matchMedia &&
                 window.matchMedia("(prefers-color-scheme: dark)").matches
         )
     }
+
     return [state, settings]
 }

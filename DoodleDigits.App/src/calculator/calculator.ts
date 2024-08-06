@@ -46,8 +46,6 @@ export async function calculate(
         angleUnit: settings.angle_unit,
     }
 
-    console.log(inputSettings)
-
     const result = JSON.parse(
         dotnetExports.DoodleDigits.JsInterop.CalculatorInterop.Calculate(
             input,
@@ -56,9 +54,3 @@ export async function calculate(
     ) as CalculatorResult
     return result
 }
-/*
-onmessage = async (e) => {
-    const { input, index } = e.data as WorkerMessageInput;
-    const result = await calculate(input);
-    postMessage( { result, index } );
-}*/

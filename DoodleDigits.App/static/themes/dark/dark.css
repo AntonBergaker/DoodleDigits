@@ -1,4 +1,4 @@
-.container {
+.calculator {
     background-image: url("./grid_dark.png");
     color: #eeeeee;
 }
@@ -15,4 +15,5 @@
 }
 .titleBarDropdown {
     background-color: #333;
+    color: #eeeeee;
 }

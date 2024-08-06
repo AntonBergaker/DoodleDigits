@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from "react"
 import "./title-bar.scss"
 import { HamburgerIcon } from "./img/hamburger-icon"
 import { TitleBarDropdown } from "./title-bar-dropdown"
-import { CalculatorAngleUnit } from "../saving/saving"
+import { CalculatorSettings } from "../saving/saving"
+import { ThemeData } from "../saving/themes"
 
 type TitleBarProps = {
-    angleUnit: CalculatorAngleUnit
+    settings: CalculatorSettings
+    availableThemes: ThemeData[]
 }
 
 export function TitleBar(props: TitleBarProps) {
@@ -20,15 +22,18 @@ export function TitleBar(props: TitleBarProps) {
             }
         }
 
+        const focusUnsub = window.electronApi.onFocusedChanged(
+            (sender, data) => {
+                setFocus(data.focused)
+            }
+        )
+
         document.addEventListener("mousedown", onMousedown)
         return () => {
             document.removeEventListener("mousedown", onMousedown)
+            focusUnsub()
         }
     }, [ref])
-
-    window.electronApi.onFocusedChanged((sender, data) => {
-        setFocus(data.focused)
-    })
 
     function showMenu() {
         setDropdownVisible(!dropdownVisible)
@@ -40,8 +45,10 @@ export function TitleBar(props: TitleBarProps) {
                 <HamburgerIcon onClick={showMenu} />
             </div>
             <TitleBarDropdown
+                availableThemes={props.availableThemes}
+                faceLeft={false}
                 show={dropdownVisible}
-                angleUnit={props.angleUnit}
+                settings={props.settings}
             />
             <svg className="seperator draggable" width="2px">
                 <rect fill="currentColor" width="1.4px" height="25px" />
