@@ -35,4 +35,9 @@
             display: block;
         }
     }
+
+    &.faceLeft {
+        left: -90px;
+        top: 10px
+    }
 }

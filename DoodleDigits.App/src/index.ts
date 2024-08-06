@@ -8,8 +8,14 @@ import {
     saveState,
     SaveStateData,
 } from "./saving/saving"
+import fs from "fs/promises"
 import contextMenu from "electron-context-menu"
 import { onIpc, sendIpc } from "./ipc/main-ipc"
+import {
+    themeFileToThemeData,
+    ThemeData,
+    getDefaultTheme,
+} from "./saving/themes"
 
 process.env.DEV_MODE = process.argv.includes("--dev") ? "true" : "false"
 
@@ -28,8 +34,14 @@ const savedStatePromise = loadStateOrDefault()
 let savedState: SaveStateData
 const savedSettingsPromise = loadSettingsOrDefault()
 let savedSettings: CalculatorSettings
-
 let mainWindow: BrowserWindow
+
+const availableThemes: { [key: string]: ThemeData } = {}
+availableThemes["default"] = getDefaultTheme()
+
+const themeDirectory =
+    (process.env.DEV_MODE == "true" ? "./static" : process.resourcesPath) +
+    "/themes/"
 
 contextMenu({
     showSelectAll: true,
@@ -37,22 +49,6 @@ contextMenu({
     showInspectElement: false,
 
     append: (defaultActions, parameters, browserWindow) => [
-        defaultActions.separator(),
-        {
-            label: "Dark Mode",
-            type: "checkbox",
-            checked: savedSettings.theme == "dark",
-            click: (item, window, event) => {
-                if (savedSettings.theme == "dark") {
-                    savedSettings.theme = "default"
-                } else {
-                    savedSettings.theme = "dark"
-                }
-                item.checked = savedSettings.theme == "dark"
-                sendIpc(window, "updateSettings", savedSettings)
-                saveSettings(savedSettings)
-            },
-        },
         defaultActions.separator(),
         {
             label: "Always on Top",
@@ -72,10 +68,36 @@ contextMenu({
 })
 
 const createWindow = async () => {
-    savedState = await savedStatePromise
     savedSettings = await savedSettingsPromise
 
+    let theme: ThemeData
+    let themeFile: string
+
+    if (savedSettings.theme != "default") {
+        try {
+            themeFile = await fs.readFile(
+                `${themeDirectory + savedSettings.theme}/${
+                    savedSettings.theme
+                }.json`,
+                "utf8"
+            )
+            theme = themeFileToThemeData(
+                savedSettings.theme,
+                JSON.parse(themeFile)
+            )
+        } catch {
+            theme = getDefaultTheme()
+        }
+    } else {
+        theme = getDefaultTheme()
+    }
+
+    savedState = await savedStatePromise
+
     const size = savedState.window_dimensions
+    // Windows and MacOS get custom titlebar
+    const customTitlebar =
+        process.platform == "win32" || process.platform == "darwin"
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -86,13 +108,14 @@ const createWindow = async () => {
             sandbox: false,
         },
         autoHideMenuBar: true,
-        titleBarStyle: "hidden",
+        titleBarStyle: customTitlebar ? "hidden" : "default",
+        frame: !customTitlebar,
         titleBarOverlay: {
             color: "#00000000",
             symbolColor: "#ffffff",
         },
         alwaysOnTop: savedSettings.always_on_top,
-        darkTheme: savedSettings.theme.includes("dark"),
+        darkTheme: theme.isDark,
         icon: "./root/icon.ico",
     })
 
@@ -109,8 +132,28 @@ const createWindow = async () => {
 
     const query = `?state=${btoa(JSON.stringify(savedState))}&settings=${btoa(
         JSON.stringify(savedSettings)
-    )}`
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY + query)
+    )}&titlebar=${customTitlebar}&theme=${btoa(JSON.stringify(theme))}`
+
+    await mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY + query)
+    if (process.platform == "darwin") {
+        mainWindow.setWindowButtonVisibility(true)
+    }
+
+    const directories = (
+        await fs.readdir(themeDirectory, { withFileTypes: true })
+    ).filter((x) => x.isDirectory())
+    for (const directory of directories) {
+        const json = await fs.readFile(
+            `${themeDirectory}${directory.name}/${directory.name}.json`,
+            "utf8"
+        )
+        const obj = JSON.parse(json)
+        availableThemes[directory.name] = themeFileToThemeData(
+            directory.name,
+            obj
+        )
+    }
+    sendIpc(mainWindow, "updateAvailableThemes", Object.values(availableThemes))
 }
 
 onIpc("saveState", (event, state) => {
@@ -119,6 +162,12 @@ onIpc("saveState", (event, state) => {
 
 onIpc("updateAngleUnit", (event, angleUnit) => {
     savedSettings.angle_unit = angleUnit
+    sendIpc(mainWindow, "updateSettings", savedSettings)
+    saveSettings(savedSettings)
+})
+
+onIpc("updateTheme", async (event, theme) => {
+    savedSettings.theme = theme
     sendIpc(mainWindow, "updateSettings", savedSettings)
     saveSettings(savedSettings)
 })

@@ -7,6 +7,7 @@ export function onIpc<T extends MainApiKey>(
     handler: (event: IpcMainEvent, data: MainApiFunctionParameters<T>) => void
 ) {
     ipcMain.on(event, handler)
+    return () => ipcMain.off(event, handler)
 }
 
 export function sendIpc<T extends RendererApiKey>(

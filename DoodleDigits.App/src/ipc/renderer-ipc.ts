@@ -15,7 +15,7 @@ type RendererEventIpc = {
             event: IpcRendererEvent,
             data: RendererApiFunctionParameters<TKey>
         ) => void
-    ) => void
+    ) => () => void
 }
 
 for (const key in rendererApi) {
@@ -23,6 +23,7 @@ for (const key in rendererApi) {
         handler: Handler
     ) {
         ipcRenderer.on(key, handler)
+        return () => ipcRenderer.off(key, handler)
     }
 }
 
@@ -43,9 +44,9 @@ type RendererCallIpc = {
 
 export type RendererIpc = RendererEventIpc & RendererCallIpc
 
-const rendererIpc: RendererIpc = {
+const rendererIpc = {
     ...rendererEventIpc,
     ...rendererCallIpc,
-} as any
+} as RendererIpc
 
 export { rendererIpc }

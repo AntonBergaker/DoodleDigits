@@ -10,6 +10,7 @@ import { SaveStateData, CalculatorSettings } from "../../saving/saving"
 type CalculatorPageProps = {
     state: SaveStateData
     settings: CalculatorSettings
+    showTitlebar: boolean
     onInput?: (string: string) => void
 }
 
@@ -34,7 +35,10 @@ export function CalculatorPage(props: CalculatorPageProps) {
     const pageMeasurer = new PageMeasurer(ref)
 
     return (
-        <div className="container">
+        <div
+            className={
+                props.showTitlebar ? "calculator offsetTitlebar" : "calculator"
+            }>
             <InputText
                 ref={ref}
                 onInput={setInput}
