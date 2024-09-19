@@ -7,5 +7,4 @@ public class ParseError {
         this.Position = position;
         this.Message = message;
     }
-
 }

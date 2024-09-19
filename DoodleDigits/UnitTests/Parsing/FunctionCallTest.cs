@@ -149,4 +149,18 @@ class FunctionCallTest {
             "log_e(5) = ln(5)"
         );
     }
+
+    [Test]
+    public void TestNewLineOnCustomFunctions() {
+        ParsingTestUtils.AssertEqual(
+            new NodeList([
+                new Identifier("test"),
+                new BinaryOperation(
+                    new NumberLiteral("5"),
+                    BinaryOperation.OperationType.Add,
+                    new NumberLiteral("5")
+                )
+            ]), "test\n(5) + 5"
+        );
+    }
 }

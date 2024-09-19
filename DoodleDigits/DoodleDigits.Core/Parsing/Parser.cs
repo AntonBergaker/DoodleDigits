@@ -418,8 +418,8 @@ public class Parser {
         if (_functions.ContainsKey(token.Content.ToLower())) {
             return ReadFunctionCall(token, false);
         }
-        // Only read custom functions if we have a ( following
-        if (_reader.Peek().Type == TokenType.ParenthesisOpen) {
+        // Only read custom functions if we have a ( following on the same line
+        if (_reader.Peek(false).Type == TokenType.ParenthesisOpen) {
             return ReadFunctionCall(token, true);
         }
 
