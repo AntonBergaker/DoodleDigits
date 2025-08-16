@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
+# 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoodleDigits.Core", "DoodleDigits.Core\DoodleDigits.Core.csproj", "{C8EE3D61-22D9-4031-AB8F-2466320479D3}"
@@ -10,6 +10,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{1535CBA9-627F-4358-A472-551B0FACE4C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoodleDigits.JsInterop", "DoodleDigits.JsInterop\DoodleDigits.JsInterop.csproj", "{3A38E1FB-40E2-4C39-AA70-59C1E6E1E644}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoodleDigits.Cli", "DoodleDigits.Cli\DoodleDigits.Cli.csproj", "{84F12B1A-4A5B-49A9-A994-6387F4114059}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{3A38E1FB-40E2-4C39-AA70-59C1E6E1E644}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A38E1FB-40E2-4C39-AA70-59C1E6E1E644}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A38E1FB-40E2-4C39-AA70-59C1E6E1E644}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84F12B1A-4A5B-49A9-A994-6387F4114059}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F12B1A-4A5B-49A9-A994-6387F4114059}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F12B1A-4A5B-49A9-A994-6387F4114059}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F12B1A-4A5B-49A9-A994-6387F4114059}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

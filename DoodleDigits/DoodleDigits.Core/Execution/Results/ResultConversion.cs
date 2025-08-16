@@ -16,4 +16,8 @@ public class ResultConversion : Result {
         NewValue = newValue;
         Type = type;
     }
+
+    public override string ToString() {
+        return $"Converted {PreviousValue} to {NewValue}";
+    }
 }

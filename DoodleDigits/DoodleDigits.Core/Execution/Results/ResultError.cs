@@ -5,4 +5,8 @@ public class ResultError : Result {
     public ResultError(string error, Range position) : base(position) {
         Error = error;
     }
+
+    public override string ToString() {
+        return Error;
+    }
 }

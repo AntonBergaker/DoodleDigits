@@ -7,4 +7,8 @@ public class ResultValue : Result {
     public ResultValue(Value value, Range position) : base(position) {
         Value = value;
     }
+
+    public override string ToString() {
+        return Value.ToString();
+    }
 }
