@@ -7,7 +7,14 @@ import { DefinePlugin } from "webpack"
 
 rules.push({
     test: /\.(scss|css)$/,
-    use: ["style-loader", "css-loader", "sass-loader"],
+    use: ["style-loader", "css-loader",
+        {
+            loader: "sass-loader",
+            options: {
+                api: "modern",
+            },
+        }
+    ],
 })
 
 const webConfig: Configuration = {
