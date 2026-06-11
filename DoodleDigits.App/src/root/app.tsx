@@ -9,6 +9,8 @@ import {
 } from "../web/mock-electron"
 import { MainWindow } from "../pages/main-window"
 import { ThemeData, getDarkTheme, getDefaultTheme } from "../saving/themes"
+import { jsonFromBase64 } from "../utils"
+
 
 const urlParams = new URLSearchParams(window.location.search)
 
@@ -19,7 +21,7 @@ if (WEB) {
 }
 
 const [state, defaultSettings] = stateFunc()
-const customTitlebar = urlParams.get("titlebar") == "true"
+const customTitlebar = !!urlParams.get("titlebar")
 
 let availableThemes: ThemeData[] = [getDefaultTheme(), getDarkTheme()]
 
@@ -27,7 +29,7 @@ let availableThemes: ThemeData[] = [getDefaultTheme(), getDarkTheme()]
 {
     const themeQuery = urlParams.get("theme")
     if (themeQuery) {
-        availableThemes.push(JSON.parse(atob(themeQuery)))
+        availableThemes.push(jsonFromBase64(themeQuery))
     }
 }
 
@@ -129,7 +131,7 @@ function readStateAndSettings(
     let state
     const stateQuery = urlParams.get("state")
     if (stateQuery) {
-        state = JSON.parse(atob(stateQuery))
+        state = jsonFromBase64(stateQuery)
     } else {
         state = getDefaultState()
     }
@@ -137,7 +139,7 @@ function readStateAndSettings(
     let settings
     const settingsQuery = urlParams.get("settings")
     if (settingsQuery) {
-        settings = JSON.parse(atob(settingsQuery))
+        settings = jsonFromBase64(settingsQuery)
     } else {
         settings = getDefaultSettings(
             () =>

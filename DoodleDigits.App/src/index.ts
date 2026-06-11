@@ -16,6 +16,7 @@ import {
     ThemeData,
     getDefaultTheme,
 } from "./saving/themes"
+import { jsonToBase64 } from "./utils"
 
 process.env.DEV_MODE = process.argv.includes("--dev") ? "true" : "false"
 
@@ -76,8 +77,7 @@ const createWindow = async () => {
     if (savedSettings.theme != "default") {
         try {
             themeFile = await fs.readFile(
-                `${themeDirectory + savedSettings.theme}/${
-                    savedSettings.theme
+                `${themeDirectory + savedSettings.theme}/${savedSettings.theme
                 }.json`,
                 "utf8"
             )
@@ -130,11 +130,14 @@ const createWindow = async () => {
         sendIpc(mainWindow, "focusedChanged", { focused: false })
     })
 
-    const query = `?state=${btoa(JSON.stringify(savedState))}&settings=${btoa(
-        JSON.stringify(savedSettings)
-    )}&titlebar=${customTitlebar}&theme=${btoa(JSON.stringify(theme))}`
+    const query =
+        `?state=${jsonToBase64(savedState)}` +
+        `&settings=${jsonToBase64(savedSettings)}` +
+        `&titlebar=${customTitlebar}` +
+        `&theme=${jsonToBase64(theme)}`
 
     await mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY + query)
+    mainWindow.webContents.openDevTools();
     if (process.platform == "darwin") {
         mainWindow.setWindowButtonVisibility(true)
     }
