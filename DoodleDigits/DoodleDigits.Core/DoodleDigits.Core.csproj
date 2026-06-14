@@ -12,7 +12,7 @@
 	
 	<PropertyGroup>
 		<PackageId>DoodleDigits.Core</PackageId>
-		<Version>1.6.0</Version>
+		<Version>1.7.0</Version>
 		<Authors>Anton Bergåker</Authors>
 		<Title>Doodle Digits Core</Title>
 		<Description>
