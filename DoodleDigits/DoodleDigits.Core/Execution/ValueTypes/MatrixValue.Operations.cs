@@ -69,7 +69,7 @@ public partial class MatrixValue {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Error);
             }
 
-            return new MatrixValue(PerformPerElementOperation(lhs.Dimension, rhs.Dimension), false);
+            return new MatrixValue(PerformPerElementOperation(lhs.Dimension, rhs.Dimension), ValueTriviality.NonTrivial);
         }
 
         return null;
@@ -89,7 +89,7 @@ public partial class MatrixValue {
 
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var realOther)) {
             // Scalar matrix multiplication
-            return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Multiply), false);
+            return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Multiply), ValueTriviality.NonTrivial);
         }
 
         return null;
@@ -105,7 +105,7 @@ public partial class MatrixValue {
 
                 lhs = new MatrixValue(
                     new MatrixDimension(new [] {new MatrixDimension((IEnumerable<IMatrixElement>)lhs.Dimension)}),
-                    lhs.TriviallyAchieved);
+                    lhs.Triviality);
             }
             
             if (lhs[0].Length != rhs.Dimension.Length) {
@@ -139,7 +139,7 @@ public partial class MatrixValue {
                 for (int i = 0; i < newMatrix.GetLength(1); i++) {
                     values.Add(new(newMatrix[0, i]));
                 }
-                return new MatrixValue(new MatrixDimension(values), false);
+                return new MatrixValue(new MatrixDimension(values), ValueTriviality.NonTrivial);
             }
 
             if (newMatrix.GetLength(1) == 1) {
@@ -147,10 +147,10 @@ public partial class MatrixValue {
                 for (int i = 0; i < newMatrix.GetLength(0); i++) {
                     values.Add(new(newMatrix[i, 0]));
                 }
-                return new MatrixValue(new MatrixDimension(values), false);
+                return new MatrixValue(new MatrixDimension(values), ValueTriviality.NonTrivial);
             }
 
-            return new MatrixValue(DimensionFromArray(newMatrix), false);
+            return new MatrixValue(DimensionFromArray(newMatrix), ValueTriviality.NonTrivial);
         }
 
         return null!;
@@ -159,7 +159,7 @@ public partial class MatrixValue {
     public override Value? TryDivide(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (side == BinaryOperation.OperationSide.Left) {
             if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherReal)) {
-                return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Divide), false);
+                return new MatrixValue(PerformOnAllElements(this.Dimension, other, side, context, nodes, BinaryOperations.Divide), ValueTriviality.NonTrivial);
             }
         }
 

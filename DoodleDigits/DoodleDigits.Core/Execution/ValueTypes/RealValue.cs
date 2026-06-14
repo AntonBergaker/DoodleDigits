@@ -16,10 +16,10 @@ public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
 
     public PresentedForm Form { get; }
 
-    public RealValue(Rational value) : this(value, false, PresentedForm.Unset) {
+    public RealValue(Rational value) : this(value, ValueTriviality.Unknown, PresentedForm.Unset) {
     }
 
-    public RealValue(Rational value, bool triviallyAchieved, PresentedForm form) : base(triviallyAchieved) {
+    public RealValue(Rational value, ValueTriviality triviality, PresentedForm form) : base(triviality) {
         Value = value;
         Form = form;
     }
@@ -59,7 +59,7 @@ public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
         return Value.GetHashCode();
     }
 
-    public static Value FromDouble(double value, bool triviallyAchieved, RealValue.PresentedForm form, bool resultOfInfinity = false) {
+    public static Value FromDouble(double value, ValueTriviality triviality, RealValue.PresentedForm form, bool resultOfInfinity = false) {
         if (double.IsPositiveInfinity(value)) {
             return new TooBigValue(resultOfInfinity ? TooBigValue.Sign.PositiveInfinity : TooBigValue.Sign.Positive);
         }
@@ -72,22 +72,22 @@ public partial class RealValue : Value, IConvertibleToReal, IConvertibleToBool {
             return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
         }
 
-        return new RealValue(RationalUtils.FromDouble(value), triviallyAchieved, form);
+        return new RealValue(RationalUtils.FromDouble(value), triviality, form);
     }
 
-    public override Value Clone(bool? triviallyAchieved = null) {
-        return new RealValue(Value, triviallyAchieved ?? this.TriviallyAchieved, Form);
+    public override Value Clone(ValueTriviality? triviality = null) {
+        return new RealValue(Value, triviality ?? this.Triviality, Form);
     }
 
-    public RealValue Clone(Rational? value = null, bool? triviallyAchieved = null, AstNode? sourceAstNode = null, PresentedForm? form = null) {
+    public RealValue Clone(Rational? value = null, ValueTriviality? triviality = null, AstNode? sourceAstNode = null, PresentedForm? form = null) {
         value ??= this.Value;
-        triviallyAchieved ??= this.TriviallyAchieved;
+        triviality ??= this.Triviality;
         form ??= this.Form;
-        if (triviallyAchieved == this.TriviallyAchieved && form == this.Form && this.Value == value) {
+        if (triviality == this.Triviality && form == this.Form && this.Value == value) {
             return this;
         }
 
-        return new RealValue(value.Value, triviallyAchieved.Value, form.Value);
+        return new RealValue(value.Value, triviality.Value, form.Value);
     }
 
     public BooleanValue ConvertToBool(ExecutorContext context, Expression node) {

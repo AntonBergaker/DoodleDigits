@@ -1,42 +1,130 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SourceGenerator {
     [Generator]
-    public class FunctionGenerator : ISourceGenerator {
-        private class SyntaxReceiver : ISyntaxReceiver {
-            public List<MethodDeclarationSyntax> References = new();
+    public class FunctionGenerator : IIncrementalGenerator {
 
-            public void OnVisitSyntaxNode(SyntaxNode syntaxNode) {
-                if (syntaxNode is MethodDeclarationSyntax method) {
-                    if (HasAttribute(method)) {
-                        References.Add(method);
+        private class AttributeData {
+            public readonly string[] Names;
+            public readonly string Expects;
+            public readonly string FunctionPath;
+            public readonly (int min, int max)? ArgumentCount;
+
+            public AttributeData(string[] names, string expects, string functionPath, (int min, int max)? argumentCount) {
+                Names = names;
+                Expects = expects;
+                FunctionPath = functionPath;
+                ArgumentCount = argumentCount;
+            }
+
+            public bool Equals(AttributeData? other) {
+                if (other is null) return false;
+
+                return
+                    Names.SequenceEqual(other.Names) &&
+                    string.Equals(Expects, other.Expects, StringComparison.Ordinal) &&
+                    string.Equals(FunctionPath, other.FunctionPath, StringComparison.Ordinal) &&
+                    ArgumentCount == other.ArgumentCount;
+            }
+
+            public override bool Equals(object? obj) => Equals(obj as AttributeData);
+
+            public override int GetHashCode() {
+                unchecked {
+                    int hash = 17;
+
+                    if (Names != null) {
+                        foreach (var n in Names)
+                            hash = hash * 31 + n.GetHashCode();
                     }
+
+                    hash = hash * 31 + Expects.GetHashCode();
+                    hash = hash * 31 + FunctionPath.GetHashCode();
+                    hash = hash * 31 + ArgumentCount.GetHashCode();
+
+                    return hash;
+                }
+            }
+        }
+
+
+        public void Initialize(IncrementalGeneratorInitializationContext context) {
+            //System.Diagnostics.Debugger.Launch();
+            var flaggedFunctions = context.SyntaxProvider.ForAttributeWithMetadataName(
+                "DoodleDigits.Core.Functions.CalculatorFunctionAttribute",
+                (syntax, _) => syntax is MethodDeclarationSyntax,
+                TransformMethod
+            );
+            var filtered = flaggedFunctions.Where((x) => x != null).Select((x, _) => x!);
+            context.RegisterImplementationSourceOutput(filtered.Collect(), Execute);
+
+        }
+
+        private readonly SymbolDisplayFormat _format = new SymbolDisplayFormat(
+            globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            memberOptions: SymbolDisplayMemberOptions.IncludeContainingType,
+            parameterOptions: SymbolDisplayParameterOptions.None);
+
+        private AttributeData? TransformMethod(GeneratorAttributeSyntaxContext context, CancellationToken token) {
+            if (context.TargetSymbol is not IMethodSymbol method) {
+                return null;
+            }
+
+            var attribute = context.Attributes.First();
+            var attributeParameters = attribute.ConstructorArguments;
+
+            if (attributeParameters.Length < 2) {
+                return null;
+            }
+
+            // First argument is return type as an enum
+            var expectsType = $"(DoodleDigits.Core.Functions.FunctionExpectedType){(int)attributeParameters[0].Value!}";
+            if (expectsType == null) {
+                return null;
+            }
+            List<string> names = new List<string>();
+            (int min, int max)? argumentCount = null;
+
+
+
+            for (var i = 1; i < attributeParameters.Length; i++) {
+                var parameter = attributeParameters[i];
+
+                if (parameter.Kind == TypedConstantKind.Primitive && parameter.Value is string str) {
+                    names.Add(str);
+                    continue;
+                }
+                if (parameter.Kind == TypedConstantKind.Array) {
+                    names.AddRange(parameter.Values.Select(x => x.Value).OfType<string>());
+                }
+                if (parameter.Kind == TypedConstantKind.Primitive && parameter.Value is int int0) {
+                    int min = int0;
+                    int max = int0;
+
+                    if (attributeParameters.Length > i + 1 && attributeParameters[i + 1].Value is int int1) {
+                        max = int1;
+                        i++;
+                    }
+                    argumentCount = (min, max);
+                    continue;
                 }
             }
 
-            private bool HasAttribute(MethodDeclarationSyntax method) {
-                return method.AttributeLists.Any() != false;
-            }
+            string name = method.ToDisplayString(_format);
+
+            return new AttributeData(names.ToArray(), expectsType, name, argumentCount);
         }
 
-        public void Initialize(GeneratorInitializationContext context) {
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-            //Debugger.Launch();
-        }
 
-        public void Execute(GeneratorExecutionContext context) {
-            if (context.Compilation.Assembly.Identity.Name != "DoodleDigits.Core") {
-                return;
-            }
+        private void Execute(SourceProductionContext context, ImmutableArray<AttributeData> attributeDatas) {
 
-            if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver) {
-                return;
-            }
 
             CodeBuilder builder = new CodeBuilder();
             builder.AddLines(
@@ -50,21 +138,16 @@ namespace SourceGenerator {
             builder.StartBlock("static FunctionLibrary()");
             builder.StartBlock("Functions = new FunctionData[]");
 
-            foreach (MethodDeclarationSyntax method in syntaxReceiver.References) {
-                var semanticModel = context.Compilation.GetSemanticModel(method.SyntaxTree);
-                if (HasFunctionAttribute(semanticModel, method, out var attributeData) == false) {
-                    continue;
-                }
+            foreach (var attributeData in attributeDatas) {
 
                 string functionNames = $"new [] {{ {string.Join(", ", attributeData!.Names.Select(x => $"\"{x}\""))} }}";
-                string functionPath = GetFullMethodName(semanticModel, method);
 
                 if (attributeData.ArgumentCount != null) {
                     string argumentCountString = $"{attributeData.ArgumentCount.Value.min}..{attributeData.ArgumentCount.Value.max}";
-                    builder.AddLine($"new({functionNames}, {attributeData.Expects}, {argumentCountString}, {functionPath}),");
+                    builder.AddLine($"new({functionNames}, {attributeData.Expects}, {argumentCountString}, {attributeData.FunctionPath}),");
                 }
                 else {
-                    builder.AddLine($"new({functionNames}, {attributeData.Expects}, {functionPath}),");
+                    builder.AddLine($"new({functionNames}, {attributeData.Expects}, {attributeData.FunctionPath}),");
                 }
             }
 
@@ -77,77 +160,5 @@ namespace SourceGenerator {
             context.AddSource("FunctionLibrary.g.cs", builder.ToString());
         }
 
-        private class AttributeData { 
-            public readonly string[] Names;
-            public readonly string Expects;
-            public readonly (int min, int max)? ArgumentCount;
-
-            public AttributeData(string[] names, string expects, (int min, int max)? argumentCount) {
-                Names = names;
-                Expects = expects;
-                ArgumentCount = argumentCount;
-            }
-            
-        }
-        
-        private bool HasFunctionAttribute(SemanticModel semanticModel, MethodDeclarationSyntax method, out AttributeData? data) {
-            foreach (var attributeDecl in method.AttributeLists.SelectMany(al => al.Attributes)) {
-                TypeInfo info = semanticModel.GetTypeInfo(attributeDecl);
-                if (info.Type?.ToString() == "DoodleDigits.Core.Functions.CalculatorFunctionAttribute") {
-                    if (attributeDecl.ArgumentList == null) {
-                        continue;
-                    }
-
-                    string expectsType = "";
-                    List<string> names = new List<string>();
-                    (int min, int max)? argumentCount = null;
-
-                    for (var i = 0; i < attributeDecl.ArgumentList.Arguments.Count; i++) {
-                        AttributeArgumentSyntax attributeParameter = attributeDecl.ArgumentList.Arguments[i];
-                        // First argument is the enum type
-                        if (i == 0) {
-                            expectsType = attributeParameter.ToFullString();
-                        }
-                        
-                        if (attributeParameter.Expression is LiteralExpressionSyntax literal) {
-                            SyntaxKind kind = literal.Kind();
-                            if (kind == SyntaxKind.NumericLiteralExpression || kind == SyntaxKind.NumericLiteralToken) {
-                                int val = (int) literal.Token.Value!;
-                                if (i == 1) {
-                                    argumentCount = (val, val);
-                                }
-                                else {
-                                    argumentCount = (argumentCount?.min ?? val, val);
-                                }
-                            }
-                            else if (literal.IsKind(SyntaxKind.StringLiteralExpression)) {
-                                names.Add( (string)literal.Token.Value! );
-                            }
-                        }
-                        else if (attributeParameter.Expression is MemberAccessExpressionSyntax access) {
-                            
-                            if (access.ToString() == "int.MaxValue") {
-                                if (i == 1) {
-                                    argumentCount = (int.MaxValue, int.MaxValue);
-                                } else {
-                                    argumentCount = (argumentCount?.min ?? int.MaxValue, int.MaxValue);
-                                }
-                            }
-                        }
-                    }
-
-                    data = new AttributeData(names.ToArray(), expectsType, argumentCount);
-                    return true;
-                }
-            }
-
-            data = null;
-            return false;
-        }
-
-        public static string GetFullMethodName(SemanticModel model, MethodDeclarationSyntax method) {
-            ISymbol symbol = model.GetEnclosingSymbol(method.SpanStart) ?? throw new NullReferenceException("symbol was null");
-            return symbol.ToDisplayString() + "." + method.Identifier;
-        }
     }
 }

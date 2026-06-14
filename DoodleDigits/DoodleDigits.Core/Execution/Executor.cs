@@ -117,8 +117,8 @@ public class Executor {
                 context.AddVariable(variable.Identifier, variable.Value);
             }
             var result = Calculate(functionValue.Implementation, context);
-            if (result.TriviallyAchieved) {
-                result = result.Clone(false);
+            if (result.Triviality == ValueTriviality.Trivial) {
+                result = result.Clone(ValueTriviality.NonTrivial);
             }
             context.PopVariableStack();
             return result;
@@ -157,7 +157,7 @@ public class Executor {
         }
 
         if (RationalUtils.TryParse(number, out Rational result, 200, @base)) {
-            return new RealValue(result, true, form);
+            return new RealValue(result, ValueTriviality.Trivial, form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -202,9 +202,13 @@ public class Executor {
                 }
                 Identifier value = (Identifier)comparison.Expressions[i];
 
-                context.AddVariable(value.Value, calculatedResult.Clone(false));
+                context.AddVariable(value.Value, calculatedResult.Clone(ValueTriviality.NonTrivial));
             }
 
+            // If it's trivial, promote it to non trivial with side effects.
+            if (calculatedResult.Triviality == ValueTriviality.Trivial) {
+                calculatedResult = calculatedResult.Clone(ValueTriviality.TrivialSideEffect);
+            } 
             return calculatedResult;
         }
         else {
@@ -254,7 +258,7 @@ public class Executor {
                 _ => RealValue.PresentedForm.Unset
             };
 
-            return realValue.Clone(triviallyAchieved: false, form: form);
+            return realValue.Clone(triviality: ValueTriviality.NonTrivial, form: form);
 
         }
 
@@ -290,7 +294,7 @@ public class Executor {
         if (dimension == null) {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
-        MatrixValue val = new MatrixValue(dimension, true);
+        MatrixValue val = new MatrixValue(dimension, ValueTriviality.Trivial);
         if (val.IsValid == false) {
             return new UndefinedValue(UndefinedValue.UndefinedType.Error);
         }
@@ -299,7 +303,7 @@ public class Executor {
     }
 
     private Value CalculateFunctionDeclaration(FunctionDeclaration function, ExecutorContext context) {
-        var functionValue = new FunctionValue(function.Identifier, function.ArgumentNames, function.Implementation, false);
+        var functionValue = new FunctionValue(function.Identifier, function.ArgumentNames, function.Implementation, ValueTriviality.NonTrivial);
         context.AddVariable(function.Identifier, functionValue);
         return functionValue;
     }

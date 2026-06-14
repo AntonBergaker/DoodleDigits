@@ -59,7 +59,7 @@ public static class UnaryOperations {
             val *= i;
         }
 
-        return new RealValue(val, false, value.Form);
+        return new RealValue(val, ValueTriviality.NonTrivial, value.Form);
     }
 
     public static Value UnaryFactorial(Value value, ExecutorContext context, UnaryOperation node) {
@@ -76,7 +76,7 @@ public static class UnaryOperations {
                 return IntegerFactorial(real, context, node);
             }
 
-            return RealValue.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), false, real.Form);
+            return RealValue.FromDouble(MathNet.Numerics.SpecialFunctions.Gamma((double)(1 + real.Value)), ValueTriviality.NonTrivial, real.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);

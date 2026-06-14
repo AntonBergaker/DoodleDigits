@@ -8,14 +8,14 @@ public class FunctionValue : Value {
     public string[] ArgumentNames { get; }
     public Expression Implementation { get; }
 
-    public FunctionValue(string identifier, string[] argumentNames, Expression implementation, bool triviallyAchieved) : base(triviallyAchieved) {
+    public FunctionValue(string identifier, string[] argumentNames, Expression implementation, ValueTriviality triviality) : base(triviality) {
         Identifier = identifier;
         ArgumentNames = argumentNames;
         Implementation = implementation;
     }
 
-    public override Value Clone(bool? triviallyAchieved = null) {
-        return new FunctionValue(Identifier, ArgumentNames, Implementation, triviallyAchieved ?? TriviallyAchieved);
+    public override Value Clone(ValueTriviality? triviality = null) {
+        return new FunctionValue(Identifier, ArgumentNames, Implementation, triviality ?? Triviality);
     }
 
     public override bool Equals(Value? other) {

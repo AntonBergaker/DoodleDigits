@@ -14,9 +14,9 @@ public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
 
     public readonly PresentationForm Form;
 
-    public BooleanValue(bool value) : this(value, false, PresentationForm.Unset) { }
+    public BooleanValue(bool value) : this(value, ValueTriviality.Unknown, PresentationForm.Unset) { }
 
-    public BooleanValue(bool value, bool triviallyAchieved, PresentationForm presentationForm) : base(triviallyAchieved) {
+    public BooleanValue(bool value, ValueTriviality triviality, PresentationForm presentationForm) : base(triviality) {
         Value = value;
         Form = presentationForm;
     }
@@ -43,13 +43,13 @@ public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
         return bOther.Value == Value;
     }
 
-    public override Value Clone(bool? triviallyAchieved = null) {
-        return new BooleanValue(Value, triviallyAchieved ?? this.TriviallyAchieved, PresentationForm.Unset);
+    public override Value Clone(ValueTriviality? triviallyAchieved = null) {
+        return new BooleanValue(Value, triviallyAchieved ?? this.Triviality, PresentationForm.Unset);
     }
 
-    public Value Clone(bool? triviallyAchieved = null, PresentationForm? form = null) {
+    public Value Clone(ValueTriviality? triviallyAchieved = null, PresentationForm? form = null) {
         return new BooleanValue(Value, 
-            triviallyAchieved ?? this.TriviallyAchieved,
+            triviallyAchieved ?? this.Triviality,
             form ?? this.Form
         );
     }

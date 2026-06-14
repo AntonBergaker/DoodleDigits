@@ -1,4 +1,5 @@
 ﻿using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution.ValueTypes;
 using NUnit.Framework;
 
 namespace UnitTests.Execution;
@@ -17,13 +18,13 @@ class VariableTest {
         {
             var result = ExecutionTestUtils.CalculateString("x = true").Results.LastOrDefault() as ResultValue;
             Assert.IsNotNull(result);
-            Assert.IsTrue(result!.Value.TriviallyAchieved);
+            Assert.AreEqual(ValueTriviality.TrivialSideEffect, result!.Value.Triviality);
         }
 
         {
             var result = ExecutionTestUtils.CalculateString("x = 5").Results.LastOrDefault() as ResultValue;
             Assert.IsNotNull(result);
-            Assert.IsTrue(result!.Value.TriviallyAchieved);
+            Assert.AreEqual(ValueTriviality.TrivialSideEffect, result!.Value.Triviality);
         }
     }
 }

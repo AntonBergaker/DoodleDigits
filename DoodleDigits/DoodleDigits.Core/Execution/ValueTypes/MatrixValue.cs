@@ -118,9 +118,9 @@ public partial class MatrixValue : Value {
 
     public readonly MatrixDimension Dimension;
 
-    public MatrixValue(MatrixDimension dimension) : this(dimension, false) { }
+    public MatrixValue(MatrixDimension dimension) : this(dimension, ValueTriviality.Unknown) { }
 
-    public MatrixValue(MatrixDimension dimension, bool triviallyAchieved) : base(triviallyAchieved) {
+    public MatrixValue(MatrixDimension dimension, ValueTriviality triviallyAchieved) : base(triviallyAchieved) {
         this.Dimension = dimension;
         IsValid = Validate();
     }
@@ -191,8 +191,8 @@ public partial class MatrixValue : Value {
     }
 
 
-    public override Value Clone(bool? triviallyAchieved = null) {
-        return new MatrixValue(Dimension);
+    public override Value Clone(ValueTriviality? triviality = null) {
+        return new MatrixValue(Dimension, this.Triviality);
     }
 
     public override bool Equals(Value? other) {

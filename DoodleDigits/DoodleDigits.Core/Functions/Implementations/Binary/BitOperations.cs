@@ -17,7 +17,7 @@ public static partial class BinaryOperations {
             lhsReal = lhsReal.Round(context, nodes.Rhs);
             rhsReal = rhsReal.Round(context, nodes.Lhs);
 
-            return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator, false, lhsReal.Form);
+            return new RealValue(lhsReal.Value.Numerator ^ rhsReal.Value.Numerator, ValueTriviality.NonTrivial, lhsReal.Form);
         }
         
         if (lhs is UndefinedValue || rhs is UndefinedValue) {
@@ -33,7 +33,7 @@ public static partial class BinaryOperations {
             lhsReal = lhsReal.Round(context, nodes.Rhs);
             rhsReal = rhsReal.Round(context, nodes.Lhs);
 
-            return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator, false, lhsReal.Form);
+            return new RealValue(lhsReal.Value.Numerator | rhsReal.Value.Numerator, ValueTriviality.NonTrivial, lhsReal.Form);
         }
 
         if (lhs is UndefinedValue || rhs is UndefinedValue) {
@@ -49,7 +49,7 @@ public static partial class BinaryOperations {
             lhsReal = lhsReal.Round(context, nodes.Rhs);
             rhsReal = rhsReal.Round(context, nodes.Lhs);
 
-            return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator, false, lhsReal.Form);
+            return new RealValue(lhsReal.Value.Numerator & rhsReal.Value.Numerator, ValueTriviality.NonTrivial, lhsReal.Form);
         }
 
         if (lhs is UndefinedValue || rhs is UndefinedValue) {
@@ -67,12 +67,12 @@ public static partial class BinaryOperations {
         {
             if (rhs is TooBigValue tbvRhs && lhs is RealValue realLhs) {
                 if (realLhs.Value.IsZero) {
-                    return new RealValue(Rational.Zero, false, realLhs.Form);
+                    return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realLhs.Form);
                 }
 
                 return tbvRhs.IsPositive
                     ? new TooBigValue(TooBigValue.Sign.Positive)
-                    : new RealValue(Rational.Zero, false, realLhs.Form);
+                    : new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realLhs.Form);
                 ;
             }
         }
@@ -83,7 +83,7 @@ public static partial class BinaryOperations {
                 rhsReal = rhsReal.Round(context, nodes.Lhs);
 
                 if (lhsReal.Value.IsZero) {
-                    return new RealValue(Rational.Zero, false, lhsReal.Form);
+                    return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, lhsReal.Form);
                 }
 
                 if (Rational.Abs(rhsReal.Value) > 10000) {
@@ -95,10 +95,10 @@ public static partial class BinaryOperations {
                         RationalUtils.Floor(new Rational(
                             lhsReal.Value.Numerator,
                             rhsReal.Value.Denominator * BigInteger.Pow(2, -(int)rhsReal.Value))
-                        ), false, lhsReal.Form
+                        ), ValueTriviality.NonTrivial, lhsReal.Form
                     );
                 }
-                return new RealValue(RationalUtils.Floor(lhsReal.Value * Rational.Pow(2, (int)rhsReal.Value)), false, lhsReal.Form);
+                return new RealValue(RationalUtils.Floor(lhsReal.Value * Rational.Pow(2, (int)rhsReal.Value)), ValueTriviality.NonTrivial, lhsReal.Form);
             }
         }
 

@@ -47,7 +47,7 @@ public partial class TooBigValue {
                     <= -2 => Sign.NegativeInfinity,
                     0 => throw new Exception(),
                 }
-                , false);
+                , ValueTriviality.NonTrivial);
         }
 
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var _)) {
@@ -75,7 +75,7 @@ public partial class TooBigValue {
                 }
 
                 if (Math.Abs(lhsSimpleSize) < Math.Abs(rhsSimpleSize)) {
-                    return new RealValue(Rational.Zero, false, RealValue.PresentedForm.Unset);
+                    return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, RealValue.PresentedForm.Unset);
                 }
 
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
@@ -94,7 +94,7 @@ public partial class TooBigValue {
         if (side == BinaryOperation.OperationSide.Right) {
             // Interactions with tbv handled in left already
             if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherReal)) {
-                return new RealValue(Rational.Zero, false, otherReal.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, otherReal.Form);
             }
         }
 
@@ -114,7 +114,7 @@ public partial class TooBigValue {
 
                     0 => throw new InvalidOperationException(),
                 }
-                , false);
+                , ValueTriviality.NonTrivial);
         }
 
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
@@ -169,11 +169,11 @@ public partial class TooBigValue {
 
             if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherReal)) {
                 if (otherReal.Value.IsZero) {
-                    return new RealValue(Rational.One, false, otherReal.Form);
+                    return new RealValue(Rational.One, ValueTriviality.NonTrivial, otherReal.Form);
                 }
 
                 if (otherReal.Value < Rational.Zero) {
-                    return new RealValue(Rational.Zero, false, otherReal.Form);
+                    return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, otherReal.Form);
                 }
 
                 return this;
@@ -185,7 +185,7 @@ public partial class TooBigValue {
             
             if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherReal)) {
                 if (otherReal.Value.IsOne) {
-                    return new RealValue(Rational.One, false, otherReal.Form);
+                    return new RealValue(Rational.One, ValueTriviality.NonTrivial, otherReal.Form);
                 }
 
                 if (otherReal.Value < Rational.Zero) {
@@ -193,7 +193,7 @@ public partial class TooBigValue {
                 }
 
                 if (otherReal.Value < Rational.One) {
-                    return new RealValue(Rational.Zero, false, otherReal.Form);
+                    return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, otherReal.Form);
                 }
 
                 return this;
