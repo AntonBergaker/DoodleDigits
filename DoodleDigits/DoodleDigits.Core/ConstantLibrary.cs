@@ -16,14 +16,14 @@ public class Constant {
 public static class ConstantLibrary {
 
     public static Constant[] Constants = {
-        new("true", new BooleanValue(true, triviallyAchieved: true, BooleanValue.PresentationForm.Unset)),
-        new("false", new BooleanValue(false, triviallyAchieved: true, BooleanValue.PresentationForm.Unset)),
-        new("pi", new RealValue(RationalUtils.Pi)),
-        new("π", new RealValue(RationalUtils.Pi)),
-        new("tau", new RealValue(RationalUtils.Tau)),
-        new("e", new RealValue(RationalUtils.EulersNumber)),
-        new("infinity", new TooBigValue(TooBigValue.Sign.PositiveInfinity)),
-        new("∞", new TooBigValue(TooBigValue.Sign.PositiveInfinity, triviallyAchieved: true)),
+        new("true", new BooleanValue(true, triviality: ValueTriviality.Trivial, BooleanValue.PresentationForm.Unset)),
+        new("false", new BooleanValue(false, triviality: ValueTriviality.Trivial, BooleanValue.PresentationForm.Unset)),
+        new("pi", new RealValue(RationalUtils.Pi, ValueTriviality.NonTrivial, RealValue.PresentedForm.Unset)),
+        new("π", new RealValue(RationalUtils.Pi, ValueTriviality.NonTrivial, RealValue.PresentedForm.Unset)),
+        new("tau", new RealValue(RationalUtils.Tau, ValueTriviality.NonTrivial, RealValue.PresentedForm.Unset)),
+        new("e", new RealValue(RationalUtils.EulersNumber, ValueTriviality.NonTrivial, RealValue.PresentedForm.Unset)),
+        new("infinity", new TooBigValue(TooBigValue.Sign.PositiveInfinity, ValueTriviality.Trivial)),
+        new("∞", new TooBigValue(TooBigValue.Sign.PositiveInfinity, ValueTriviality.Trivial)),
     };
 
 

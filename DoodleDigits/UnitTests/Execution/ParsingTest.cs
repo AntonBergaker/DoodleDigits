@@ -1,6 +1,8 @@
-﻿using System.Numerics;
+﻿using DoodleDigits.Core.Execution.Results;
+using DoodleDigits.Core.Execution.ValueTypes;
 using NUnit.Framework;
 using Rationals;
+using System.Numerics;
 
 namespace UnitTests.Execution;
 class ParsingTest {
@@ -14,4 +16,15 @@ class ParsingTest {
         ExecutionTestUtils.AssertEqual(new Rational(BigInteger.Parse(bigNumber)), bigNumber);
     }
 
+    [Test]
+    public void TestConfusingComma() {
+        var result = ExecutionTestUtils.CalculateString("5,2*5");
+
+        var values = result.Results.OfType<ResultValue>().ToArray();
+        Assert.AreEqual(2, values.Length);
+        Assert.AreEqual(new RealValue(5), values[0].Value);
+        Assert.AreEqual(ValueTriviality.Trivial, values[0].Value.Triviality);
+        Assert.AreEqual(new RealValue(10), values[1].Value);
+        Assert.AreEqual(ValueTriviality.NonTrivial, values[1].Value.Triviality);
+    }
 }

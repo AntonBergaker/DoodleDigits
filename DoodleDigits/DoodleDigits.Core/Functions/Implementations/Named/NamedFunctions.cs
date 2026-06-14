@@ -29,7 +29,7 @@ public static partial class NamedFunctions {
             @base = 10;
         } else {
             if (values[1] is TooBigValue { IsPositive: true }) {
-                return new RealValue(Rational.Zero, false, value.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, value.Form);
             }
 
             if (values[1] is not IConvertibleToReal convertibleToReal1) {
@@ -52,7 +52,7 @@ public static partial class NamedFunctions {
                 count++;
                 remainingValue = (remainingValue/@base).CanonicalForm;
                 if (remainingValue == @base) {
-                    return new RealValue(count, false, value.Form);
+                    return new RealValue(count, ValueTriviality.NonTrivial, value.Form);
                 }
                 if (remainingValue < Rational.One) {
                     break;
@@ -64,7 +64,7 @@ public static partial class NamedFunctions {
         return RealValue.FromDouble(Rational.Log(
             value.Value,
             (double)@base
-        ), false, value.Form);
+        ), ValueTriviality.NonTrivial, value.Form);
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "root")]
@@ -82,7 +82,7 @@ public static partial class NamedFunctions {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return RealValue.FromDouble(Math.Pow((double) dValue.Value, (double) (1 / dRoot.Value)), false, dValue.Form);
+            return RealValue.FromDouble(Math.Pow((double) dValue.Value, (double) (1 / dRoot.Value)), ValueTriviality.NonTrivial, dValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -97,7 +97,7 @@ public static partial class NamedFunctions {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return RealValue.FromDouble(Rational.Log(realValue.Value), false, realValue.Form);
+            return RealValue.FromDouble(Rational.Log(realValue.Value), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -126,7 +126,7 @@ public static partial class NamedFunctions {
             value = BigInteger.GreatestCommonDivisor(value, realValue.Value.Numerator);
         }
 
-        return new RealValue(value, false, firstValue.Form);
+        return new RealValue(value, ValueTriviality.NonTrivial, firstValue.Form);
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "sqrt", "square_root")]
@@ -138,7 +138,7 @@ public static partial class NamedFunctions {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return new RealValue(RationalUtils.Sqrt(realValue.Value), false, realValue.Form);
+            return new RealValue(RationalUtils.Sqrt(realValue.Value), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -157,7 +157,7 @@ public static partial class NamedFunctions {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
-            return new RealValue(Rational.Abs(realValue.Value), false, realValue.Form);
+            return new RealValue(Rational.Abs(realValue.Value), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -172,7 +172,7 @@ public static partial class NamedFunctions {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
-            return new RealValue(realValue.Value.Sign, false, realValue.Form);
+            return new RealValue(realValue.Value.Sign, ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -189,7 +189,7 @@ public static partial class NamedFunctions {
         }
 
         RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
-        return new RealValue(RationalUtils.Floor(realValue.Value), false, realValue.Form);
+        return new RealValue(RationalUtils.Floor(realValue.Value), ValueTriviality.NonTrivial, realValue.Form);
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "round")]
@@ -203,7 +203,7 @@ public static partial class NamedFunctions {
         }
 
         RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
-        return new RealValue(RationalUtils.Round(realValue.Value), false, realValue.Form);
+        return new RealValue(RationalUtils.Round(realValue.Value), ValueTriviality.NonTrivial, realValue.Form);
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "ceil", "ceiling")]
@@ -217,6 +217,6 @@ public static partial class NamedFunctions {
         }
 
         RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
-        return new RealValue(RationalUtils.Ceil(realValue.Value), false, realValue.Form);
+        return new RealValue(RationalUtils.Ceil(realValue.Value), ValueTriviality.NonTrivial, realValue.Form);
     }
 }

@@ -142,7 +142,7 @@ public static partial class NamedFunctions {
 
         // Uneven, nice!
         if (sortedValues.Count % 2 == 1) {
-            return sortedValues[sortedValues.Count / 2].value.Clone(triviallyAchieved: false);
+            return sortedValues[sortedValues.Count / 2].value.Clone(ValueTriviality.NonTrivial);
         } else {
             var a = sortedValues[sortedValues.Count / 2 - 1];
             var b = sortedValues[sortedValues.Count / 2];

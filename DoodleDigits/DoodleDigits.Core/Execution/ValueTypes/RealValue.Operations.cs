@@ -8,7 +8,7 @@ namespace DoodleDigits.Core.Execution.ValueTypes;
 public partial class RealValue {
     public override Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
-            return new RealValue((this.Value + otherRealValue.Value).CanonicalForm, false, Form);
+            return new RealValue((this.Value + otherRealValue.Value).CanonicalForm, ValueTriviality.NonTrivial, Form);
         }
 
         return null;
@@ -20,7 +20,7 @@ public partial class RealValue {
                 this.Value - otherRealValue.Value : 
                 otherRealValue.Value - this.Value;
 
-            return new RealValue(value.CanonicalForm, false, Form);
+            return new RealValue(value.CanonicalForm, ValueTriviality.NonTrivial, Form);
         }
 
         return null;
@@ -28,7 +28,7 @@ public partial class RealValue {
 
     public override Value? TryMultiply(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
         if (BinaryOperationHelpers.TryConvertToReal(other, shouldConvert, side.Flip(), context, nodes, out var otherRealValue)) {
-            return new RealValue((this.Value * otherRealValue.Value).CanonicalForm, false, Form);
+            return new RealValue((this.Value * otherRealValue.Value).CanonicalForm, ValueTriviality.NonTrivial, Form);
         }
 
         return null;
@@ -42,7 +42,7 @@ public partial class RealValue {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return new RealValue((lhs.Value / rhs.Value).CanonicalForm, false, Form);
+            return new RealValue((lhs.Value / rhs.Value).CanonicalForm, ValueTriviality.NonTrivial, Form);
         }
 
         return null;
@@ -56,7 +56,7 @@ public partial class RealValue {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return new RealValue(lhs.Value.Modulus(rhs.Value), false, Form);
+            return new RealValue(lhs.Value.Modulus(rhs.Value), ValueTriviality.NonTrivial, Form);
         }
 
         return null;
@@ -85,7 +85,7 @@ public partial class RealValue {
                 }
             }
 
-            return FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()), false, lhs.Form);
+            return FromDouble(Math.Pow(lhs.Value.ToDouble(), rhs.Value.ToDouble()), ValueTriviality.NonTrivial, lhs.Form);
         }
 
         return null;

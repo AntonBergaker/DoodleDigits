@@ -12,6 +12,16 @@ public static class ResultJsonConverter {
         );
     }
 
+    private static JsonNode TrivialityToJson(ValueTriviality triviality) {
+        return JsonValue.Create(triviality switch {
+            ValueTriviality.Trivial => "trivial",
+            ValueTriviality.NonTrivial => "non_trivial",
+            ValueTriviality.TrivialSideEffect => "trivial_side_effect",
+            ValueTriviality.Unknown => "unknown",
+            _ => throw new Exception("Unknown triviality")
+        });
+    }
+
     public static JsonObject CalculationToJson(CalculationResult calculationResult) {
 
         var array = new JsonArray();
@@ -43,7 +53,7 @@ public static class ResultJsonConverter {
         };
     }
 
-    private static JsonNode ValueToJson(Value value) {
+    private static JsonObject ValueToJson(Value value) {
         var jsonObj = value switch {
             BooleanValue bv => BooleanValueToJson(bv),
             RealValue rv => RealValueToJson(rv),
@@ -56,7 +66,7 @@ public static class ResultJsonConverter {
             }
         };
 
-        jsonObj.Add("trivially_achieved", value.TriviallyAchieved);
+        jsonObj.Add("triviality", TrivialityToJson(value.Triviality));
         return jsonObj;
     }
 
@@ -102,7 +112,7 @@ public static class ResultJsonConverter {
                 if (element is MatrixValue.MatrixDimension md) {
                     array.Add(MatrixDimensionToJson(md));
                 } else if (element is MatrixValue.MatrixValueElement mve) {
-                    array.Add(ValueToJson(mve.Value));
+                    array.Add((JsonNode)ValueToJson(mve.Value));
                 }
             }
 

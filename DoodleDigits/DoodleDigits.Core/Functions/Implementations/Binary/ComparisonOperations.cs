@@ -61,7 +61,7 @@ public static partial class BinaryOperations {
             }
         }
 
-        return new BooleanValue(false, triviallyAchieved: false, BooleanValue.PresentationForm.FromComparison);
+        return new BooleanValue(false, ValueTriviality.NonTrivial, BooleanValue.PresentationForm.FromComparison);
     }
 
 

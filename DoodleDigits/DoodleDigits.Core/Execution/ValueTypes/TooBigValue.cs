@@ -12,11 +12,11 @@ public partial class TooBigValue : Value, IConvertibleToBool {
 
     public readonly Sign ValueSign;
 
-    public TooBigValue(Sign sign, bool triviallyAchieved) : base(triviallyAchieved) {
+    public TooBigValue(Sign sign, ValueTriviality triviality) : base(triviality) {
         ValueSign = sign;
     }
 
-    public TooBigValue(Sign sign) : this(sign, false) { }
+    public TooBigValue(Sign sign) : this(sign, ValueTriviality.Unknown) { }
 
     public override string ToString() {
         return "Very big";
@@ -34,8 +34,8 @@ public partial class TooBigValue : Value, IConvertibleToBool {
         return ValueSign.GetHashCode();
     }
 
-    public override Value Clone(bool? triviallyAchieved = null) {
-        return new TooBigValue(this.ValueSign, triviallyAchieved ?? TriviallyAchieved);
+    public override Value Clone(ValueTriviality? triviality = null) {
+        return new TooBigValue(this.ValueSign, triviality ?? Triviality);
     }
 
     public bool IsPositive => ValueSign is Sign.Positive or Sign.PositiveInfinity;

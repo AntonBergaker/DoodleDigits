@@ -137,7 +137,6 @@ const createWindow = async () => {
         `&theme=${jsonToBase64(theme)}`
 
     await mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY + query)
-    mainWindow.webContents.openDevTools();
     if (process.platform == "darwin") {
         mainWindow.setWindowButtonVisibility(true)
     }

@@ -15,38 +15,40 @@ export type ResultsViewProps = {
 }
 
 export function ResultView(props: ResultsViewProps) {
-    const resultsPerLine: Map<number, string[]> = new Map()
+    const resultsPerLine: Map<number, Result[]> = new Map()
     for (const result of props.result.results) {
-        const text = getResultText(result)
-
-        if (text == null) {
-            continue
-        }
-
         const line = props.pageMeasurer.getCharacterLine(
             getRange(result.range)[1]
         )
 
-        let array: string[]
+        let array: Result[]
         if (resultsPerLine.has(line)) {
             array = resultsPerLine.get(line)
         } else {
             array = []
             resultsPerLine.set(line, array)
         }
-        array.push(text)
+        array.push(result)
     }
 
     let index = 0
     const resultDoms: JSX.Element[] = []
-    for (const [line, results] of resultsPerLine) {
+    for (let [line, results] of resultsPerLine) {
         const pos = props.pageMeasurer.getLinePosition(line)
+
+        // If everything on the line is a trivial value, ignore everything
+        if (results.every(x => x.type == "value" && (x.value.triviality == "trivial" || x.value.triviality == "trivial_side_effect"))) {
+            continue;
+        }
+        // If not, hide side effects
+        results = results.filter(x => x.type == "value" && x.value.triviality != "trivial_side_effect")
+
         const resultDom = (
             <p
                 style={{ left: `${pos[0]}px`, top: `${pos[1]}px` }}
                 className="result"
                 key={index++}>
-                {results.join(", ")}
+                {results.map(x => getResultText(x)).join(", ")}
             </p>
         )
         resultDoms.push(resultDom)
@@ -57,9 +59,6 @@ export function ResultView(props: ResultsViewProps) {
 
 function getResultText(result: Result): string | null {
     if (result.type == "value") {
-        if (result.value.trivially_achieved) {
-            return null
-        }
         return getValueText(result.value, true)
     }
     if (result.type == "error") {

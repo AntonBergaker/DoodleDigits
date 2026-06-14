@@ -55,7 +55,7 @@ public static partial class NamedFunctions {
         if (result is IConvertibleToReal convertibleToReal) {
             RealValue realResult = convertibleToReal.ConvertToReal(context, node);
             if (realResult.Value.IsZero == false) {
-                return new RealValue(1 / realResult.Value, false, realResult.Form);
+                return new RealValue(1 / realResult.Value, ValueTriviality.NonTrivial, realResult.Form);
             }
         }
 
@@ -73,7 +73,7 @@ public static partial class NamedFunctions {
         if (value is IConvertibleToReal convertibleToReal) {
             RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
             if (realValue.Value.IsZero == false) {
-                RealValue real = new RealValue(1 / realValue.Value, false, realValue.Form);
+                RealValue real = new RealValue(1 / realValue.Value, ValueTriviality.NonTrivial, realValue.Form);
 
                 return trigArcFunction(real, context, node);
             }
@@ -94,22 +94,22 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.Zero) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
             if (rational == TauFourth) {
-                return new RealValue(Rational.One, false, realValue.Form);
+                return new RealValue(Rational.One, ValueTriviality.NonTrivial, realValue.Form);
             }
 
             if (rational == TauHalf) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
             if (rational == TauThreeFourths) {
-                return new RealValue(-Rational.One, false, realValue.Form);
+                return new RealValue(-Rational.One, ValueTriviality.NonTrivial, realValue.Form);
             }
 
-            return RealValue.FromDouble(Math.Sin((double) rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Sin((double) rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -124,19 +124,19 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.Zero) {
-                return new RealValue(Rational.One, false, realValue.Form);
+                return new RealValue(Rational.One, ValueTriviality.NonTrivial, realValue.Form);
             }
             if (rational == TauFourth) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
             if (rational == TauHalf) {
-                return new RealValue(-Rational.One, false, realValue.Form);
+                return new RealValue(-Rational.One, ValueTriviality.NonTrivial, realValue.Form);
             }
             if (rational == TauThreeFourths) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
-            return RealValue.FromDouble(Math.Cos((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Cos((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -151,7 +151,7 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.Zero) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
             if (rational == TauFourth) {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
@@ -160,7 +160,7 @@ public static partial class NamedFunctions {
                 return new UndefinedValue(UndefinedValue.UndefinedType.Undefined);
             }
 
-            return RealValue.FromDouble(Math.Tan((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Tan((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -186,7 +186,7 @@ public static partial class NamedFunctions {
 
         RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
-        return CorrectUnitForOutput(RealValue.FromDouble(Math.Asin((double)realValue.Value), false, realValue.Form), context);
+        return CorrectUnitForOutput(RealValue.FromDouble(Math.Asin((double)realValue.Value), ValueTriviality.NonTrivial, realValue.Form), context);
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arccos", "acos")]
@@ -197,7 +197,7 @@ public static partial class NamedFunctions {
 
         RealValue realValue = ConvertArgumentToReal(convertibleToReal, context, node, 0);
 
-        return CorrectUnitForOutput(RealValue.FromDouble(Math.Acos((double)realValue.Value), false, realValue.Form), context);
+        return CorrectUnitForOutput(RealValue.FromDouble(Math.Acos((double)realValue.Value), ValueTriviality.NonTrivial, realValue.Form), context);
     }
 
     [CalculatorFunction(FunctionExpectedType.Real, "arctan", "atan")]
@@ -211,12 +211,12 @@ public static partial class NamedFunctions {
 
         Value returnValue;
         if (rational == Rational.Zero) {
-            returnValue = new RealValue(Rational.Zero, false, realValue.Form);
+            returnValue = new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
         }
         else if (rational == Rational.One) {
-            returnValue = new RealValue(TauFourth/2, false, realValue.Form);
+            returnValue = new RealValue(TauFourth/2, ValueTriviality.NonTrivial, realValue.Form);
         } else {
-            returnValue = RealValue.FromDouble(Math.Atan((double)rational), false, realValue.Form);
+            returnValue = RealValue.FromDouble(Math.Atan((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return CorrectUnitForOutput(returnValue, context);
@@ -236,7 +236,7 @@ public static partial class NamedFunctions {
             RealValue realValue = resultReal.ConvertToReal(context, node);
             Rational offset = context.Settings.AngleUnit == AngleUnits.Radians ? TauFourth : 90;
 
-            return new RealValue(offset - realValue.Value, false, realValue.Form);
+            return new RealValue(offset - realValue.Value, ValueTriviality.NonTrivial, realValue.Form);
         }
     
 
@@ -257,7 +257,7 @@ public static partial class NamedFunctions {
                 return new RealValue(Rational.Zero);
             }
 
-            return RealValue.FromDouble(Math.Sinh((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Sinh((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -274,7 +274,7 @@ public static partial class NamedFunctions {
                 return new RealValue(Rational.One);
             }
 
-            return RealValue.FromDouble(Math.Cosh((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Cosh((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -288,10 +288,10 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.Zero) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
-            return RealValue.FromDouble(Math.Tanh((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Tanh((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -317,10 +317,10 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.Zero) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
-            return RealValue.FromDouble(Math.Asinh((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Asinh((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -334,10 +334,10 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.One) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
-            return RealValue.FromDouble(Math.Acosh((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Acosh((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);
@@ -351,10 +351,10 @@ public static partial class NamedFunctions {
 
             // Hardcoded to avoid double-unperfectness
             if (rational == Rational.Zero) {
-                return new RealValue(Rational.Zero, false, realValue.Form);
+                return new RealValue(Rational.Zero, ValueTriviality.NonTrivial, realValue.Form);
             }
 
-            return RealValue.FromDouble(Math.Atanh((double)rational), false, realValue.Form);
+            return RealValue.FromDouble(Math.Atanh((double)rational), ValueTriviality.NonTrivial, realValue.Form);
         }
 
         return new UndefinedValue(UndefinedValue.UndefinedType.Error);

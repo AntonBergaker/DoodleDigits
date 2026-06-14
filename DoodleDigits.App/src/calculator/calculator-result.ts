@@ -23,6 +23,8 @@ export type ConversionResult = BaseResult & {
     new: Value
 }
 
+export type ValueTriviality = "unknown" | "trivial" | "non_trivial" | "trivial_side_effect"
+
 export type Value =
     | MatrixValue
     | RealValue
@@ -30,7 +32,7 @@ export type Value =
     | TooBigValue
     | UndefinedValue
 type BaseValue = {
-    trivially_achieved: boolean
+    triviality: ValueTriviality
 }
 
 export type MatrixValue = BaseValue & {

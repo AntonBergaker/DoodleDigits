@@ -20,13 +20,13 @@ public class UndefinedValue : Value {
         return 0;
     }
 
-    public override Value Clone(bool? triviallyAchieved = null) {
+    public override Value Clone(ValueTriviality? triviality = null) {
         return new UndefinedValue(Type);
     }
 
     public UndefinedValue() : this(UndefinedType.Unset) { }
 
-    public UndefinedValue(UndefinedType type) : base(false) {
+    public UndefinedValue(UndefinedType type) : base(ValueTriviality.Unknown) {
         Type = type;
     }
 }

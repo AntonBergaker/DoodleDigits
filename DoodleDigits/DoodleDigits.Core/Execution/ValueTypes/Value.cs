@@ -2,13 +2,21 @@
 using DoodleDigits.Core.Parsing.Ast;
 
 namespace DoodleDigits.Core.Execution.ValueTypes;
+
+public enum ValueTriviality {
+    Unknown,
+    Trivial,
+    TrivialSideEffect,
+    NonTrivial,
+}
+
 public abstract class Value : IEquatable<Value> {
     public abstract override string ToString();
 
-    public bool TriviallyAchieved { get; }
+    public ValueTriviality Triviality { get; }
 
-    protected Value(bool triviallyAchieved) {
-        TriviallyAchieved = triviallyAchieved;
+    protected Value(ValueTriviality triviality) {
+        Triviality = triviality;
     }
 
     public virtual Value? TryAdd(Value other, BinaryOperation.OperationSide side, bool shouldConvert, ExecutorContext context, BinaryNodes nodes) {
@@ -43,5 +51,5 @@ public abstract class Value : IEquatable<Value> {
     }
 
     public abstract override int GetHashCode();
-    public abstract Value Clone(bool? triviallyAchieved = null);
+    public abstract Value Clone(ValueTriviality? triviality = null);
 }
