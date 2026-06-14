@@ -43,13 +43,13 @@ public class BooleanValue : Value, IConvertibleToReal, IConvertibleToBool {
         return bOther.Value == Value;
     }
 
-    public override Value Clone(ValueTriviality? triviallyAchieved = null) {
-        return new BooleanValue(Value, triviallyAchieved ?? this.Triviality, PresentationForm.Unset);
+    public override Value Clone(ValueTriviality? triviality = null) {
+        return new BooleanValue(Value, triviality ?? this.Triviality, PresentationForm.Unset);
     }
 
-    public Value Clone(ValueTriviality? triviallyAchieved = null, PresentationForm? form = null) {
+    public Value Clone(ValueTriviality? triviality = null, PresentationForm? form = null) {
         return new BooleanValue(Value, 
-            triviallyAchieved ?? this.Triviality,
+            triviality ?? this.Triviality,
             form ?? this.Form
         );
     }

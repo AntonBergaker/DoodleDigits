@@ -120,7 +120,7 @@ public partial class MatrixValue : Value {
 
     public MatrixValue(MatrixDimension dimension) : this(dimension, ValueTriviality.Unknown) { }
 
-    public MatrixValue(MatrixDimension dimension, ValueTriviality triviallyAchieved) : base(triviallyAchieved) {
+    public MatrixValue(MatrixDimension dimension, ValueTriviality triviality) : base(triviality) {
         this.Dimension = dimension;
         IsValid = Validate();
     }

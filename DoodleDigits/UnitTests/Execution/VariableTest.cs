@@ -14,7 +14,7 @@ class VariableTest {
     }
 
     [Test]
-    public void TestTriviallyAchievedAssignment() {
+    public void TestAssignmentTriviality() {
         {
             var result = ExecutionTestUtils.CalculateString("x = true").Results.LastOrDefault() as ResultValue;
             Assert.IsNotNull(result);
